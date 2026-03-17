@@ -397,7 +397,7 @@ export default function R02Page() {
               objectFit: "cover",
             }}
           >
-            <source src="/videos/hero-bright.mp4" type="video/mp4" />
+            <source src="/keikamotsu-new-templates/videos/hero-bright.mp4" type="video/mp4" />
           </video>
           {/* 明るいオーバーレイ */}
           <div

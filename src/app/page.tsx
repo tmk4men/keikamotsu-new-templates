@@ -69,7 +69,7 @@ export default function Home() {
               {group.items.map((t) => (
                 <a
                   key={t.id}
-                  href={`/${t.id}`}
+                  href={`/keikamotsu-new-templates/${t.id}`}
                   style={{
                     display: "block",
                     padding: "1.5rem",

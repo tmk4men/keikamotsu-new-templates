@@ -739,7 +739,7 @@ export default function CP02Page() {
               }}
             >
               <img
-                src="/images/ceo-portrait.webp"
+                src="/keikamotsu-new-templates/images/ceo-portrait.webp"
                 alt={ceoMessage.name}
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />

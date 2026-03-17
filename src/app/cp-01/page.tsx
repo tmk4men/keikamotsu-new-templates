@@ -391,7 +391,7 @@ export default function CP01Page() {
           objectFit: "cover",
         }}
       >
-        <source src="/videos/hero-nightcity.mp4" type="video/mp4" />
+        <source src="/keikamotsu-new-templates/videos/hero-nightcity.mp4" type="video/mp4" />
       </video>
       <div
         style={{
@@ -730,7 +730,7 @@ export default function CP01Page() {
               }}
             >
               <img
-                src="/images/ceo-portrait.webp"
+                src="/keikamotsu-new-templates/images/ceo-portrait.webp"
                 alt={`${ceoMessage.name} ${ceoMessage.title}`}
                 style={{ width: "100%", display: "block", filter: "grayscale(20%)" }}
               />

@@ -392,7 +392,7 @@ export default function CP04Page() {
                 objectFit: "cover",
               }}
             >
-              <source src="/videos/hero-daytime.mp4" type="video/mp4" />
+              <source src="/keikamotsu-new-templates/videos/hero-daytime.mp4" type="video/mp4" />
             </video>
             <div
               style={{

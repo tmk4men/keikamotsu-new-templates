@@ -295,11 +295,11 @@ export const gallery = {
   heading: "職場の雰囲気",
   intro: "実際の車両や職場の様子をご覧ください。20〜60代まで幅広い仲間が活躍しています。",
   images: [
-    { src: "/images/vehicle.webp", alt: "配送車両", caption: "無料貸出の配達車。ピカピカの軽バンです" },
-    { src: "/images/delivery.webp", alt: "配達シーン", caption: "置き配中心でスムーズに配達" },
-    { src: "/images/workplace.webp", alt: "オフィス", caption: "明るく清潔なオフィス環境" },
-    { src: "/images/loading.webp", alt: "荷物積み込み", caption: "スマホでルート確認しながら積み込み" },
-    { src: "/images/team.webp", alt: "チーム写真", caption: "年齢問わず笑顔あふれるチーム" },
+    { src: "/keikamotsu-new-templates/images/vehicle.webp", alt: "配送車両", caption: "無料貸出の配達車。ピカピカの軽バンです" },
+    { src: "/keikamotsu-new-templates/images/delivery.webp", alt: "配達シーン", caption: "置き配中心でスムーズに配達" },
+    { src: "/keikamotsu-new-templates/images/workplace.webp", alt: "オフィス", caption: "明るく清潔なオフィス環境" },
+    { src: "/keikamotsu-new-templates/images/loading.webp", alt: "荷物積み込み", caption: "スマホでルート確認しながら積み込み" },
+    { src: "/keikamotsu-new-templates/images/team.webp", alt: "チーム写真", caption: "年齢問わず笑顔あふれるチーム" },
   ],
 };
 

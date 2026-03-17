@@ -883,7 +883,7 @@ function CeoSection({
             }}
           >
             <img
-              src="/images/ceo.webp"
+              src="/keikamotsu-new-templates/images/ceo.webp"
               alt={ceoMessage.name}
               style={{
                 width: "100%",

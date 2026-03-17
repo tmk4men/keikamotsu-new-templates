@@ -297,7 +297,7 @@ export default function R04Flow() {
               objectFit: "cover", zIndex: 0,
             }}
           >
-            <source src="/videos/hero-daytime.mp4" type="video/mp4" />
+            <source src="/keikamotsu-new-templates/videos/hero-daytime.mp4" type="video/mp4" />
           </video>
           <div style={{
             position: "absolute", inset: 0, zIndex: 1,

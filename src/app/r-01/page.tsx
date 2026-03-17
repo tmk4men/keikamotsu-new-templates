@@ -186,7 +186,7 @@ export default function R01Page() {
         <video
           autoPlay muted loop playsInline
           style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" }}
-          src="/videos/hero-nightcity.mp4"
+          src="/keikamotsu-new-templates/videos/hero-nightcity.mp4"
         />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.85) 100%)" }} />
 

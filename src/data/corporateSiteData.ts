@@ -147,12 +147,12 @@ export const numbers = [
 ];
 
 export const partners = [
-  { name: "大手運輸会社A社", industry: "物流", logo: "/images/partner-a.png" },
-  { name: "大手EC通販プラットフォームB社", industry: "EC・通販", logo: "/images/partner-b.png" },
-  { name: "大手ネット通販C社", industry: "EC・通販", logo: "/images/partner-c.png" },
-  { name: "食品メーカーD社", industry: "食品", logo: "/images/partner-d.png" },
-  { name: "医療機器メーカーE社", industry: "医療", logo: "/images/partner-e.png" },
-  { name: "アパレルブランドF社", industry: "アパレル", logo: "/images/partner-f.png" },
+  { name: "大手運輸会社A社", industry: "物流", logo: "/keikamotsu-new-templates/images/partner-a.png" },
+  { name: "大手EC通販プラットフォームB社", industry: "EC・通販", logo: "/keikamotsu-new-templates/images/partner-b.png" },
+  { name: "大手ネット通販C社", industry: "EC・通販", logo: "/keikamotsu-new-templates/images/partner-c.png" },
+  { name: "食品メーカーD社", industry: "食品", logo: "/keikamotsu-new-templates/images/partner-d.png" },
+  { name: "医療機器メーカーE社", industry: "医療", logo: "/keikamotsu-new-templates/images/partner-e.png" },
+  { name: "アパレルブランドF社", industry: "アパレル", logo: "/keikamotsu-new-templates/images/partner-f.png" },
 ];
 
 export const news = [
