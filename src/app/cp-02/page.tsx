@@ -434,7 +434,7 @@ export default function CP02Page() {
                 marginBottom: 10,
               }}
             >
-              Services
+              ─ Services ─
             </p>
             <h2
               style={{
@@ -458,8 +458,8 @@ export default function CP02Page() {
                 letterSpacing: "0.05em",
               }}
             >
-              物流を軸に、車両リース・レンタカー・ロードサービスまで。
-              配送業に関わるすべてをワンストップで支える体制を整えています。
+              物流を軸に、<br/>車両リース・レンタカー・ロードサービスまで。<br/>
+              配送業に関わるすべてを<br/>ワンストップで支える体制を整えています。
             </p>
           </div>
 
@@ -511,7 +511,7 @@ export default function CP02Page() {
                     letterSpacing: "0.04em",
                   }}
                 >
-                  {s.title}
+                  ■ {s.title}
                 </h3>
                 <p
                   style={{
@@ -538,6 +538,12 @@ export default function CP02Page() {
   };
 
   /* ─── Strengths ─── */
+  const strengthImages = [
+    "/keikamotsu-new-templates/images/strength-01.webp",
+    "/keikamotsu-new-templates/images/strength-02.webp",
+    "/keikamotsu-new-templates/images/strength-03.webp",
+  ];
+
   const renderStrengths = () => {
     const f = useFadeIn();
     return (
@@ -560,7 +566,7 @@ export default function CP02Page() {
               marginBottom: 10,
             }}
           >
-            Strengths
+            ─ Strengths ─
           </p>
           <h2
             style={{
@@ -588,55 +594,79 @@ export default function CP02Page() {
                 style={{
                   flex: 1,
                   backgroundColor: C.white,
-                  padding: isMobile ? "28px 22px" : "36px 32px",
                   borderRadius: i === 0 ? 6 : i === 1 ? 8 : 5,
                   marginBottom: isMobile ? 16 : 0,
                   borderTop: `3px solid ${C.accent}`,
+                  overflow: "hidden",
                 }}
               >
-                <span
+                {/* 強み画像 */}
+                <div
                   style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: 28,
-                    fontWeight: 700,
-                    color: C.accent,
-                    lineHeight: 1,
-                    display: "block",
-                    marginBottom: 14,
-                    opacity: 0.6,
+                    width: "100%",
+                    height: 160,
+                    overflow: "hidden",
                   }}
                 >
-                  {s.num}
-                </span>
-                <h3
+                  <img
+                    src={strengthImages[i] || strengthImages[0]}
+                    alt={s.title}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </div>
+                <div
                   style={{
-                    fontFamily: "'Zen Kaku Gothic New', sans-serif",
-                    fontSize: isMobile ? 17 : 18,
-                    fontWeight: 700,
-                    color: C.text,
-                    lineHeight: 1.5,
-                    letterSpacing: "0.04em",
-                    marginBottom: 14,
+                    padding: isMobile ? "28px 22px" : "28px 32px 36px",
                   }}
                 >
-                  {s.title}
-                </h3>
-                <p
-                  style={{
-                    fontFamily: "'Noto Sans JP', sans-serif",
-                    fontSize: 13,
-                    color: C.textSub,
-                    lineHeight: 1.9,
-                    letterSpacing: "0.05em",
-                  }}
-                >
-                  {s.text.split("\n").map((line, j) => (
-                    <React.Fragment key={j}>
-                      {line}
-                      {j < s.text.split("\n").length - 1 && <br />}
-                    </React.Fragment>
-                  ))}
-                </p>
+                  <span
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: 28,
+                      fontWeight: 700,
+                      color: C.accent,
+                      lineHeight: 1,
+                      display: "block",
+                      marginBottom: 14,
+                      opacity: 0.6,
+                    }}
+                  >
+                    {s.num}
+                  </span>
+                  <h3
+                    style={{
+                      fontFamily: "'Zen Kaku Gothic New', sans-serif",
+                      fontSize: isMobile ? 17 : 18,
+                      fontWeight: 700,
+                      color: C.text,
+                      lineHeight: 1.5,
+                      letterSpacing: "0.04em",
+                      marginBottom: 14,
+                    }}
+                  >
+                    ─ {s.title}
+                  </h3>
+                  <p
+                    style={{
+                      fontFamily: "'Noto Sans JP', sans-serif",
+                      fontSize: 13,
+                      color: C.textSub,
+                      lineHeight: 1.9,
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    {s.text.split("\n").map((line, j) => (
+                      <React.Fragment key={j}>
+                        {line}
+                        {j < s.text.split("\n").length - 1 && <br />}
+                      </React.Fragment>
+                    ))}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -679,7 +709,7 @@ export default function CP02Page() {
               marginBottom: 10,
             }}
           >
-            Message
+            ─ Message ─
           </p>
           <h2
             style={{
@@ -797,7 +827,7 @@ export default function CP02Page() {
               marginBottom: 10,
             }}
           >
-            Company
+            ─ Company ─
           </p>
           <h2
             style={{
@@ -836,7 +866,7 @@ export default function CP02Page() {
                     marginBottom: isMobile ? 4 : 0,
                   }}
                 >
-                  {item.dt}
+                  ▪ {item.dt}
                 </div>
                 <div
                   style={{
@@ -882,7 +912,7 @@ export default function CP02Page() {
               marginBottom: 10,
             }}
           >
-            History
+            ─ History ─
           </p>
           <h2
             style={{
@@ -990,11 +1020,30 @@ export default function CP02Page() {
       <section
         id="numbers"
         style={{
-          backgroundColor: C.accent,
+          position: "relative",
+          overflow: "hidden",
           padding: isMobile ? "52px 20px 44px" : "100px 40px 90px",
         }}
       >
-        <div ref={f.ref} style={{ ...f.style, maxWidth: 960, margin: "0 auto" }}>
+        {/* 背景画像 */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: "url(/keikamotsu-new-templates/images/delivery.webp)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "brightness(0.15)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "rgba(59,89,152,0.85)",
+          }}
+        />
+        <div ref={f.ref} style={{ ...f.style, maxWidth: 960, margin: "0 auto", position: "relative", zIndex: 1 }}>
           <p
             style={{
               fontFamily: "'DM Sans', sans-serif",
@@ -1006,7 +1055,7 @@ export default function CP02Page() {
               marginBottom: 10,
             }}
           >
-            Numbers
+            ─ Numbers ─
           </p>
           <h2
             style={{
@@ -1095,7 +1144,7 @@ export default function CP02Page() {
               marginBottom: 10,
             }}
           >
-            Partners
+            ─ Partners ─
           </p>
           <h2
             style={{
@@ -1184,7 +1233,7 @@ export default function CP02Page() {
               marginBottom: 10,
             }}
           >
-            News
+            ─ News ─
           </p>
           <h2
             style={{
@@ -1243,7 +1292,7 @@ export default function CP02Page() {
                         letterSpacing: "0.04em",
                       }}
                     >
-                      {n.date}
+                      ─ {n.date}
                     </span>
                     <span
                       style={{
@@ -1288,10 +1337,29 @@ export default function CP02Page() {
       <section
         id="recruit"
         style={{
-          backgroundColor: C.cta,
+          position: "relative",
+          overflow: "hidden",
           padding: isMobile ? "56px 20px 48px" : "130px 40px 140px",
         }}
       >
+        {/* 背景に人物写真 */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: "url(/keikamotsu-new-templates/images/team.webp)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "brightness(0.15)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "rgba(50,55,60,0.88)",
+          }}
+        />
         <div
           ref={f.ref}
           style={{
@@ -1299,6 +1367,8 @@ export default function CP02Page() {
             maxWidth: 800,
             margin: "0 auto",
             textAlign: "center",
+            position: "relative",
+            zIndex: 1,
           }}
         >
           <p
@@ -1312,7 +1382,7 @@ export default function CP02Page() {
               marginBottom: 10,
             }}
           >
-            Recruit
+            ─ Recruit ─
           </p>
           <h2
             style={{
@@ -1393,7 +1463,7 @@ export default function CP02Page() {
               marginBottom: 10,
             }}
           >
-            Access
+            ─ Access ─
           </p>
           <h2
             style={{
@@ -1529,7 +1599,7 @@ export default function CP02Page() {
               marginBottom: 10,
             }}
           >
-            Contact
+            ─ Contact ─
           </p>
           <h2
             style={{
@@ -1589,13 +1659,13 @@ export default function CP02Page() {
                     {field.required && (
                       <span
                         style={{
-                          color: "#e74c3c",
-                          fontSize: 11,
+                          color: "#777",
+                          fontSize: 12,
                           marginLeft: 6,
-                          fontWeight: 500,
+                          fontWeight: 600,
                         }}
                       >
-                        必須
+                        ＊
                       </span>
                     )}
                   </label>

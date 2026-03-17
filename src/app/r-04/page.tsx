@@ -31,8 +31,8 @@ const C = {
   text: "#2d2d2d",
   muted: "#888888",
   mutedLight: "#b5b5b5",
-  bronze: "#8b6f47",
-  bronzeLight: "#a6895e",
+  accent: "#32373c",
+  accentLight: "#555555",
   cta: "#32373c",
   ctaHover: "#3e444a",
   border: "#e0ddd8",
@@ -43,9 +43,9 @@ const C = {
    フォントスタック
    ═══════════════════════════════════════════ */
 const F = {
-  mincho: "'Shippori Mincho B1', 'Playfair Display', serif",
+  heading: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
   sans: "'Noto Sans JP', sans-serif",
-  playfair: "'Playfair Display', 'Shippori Mincho B1', serif",
+  accent: "'Oswald', 'Zen Kaku Gothic New', sans-serif",
 };
 
 /* ═══════════════════════════════════════════
@@ -170,7 +170,7 @@ export default function R04Flow() {
     <>
       {/* ── Google Fonts ── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Sans+JP:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;600;700&family=Oswald:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap');
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { overflow-x: hidden; }
@@ -202,7 +202,7 @@ export default function R04Flow() {
             padding: isMobile ? "14px 20px" : "18px 48px",
           }}>
             <a href="#" style={{
-              fontFamily: F.mincho, fontSize: isMobile ? "16px" : "18px",
+              fontFamily: F.heading, fontSize: isMobile ? "16px" : "18px",
               fontWeight: 600, color: atTop ? "#fff" : C.text,
               letterSpacing: "0.08em", transition: "color 0.3s",
             }}>
@@ -217,7 +217,7 @@ export default function R04Flow() {
                     fontSize: "12px", color: atTop ? "rgba(255,255,255,0.7)" : C.muted,
                     letterSpacing: "0.06em", transition: "color 0.3s",
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.color = C.bronze)}
+                  onMouseEnter={e => (e.currentTarget.style.color = C.accent)}
                   onMouseLeave={e => (e.currentTarget.style.color = atTop ? "rgba(255,255,255,0.7)" : C.muted)}
                   >
                     {l.label}
@@ -226,7 +226,7 @@ export default function R04Flow() {
                 <a href="#apply" style={{
                   fontSize: "12px", color: atTop ? "#fff" : C.cta,
                   fontWeight: 500, letterSpacing: "0.06em", transition: "color 0.3s",
-                  borderBottom: `1px solid ${atTop ? "rgba(255,255,255,0.4)" : C.bronze}`,
+                  borderBottom: `1px solid ${atTop ? "rgba(255,255,255,0.4)" : C.accent}`,
                   paddingBottom: "2px",
                 }}>
                   応募する
@@ -267,14 +267,14 @@ export default function R04Flow() {
             }}>
               {navLinks.map(l => (
                 <a key={l.href} href={l.href} onClick={() => setMobileNav(false)}
-                  style={{ fontFamily: F.mincho, fontSize: "15px", color: C.text, letterSpacing: "0.04em" }}>
+                  style={{ fontFamily: F.heading, fontSize: "15px", color: C.text, letterSpacing: "0.04em" }}>
                   {l.label}
                 </a>
               ))}
               <a href="#apply" onClick={() => setMobileNav(false)}
                 style={{
-                  fontFamily: F.mincho, fontSize: "15px", color: C.bronze,
-                  borderBottom: `1px solid ${C.bronze}`, alignSelf: "flex-start", paddingBottom: "2px",
+                  fontFamily: F.heading, fontSize: "15px", color: C.accent,
+                  borderBottom: `1px solid ${C.accent}`, alignSelf: "flex-start", paddingBottom: "2px",
                 }}>
                 応募する
               </a>
@@ -307,7 +307,7 @@ export default function R04Flow() {
           <div style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "0 24px" }}>
             <FadeIn delay={0.3}>
               <p style={{
-                fontFamily: F.playfair, fontSize: isMobile ? "11px" : "13px",
+                fontFamily: F.accent, fontSize: isMobile ? "11px" : "13px",
                 color: "rgba(255,255,255,0.6)", letterSpacing: "0.3em",
                 marginBottom: isMobile ? "16px" : "24px", textTransform: "uppercase",
               }}>
@@ -316,8 +316,8 @@ export default function R04Flow() {
             </FadeIn>
             <FadeIn delay={0.6}>
               <h1 style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "28px" : "52px",
-                fontWeight: 500, color: "#fff", lineHeight: 1.3,
+                fontFamily: F.heading, fontSize: isMobile ? "28px" : "52px",
+                fontWeight: 700, color: "#fff", lineHeight: 1.3,
                 letterSpacing: "0.08em",
               }}>
                 物流で、未来を<br />変えていく。
@@ -340,7 +340,7 @@ export default function R04Flow() {
             zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
           }}>
             <span style={{
-              fontFamily: F.playfair, fontSize: "10px", color: "rgba(255,255,255,0.4)",
+              fontFamily: F.accent, fontSize: "10px", color: "rgba(255,255,255,0.4)",
               letterSpacing: "0.2em", textTransform: "uppercase",
             }}>
               Scroll
@@ -365,16 +365,16 @@ export default function R04Flow() {
           <div style={{ width: containerW, margin: "0 auto" }}>
             <FadeIn>
               <p style={{
-                fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                 letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "32px",
               }}>
-                About This Work
+                ── About This Work ──
               </p>
             </FadeIn>
             <FadeIn delay={0.15}>
               <h2 style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "24px" : "40px",
-                fontWeight: 500, lineHeight: 1.3, color: C.text,
+                fontFamily: F.heading, fontSize: isMobile ? "24px" : "40px",
+                fontWeight: 700, lineHeight: 1.3, color: C.text,
                 letterSpacing: "0.04em",
                 maxWidth: isMobile ? "100%" : "70%",
               }}>
@@ -383,7 +383,7 @@ export default function R04Flow() {
             </FadeIn>
             <FadeIn delay={0.3}>
               <p style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "15px" : "18px",
+                fontFamily: F.sans, fontSize: isMobile ? "15px" : "18px",
                 lineHeight: 1.9, color: C.muted, marginTop: "32px",
                 maxWidth: isMobile ? "100%" : "60%",
                 marginLeft: isMobile ? "0" : "80px",
@@ -404,14 +404,14 @@ export default function R04Flow() {
           <div style={{ width: containerW, margin: "0 auto" }}>
             <FadeIn>
               <p style={{
-                fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                 letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "16px",
               }}>
-                Why Choose Us
+                ── Why Choose Us ──
               </p>
               <h2 style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "22px" : "32px",
-                fontWeight: 500, color: C.text, letterSpacing: "0.06em",
+                fontFamily: F.heading, fontSize: isMobile ? "22px" : "32px",
+                fontWeight: 700, color: C.text, letterSpacing: "0.06em",
               }}>
                 選ばれる理由
               </h2>
@@ -422,44 +422,59 @@ export default function R04Flow() {
                 <FadeIn key={r.num} delay={i * 0.12}>
                   <div style={{
                     display: isMobile ? "block" : "flex",
-                    alignItems: "flex-start",
+                    alignItems: "stretch",
                     padding: isMobile ? "40px 0" : "60px 0",
                     borderBottom: i < reasons.length - 1 ? `1px solid ${C.border}` : "none",
-                    gap: "60px",
+                    gap: "48px",
                   }}>
-                    {/* Left Page */}
+                    {/* Image */}
                     <div style={{
-                      flex: isMobile ? undefined : "0 0 40%",
-                      marginBottom: isMobile ? "24px" : 0,
+                      flex: isMobile ? undefined : "0 0 38%",
+                      marginBottom: isMobile ? "20px" : 0,
+                      overflow: "hidden",
+                    }}>
+                      <img
+                        src={`/keikamotsu-new-templates/images/strength-${r.num}.webp`}
+                        alt={r.title}
+                        style={{
+                          width: "100%",
+                          height: isMobile ? "200px" : "100%",
+                          objectFit: "cover",
+                          display: "block",
+                          filter: "grayscale(15%)",
+                        }}
+                      />
+                    </div>
+
+                    {/* Text */}
+                    <div style={{
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
                     }}>
                       <span style={{
-                        fontFamily: F.playfair, fontSize: isMobile ? "64px" : "96px",
+                        fontFamily: F.accent, fontSize: isMobile ? "48px" : "72px",
                         fontWeight: 300, color: C.border, lineHeight: 1,
                         display: "block",
                       }}>
-                        {r.num}
+                        ─ {r.num}
                       </span>
                       <h3 style={{
-                        fontFamily: F.mincho, fontSize: isMobile ? "18px" : "22px",
-                        fontWeight: 500, color: C.text, marginTop: "16px",
+                        fontFamily: F.heading, fontSize: isMobile ? "18px" : "22px",
+                        fontWeight: 600, color: C.text, marginTop: "16px",
                         lineHeight: 1.6, letterSpacing: "0.03em",
                       }}>
                         {r.title}
                       </h3>
-                    </div>
-
-                    {/* Right Page */}
-                    <div style={{
-                      flex: 1,
-                      paddingLeft: isMobile ? "0" : "40px",
-                      borderLeft: isMobile ? "none" : `1px solid ${C.border}`,
-                      display: "flex", alignItems: "center",
-                    }}>
                       <p style={{
                         fontSize: isMobile ? "13px" : "15px", color: C.muted,
                         lineHeight: 1.9, letterSpacing: "0.02em",
+                        marginTop: "16px",
                       }}>
-                        {r.text}
+                        {typeof r.text === 'string' && r.text.includes('\n')
+                          ? r.text.split('\n').map((line, li) => <span key={li}>{line}{li < r.text.split('\n').length - 1 && <br />}</span>)
+                          : r.text}
                       </p>
                     </div>
                   </div>
@@ -476,14 +491,14 @@ export default function R04Flow() {
           <div style={{ width: containerW, margin: "0 auto" }}>
             <FadeIn>
               <p style={{
-                fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                 letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "16px",
               }}>
-                Recruitment
+                ── Recruitment ──
               </p>
               <h2 style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "22px" : "32px",
-                fontWeight: 500, color: C.text, letterSpacing: "0.06em",
+                fontFamily: F.heading, fontSize: isMobile ? "22px" : "32px",
+                fontWeight: 700, color: C.text, letterSpacing: "0.06em",
               }}>
                 求人情報
               </h2>
@@ -491,7 +506,7 @@ export default function R04Flow() {
 
             <FadeIn delay={0.15}>
               <p style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "13px" : "15px",
+                fontFamily: F.sans, fontSize: isMobile ? "13px" : "15px",
                 color: C.muted, marginTop: "32px", lineHeight: 1.9, maxWidth: "640px",
               }}>
                 {jobs.intro}
@@ -508,18 +523,18 @@ export default function R04Flow() {
                     gap: "40px",
                   }}>
                     <dt style={{
-                      fontFamily: F.mincho, fontSize: "13px", color: C.muted,
-                      flex: isMobile ? undefined : "0 0 140px",
+                      fontFamily: F.heading, fontSize: "13px", color: C.muted,
+                      flex: isMobile ? undefined : "0 0 160px",
                       letterSpacing: "0.06em",
                       marginBottom: isMobile ? "8px" : 0,
                     }}>
-                      {row.dt}
+                      <span style={{ color: C.accent, marginRight: "8px" }}>▪</span>{row.dt}
                     </dt>
                     <dd style={{
                       fontSize: row.accent ? (isMobile ? "18px" : "22px") : (isMobile ? "14px" : "15px"),
-                      fontFamily: row.accent ? F.mincho : F.sans,
+                      fontFamily: row.accent ? F.heading : F.sans,
                       fontWeight: row.accent ? 600 : 300,
-                      color: row.accent ? C.bronze : C.text,
+                      color: row.accent ? C.accent : C.text,
                       lineHeight: 1.9,
                       letterSpacing: row.accent ? "0.04em" : "0.01em",
                     }}>
@@ -534,7 +549,7 @@ export default function R04Flow() {
             <FadeIn delay={0.2}>
               <div style={{ marginTop: isMobile ? "40px" : "56px" }}>
                 <p style={{
-                  fontFamily: F.mincho, fontSize: "13px", color: C.muted,
+                  fontFamily: F.heading, fontSize: "13px", color: C.muted,
                   letterSpacing: "0.06em", marginBottom: "20px",
                 }}>
                   応募資格
@@ -564,14 +579,14 @@ export default function R04Flow() {
           <div style={{ width: containerW, margin: "0 auto" }}>
             <FadeIn>
               <p style={{
-                fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                 letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "16px",
               }}>
-                Benefits
+                ── Benefits ──
               </p>
               <h2 style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "22px" : "32px",
-                fontWeight: 500, color: C.text, letterSpacing: "0.06em",
+                fontFamily: F.heading, fontSize: isMobile ? "22px" : "32px",
+                fontWeight: 700, color: C.text, letterSpacing: "0.06em",
               }}>
                 待遇・福利厚生
               </h2>
@@ -591,23 +606,25 @@ export default function R04Flow() {
                   }}>
                     <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "12px" }}>
                       <span style={{
-                        fontFamily: F.playfair, fontSize: "28px", fontWeight: 300,
-                        color: C.border, lineHeight: 1,
+                        fontSize: "16px", fontWeight: 700,
+                        color: C.accent, lineHeight: 1,
                       }}>
-                        {String(i + 1).padStart(2, "0")}
+                        ✓
                       </span>
                       <h3 style={{
-                        fontFamily: F.mincho, fontSize: isMobile ? "16px" : "17px",
-                        fontWeight: 500, color: C.text, letterSpacing: "0.03em",
+                        fontFamily: F.heading, fontSize: isMobile ? "16px" : "17px",
+                        fontWeight: 600, color: C.text, letterSpacing: "0.03em",
                       }}>
                         {b.title}
                       </h3>
                     </div>
                     <p style={{
                       fontSize: "13px", color: C.muted, lineHeight: 1.9,
-                      marginLeft: isMobile ? "0" : "42px",
+                      marginLeft: isMobile ? "0" : "30px",
                     }}>
-                      {b.text}
+                      {typeof b.text === 'string' && b.text.includes('\n')
+                        ? b.text.split('\n').map((line, li) => <span key={li}>{line}{li < b.text.split('\n').length - 1 && <br />}</span>)
+                        : b.text}
                     </p>
                   </div>
                 </FadeIn>
@@ -624,14 +641,14 @@ export default function R04Flow() {
             <FadeIn>
               <div style={{ textAlign: isMobile ? "left" : "right" }}>
                 <p style={{
-                  fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                  fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                   letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "16px",
                 }}>
-                  Daily Schedule
+                  ── Daily Schedule ──
                 </p>
                 <h2 style={{
-                  fontFamily: F.mincho, fontSize: isMobile ? "22px" : "32px",
-                  fontWeight: 500, color: C.text, letterSpacing: "0.06em",
+                  fontFamily: F.heading, fontSize: isMobile ? "22px" : "32px",
+                  fontWeight: 700, color: C.text, letterSpacing: "0.06em",
                 }}>
                   一日の流れ
                 </h2>
@@ -640,7 +657,7 @@ export default function R04Flow() {
 
             <FadeIn delay={0.15}>
               <p style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "13px" : "15px",
+                fontFamily: F.sans, fontSize: isMobile ? "13px" : "15px",
                 color: C.muted, marginTop: "32px", lineHeight: 1.9,
                 textAlign: isMobile ? "left" : "right",
                 maxWidth: isMobile ? "100%" : "50%",
@@ -675,10 +692,10 @@ export default function R04Flow() {
                       marginBottom: isMobile ? "8px" : 0,
                     }}>
                       <span style={{
-                        fontFamily: F.playfair, fontSize: isMobile ? "24px" : "32px",
-                        fontWeight: 300, color: C.bronze, letterSpacing: "0.04em",
+                        fontFamily: F.accent, fontSize: isMobile ? "24px" : "32px",
+                        fontWeight: 300, color: C.accentLight, letterSpacing: "0.04em",
                       }}>
-                        {step.time}
+                        <span style={{ fontSize: "10px", verticalAlign: "middle", marginRight: "6px" }}>●</span>{step.time}
                       </span>
                     </div>
 
@@ -690,7 +707,7 @@ export default function R04Flow() {
                       }}>
                         <div style={{
                           width: "8px", height: "8px", borderRadius: "50%",
-                          background: C.bronze, position: "relative", zIndex: 1,
+                          background: C.accent, position: "relative", zIndex: 1,
                         }} />
                       </div>
                     )}
@@ -698,8 +715,8 @@ export default function R04Flow() {
                     {/* Content */}
                     <div style={{ flex: 1 }}>
                       <h3 style={{
-                        fontFamily: F.mincho, fontSize: isMobile ? "16px" : "17px",
-                        fontWeight: 500, color: C.text, marginBottom: "8px",
+                        fontFamily: F.heading, fontSize: isMobile ? "16px" : "17px",
+                        fontWeight: 600, color: C.text, marginBottom: "8px",
                         letterSpacing: "0.03em",
                       }}>
                         {step.title}
@@ -707,7 +724,9 @@ export default function R04Flow() {
                       <p style={{
                         fontSize: "13px", color: C.muted, lineHeight: 1.9,
                       }}>
-                        {step.desc}
+                        {typeof step.desc === 'string' && step.desc.includes('\n')
+                          ? step.desc.split('\n').map((line, li) => <span key={li}>{line}{li < step.desc.split('\n').length - 1 && <br />}</span>)
+                          : step.desc}
                       </p>
                     </div>
                   </div>
@@ -724,14 +743,14 @@ export default function R04Flow() {
           <div style={{ width: containerW, margin: "0 auto" }}>
             <FadeIn>
               <p style={{
-                fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                 letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "16px",
               }}>
-                Gallery
+                ── Gallery ──
               </p>
               <h2 style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "22px" : "32px",
-                fontWeight: 500, color: C.text, letterSpacing: "0.06em",
+                fontFamily: F.heading, fontSize: isMobile ? "22px" : "32px",
+                fontWeight: 700, color: C.text, letterSpacing: "0.06em",
               }}>
                 {gallery.heading}
               </h2>
@@ -751,7 +770,7 @@ export default function R04Flow() {
                         }}
                       />
                       <p style={{
-                        fontFamily: F.mincho, fontSize: "11px", color: C.muted,
+                        fontFamily: F.heading, fontSize: "11px", color: C.muted,
                         marginTop: "8px", letterSpacing: "0.03em",
                       }}>
                         {img.caption}
@@ -794,7 +813,7 @@ export default function R04Flow() {
                         background: "linear-gradient(transparent, rgba(0,0,0,0.45))",
                       }}>
                         <p style={{
-                          fontFamily: F.mincho, fontSize: "12px", color: "rgba(255,255,255,0.85)",
+                          fontFamily: F.heading, fontSize: "12px", color: "rgba(255,255,255,0.85)",
                           letterSpacing: "0.03em",
                         }}>
                           {img.caption}
@@ -815,14 +834,14 @@ export default function R04Flow() {
           <div style={{ width: containerW, margin: "0 auto" }}>
             <FadeIn>
               <p style={{
-                fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                 letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "16px",
               }}>
-                Interviews
+                ── Interviews ──
               </p>
               <h2 style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "22px" : "32px",
-                fontWeight: 500, color: C.text, letterSpacing: "0.06em",
+                fontFamily: F.heading, fontSize: isMobile ? "22px" : "32px",
+                fontWeight: 700, color: C.text, letterSpacing: "0.06em",
               }}>
                 先輩の声
               </h2>
@@ -841,14 +860,14 @@ export default function R04Flow() {
                     {/* Quote */}
                     <div style={{ flex: 1 }}>
                       <span style={{
-                        fontFamily: F.playfair, fontSize: "72px", lineHeight: 1,
+                        fontFamily: F.accent, fontSize: "72px", lineHeight: 1,
                         color: C.border, display: "block", marginBottom: "-16px",
                       }}>
                         &ldquo;
                       </span>
                       <p style={{
-                        fontFamily: F.mincho, fontSize: isMobile ? "18px" : "22px",
-                        fontWeight: 500, color: C.bronze, lineHeight: 1.6,
+                        fontFamily: F.heading, fontSize: isMobile ? "18px" : "22px",
+                        fontWeight: 600, color: C.text, lineHeight: 1.6,
                         letterSpacing: "0.02em", marginBottom: "24px",
                       }}>
                         {v.highlight}
@@ -856,7 +875,9 @@ export default function R04Flow() {
                       <p style={{
                         fontSize: "13px", color: C.muted, lineHeight: 1.9,
                       }}>
-                        {v.text}
+                        {typeof v.text === 'string' && v.text.includes('\n')
+                          ? v.text.split('\n').map((line, li) => <span key={li}>{line}{li < v.text.split('\n').length - 1 && <br />}</span>)
+                          : v.text}
                       </p>
                     </div>
 
@@ -867,7 +888,7 @@ export default function R04Flow() {
                       textAlign: i % 2 === 0 ? "right" : "left",
                     }}>
                       <p style={{
-                        fontFamily: F.mincho, fontSize: "16px", fontWeight: 500,
+                        fontFamily: F.heading, fontSize: "16px", fontWeight: 600,
                         color: C.text, letterSpacing: "0.04em",
                       }}>
                         {v.name}
@@ -893,14 +914,14 @@ export default function R04Flow() {
             <FadeIn>
               <div style={{ textAlign: "center" }}>
                 <p style={{
-                  fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                  fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                   letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "16px",
                 }}>
-                  FAQ
+                  ── FAQ ──
                 </p>
                 <h2 style={{
-                  fontFamily: F.mincho, fontSize: isMobile ? "22px" : "32px",
-                  fontWeight: 500, color: C.text, letterSpacing: "0.06em",
+                  fontFamily: F.heading, fontSize: isMobile ? "22px" : "32px",
+                  fontWeight: 700, color: C.text, letterSpacing: "0.06em",
                 }}>
                   よくある質問
                 </h2>
@@ -919,13 +940,13 @@ export default function R04Flow() {
                       gap: "16px",
                     }}>
                       <span style={{
-                        fontFamily: F.mincho, fontSize: isMobile ? "14px" : "16px",
+                        fontFamily: F.heading, fontSize: isMobile ? "14px" : "16px",
                         color: C.text, letterSpacing: "0.03em", lineHeight: 1.6,
                       }}>
-                        {item.q}
+                        <span style={{ color: C.accentLight, marginRight: "8px" }}>&#x25B8;</span>{item.q}
                       </span>
                       <span style={{
-                        fontFamily: F.playfair, fontSize: "20px", color: C.muted,
+                        fontFamily: F.accent, fontSize: "20px", color: C.muted,
                         flex: "0 0 20px", textAlign: "center", transition: "transform 0.3s",
                       }}>
                         +
@@ -938,7 +959,9 @@ export default function R04Flow() {
                         fontSize: "13px", color: C.muted, lineHeight: 1.9,
                         paddingLeft: isMobile ? "0" : "16px",
                       }}>
-                        {item.a}
+                        {typeof item.a === 'string' && item.a.includes('\n')
+                          ? item.a.split('\n').map((line, li) => <span key={li}>{line}{li < item.a.split('\n').length - 1 && <br />}</span>)
+                          : item.a}
                       </p>
                     </div>
                   </details>
@@ -955,14 +978,14 @@ export default function R04Flow() {
           <div style={{ width: containerW, margin: "0 auto" }}>
             <FadeIn>
               <p style={{
-                fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                 letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "16px",
               }}>
-                News
+                ── News ──
               </p>
               <h2 style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "22px" : "32px",
-                fontWeight: 500, color: C.text, letterSpacing: "0.06em",
+                fontFamily: F.heading, fontSize: isMobile ? "22px" : "32px",
+                fontWeight: 700, color: C.text, letterSpacing: "0.06em",
               }}>
                 お知らせ
               </h2>
@@ -980,16 +1003,16 @@ export default function R04Flow() {
                   }}>
                     <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
                       <time style={{
-                        fontFamily: F.playfair, fontSize: "13px", color: C.muted,
+                        fontFamily: F.accent, fontSize: "13px", color: C.muted,
                         letterSpacing: "0.04em", flex: "0 0 auto",
                       }}>
-                        {n.date}
+                        <span style={{ marginRight: "6px" }}>─</span>{n.date}
                       </time>
                       <span style={{
                         fontSize: "10px", padding: "2px 10px",
                         letterSpacing: "0.06em",
-                        color: n.tagStyle === "urgent" ? "#c0392b" : n.tagStyle === "new" ? C.bronze : C.muted,
-                        border: `1px solid ${n.tagStyle === "urgent" ? "#c0392b" : n.tagStyle === "new" ? C.bronze : C.border}`,
+                        color: n.tagStyle === "urgent" ? "#c0392b" : n.tagStyle === "new" ? C.accent : C.muted,
+                        border: `1px solid ${n.tagStyle === "urgent" ? "#c0392b" : n.tagStyle === "new" ? C.accent : C.border}`,
                       }}>
                         {n.tag}
                       </span>
@@ -1014,14 +1037,14 @@ export default function R04Flow() {
           <div style={{ width: containerW, margin: "0 auto" }}>
             <FadeIn>
               <p style={{
-                fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                 letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "16px",
               }}>
-                Access
+                ── Access ──
               </p>
               <h2 style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "22px" : "32px",
-                fontWeight: 500, color: C.text, letterSpacing: "0.06em",
+                fontFamily: F.heading, fontSize: isMobile ? "22px" : "32px",
+                fontWeight: 700, color: C.text, letterSpacing: "0.06em",
               }}>
                 {access.heading}
               </h2>
@@ -1055,7 +1078,7 @@ export default function R04Flow() {
                     maxWidth: isMobile ? "100%" : "360px",
                   }}>
                     <p style={{
-                      fontFamily: F.mincho, fontSize: "14px", color: C.text,
+                      fontFamily: F.heading, fontSize: "14px", color: C.text,
                       lineHeight: 1.9, marginBottom: "8px",
                     }}>
                       {company.address}
@@ -1081,14 +1104,14 @@ export default function R04Flow() {
             <FadeIn>
               <div style={{ textAlign: "center" }}>
                 <p style={{
-                  fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                  fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                   letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "16px",
                 }}>
-                  Company
+                  ── Company ──
                 </p>
                 <h2 style={{
-                  fontFamily: F.mincho, fontSize: isMobile ? "22px" : "32px",
-                  fontWeight: 500, color: C.text, letterSpacing: "0.06em",
+                  fontFamily: F.heading, fontSize: isMobile ? "22px" : "32px",
+                  fontWeight: 700, color: C.text, letterSpacing: "0.06em",
                 }}>
                   会社概要
                 </h2>
@@ -1105,7 +1128,7 @@ export default function R04Flow() {
                     gap: "40px",
                   }}>
                     <dt style={{
-                      fontFamily: F.mincho, fontSize: "13px", color: C.muted,
+                      fontFamily: F.heading, fontSize: "13px", color: C.muted,
                       flex: isMobile ? undefined : "0 0 120px",
                       letterSpacing: "0.06em",
                       marginBottom: isMobile ? "4px" : 0,
@@ -1132,14 +1155,14 @@ export default function R04Flow() {
             <FadeIn>
               <div style={{ textAlign: "center" }}>
                 <p style={{
-                  fontFamily: F.playfair, fontSize: "11px", color: C.mutedLight,
+                  fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
                   letterSpacing: "0.25em", textTransform: "uppercase", marginBottom: "16px",
                 }}>
-                  Apply
+                  ── Apply ──
                 </p>
                 <h2 style={{
-                  fontFamily: F.mincho, fontSize: isMobile ? "22px" : "32px",
-                  fontWeight: 500, color: C.text, letterSpacing: "0.06em",
+                  fontFamily: F.heading, fontSize: isMobile ? "22px" : "32px",
+                  fontWeight: 700, color: C.text, letterSpacing: "0.06em",
                 }}>
                   応募フォーム
                 </h2>
@@ -1148,7 +1171,7 @@ export default function R04Flow() {
 
             <FadeIn delay={0.15}>
               <p style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "13px" : "14px",
+                fontFamily: F.heading, fontSize: isMobile ? "13px" : "14px",
                 color: C.muted, textAlign: "center", marginTop: "24px", lineHeight: 1.9,
               }}>
                 下記フォームに必要事項をご入力ください。<br />
@@ -1162,7 +1185,7 @@ export default function R04Flow() {
                   textAlign: "center", marginTop: "64px", padding: "48px 0",
                 }}>
                   <p style={{
-                    fontFamily: F.mincho, fontSize: isMobile ? "18px" : "22px",
+                    fontFamily: F.heading, fontSize: isMobile ? "18px" : "22px",
                     color: C.text, marginBottom: "16px",
                   }}>
                     送信ありがとうございます。
@@ -1182,12 +1205,12 @@ export default function R04Flow() {
                   ].map((field) => (
                     <div key={field.name} style={{ marginBottom: isMobile ? "32px" : "40px" }}>
                       <label style={{
-                        fontFamily: F.mincho, fontSize: "13px", color: C.text,
+                        fontFamily: F.heading, fontSize: "13px", color: C.text,
                         letterSpacing: "0.06em", display: "block", marginBottom: "12px",
                       }}>
                         {field.label}
                         {field.required && (
-                          <span style={{ fontSize: "10px", color: C.bronze, marginLeft: "8px" }}>必須</span>
+                          <span style={{ fontSize: "10px", color: C.accent, marginLeft: "8px" }}>必須</span>
                         )}
                       </label>
                       <input
@@ -1202,7 +1225,7 @@ export default function R04Flow() {
                           fontFamily: F.sans, fontWeight: 300, color: C.text,
                           outline: "none", transition: "border-color 0.3s",
                         }}
-                        onFocus={e => (e.currentTarget.style.borderBottomColor = C.bronze)}
+                        onFocus={e => (e.currentTarget.style.borderBottomColor = C.accent)}
                         onBlur={e => (e.currentTarget.style.borderBottomColor = C.border)}
                       />
                     </div>
@@ -1210,7 +1233,7 @@ export default function R04Flow() {
 
                   <div style={{ marginBottom: isMobile ? "32px" : "40px" }}>
                     <label style={{
-                      fontFamily: F.mincho, fontSize: "13px", color: C.text,
+                      fontFamily: F.heading, fontSize: "13px", color: C.text,
                       letterSpacing: "0.06em", display: "block", marginBottom: "12px",
                     }}>
                       備考・ご質問
@@ -1226,14 +1249,14 @@ export default function R04Flow() {
                         fontFamily: F.sans, fontWeight: 300, color: C.text,
                         outline: "none", resize: "vertical", transition: "border-color 0.3s",
                       }}
-                      onFocus={e => (e.currentTarget.style.borderBottomColor = C.bronze)}
+                      onFocus={e => (e.currentTarget.style.borderBottomColor = C.accent)}
                       onBlur={e => (e.currentTarget.style.borderBottomColor = C.border)}
                     />
                   </div>
 
                   <div style={{ textAlign: "center", marginTop: isMobile ? "40px" : "56px" }}>
                     <button type="submit" style={{
-                      fontFamily: F.mincho, fontSize: "15px", letterSpacing: "0.08em",
+                      fontFamily: F.heading, fontSize: "15px", letterSpacing: "0.08em",
                       color: "#fff", background: C.cta,
                       border: "none", padding: isMobile ? "16px 48px" : "18px 72px",
                       cursor: "pointer", transition: "background 0.3s, transform 0.3s",
@@ -1261,13 +1284,14 @@ export default function R04Flow() {
            ════════════════════════════════════════ */}
         <section style={{
           padding: isMobile ? "100px 0" : "160px 0",
-          background: C.dark, color: "#fff",
+          background: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)), url(/keikamotsu-new-templates/images/delivery.webp) center/cover no-repeat`,
+          color: "#fff",
         }}>
           <div style={{ width: containerW, margin: "0 auto", textAlign: "center" }}>
             <FadeIn>
               <h2 style={{
-                fontFamily: F.mincho, fontSize: isMobile ? "22px" : "36px",
-                fontWeight: 500, lineHeight: 1.3, letterSpacing: "0.06em",
+                fontFamily: F.heading, fontSize: isMobile ? "22px" : "36px",
+                fontWeight: 700, lineHeight: 1.3, letterSpacing: "0.06em",
                 color: "#fff",
               }}>
                 ちょっと話を<br />聞いてみたい。
@@ -1285,14 +1309,14 @@ export default function R04Flow() {
             <FadeIn delay={0.35}>
               <div style={{ marginTop: "48px" }}>
                 <p style={{
-                  fontFamily: F.playfair, fontSize: "11px",
+                  fontFamily: F.accent, fontSize: "11px",
                   color: "rgba(255,255,255,0.35)", letterSpacing: "0.2em",
                   textTransform: "uppercase", marginBottom: "12px",
                 }}>
                   Phone
                 </p>
                 <a href={`tel:${cta.phone}`} style={{
-                  fontFamily: F.playfair, fontSize: isMobile ? "28px" : "40px",
+                  fontFamily: F.accent, fontSize: isMobile ? "28px" : "40px",
                   fontWeight: 400, color: "#fff", letterSpacing: "0.06em",
                   display: "inline-block",
                 }}>
@@ -1309,7 +1333,7 @@ export default function R04Flow() {
             <FadeIn delay={0.45}>
               <a href="#apply" style={{
                 display: "inline-block", marginTop: "48px",
-                fontFamily: F.mincho, fontSize: "14px", letterSpacing: "0.1em",
+                fontFamily: F.heading, fontSize: "14px", letterSpacing: "0.1em",
                 color: "#fff", border: "1px solid rgba(255,255,255,0.3)",
                 padding: isMobile ? "14px 40px" : "16px 56px",
                 transition: "background 0.4s, border-color 0.4s",
@@ -1338,14 +1362,14 @@ export default function R04Flow() {
           textAlign: "center",
         }}>
           <p style={{
-            fontFamily: F.mincho, fontSize: isMobile ? "12px" : "14px",
+            fontFamily: F.heading, fontSize: isMobile ? "12px" : "14px",
             color: "rgba(255,255,255,0.3)", letterSpacing: "0.04em", lineHeight: 1.9,
             maxWidth: "480px", margin: "0 auto",
           }}>
             {footer.catchphrase}
           </p>
           <p style={{
-            fontFamily: F.playfair, fontSize: "12px",
+            fontFamily: F.accent, fontSize: "12px",
             color: "rgba(255,255,255,0.2)", marginTop: "32px",
             letterSpacing: "0.1em",
           }}>

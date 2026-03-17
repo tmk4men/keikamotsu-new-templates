@@ -67,8 +67,8 @@ const fadeUpStyle = (visible: boolean, delay = 0): React.CSSProperties => ({
 });
 
 /* ─────────────────── fonts ─────────────────── */
-const fontMincho = "'Shippori Mincho B1', 'Noto Serif JP', serif";
-const fontPlayfair = "'Playfair Display', serif";
+const fontGothic = "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif";
+const fontOswald = "'Oswald', sans-serif";
 const fontBody = "'Noto Sans JP', sans-serif";
 
 /* ─────────────────── colors ─────────────────── */
@@ -96,7 +96,7 @@ export default function CP03() {
   useEffect(() => {
     const link = document.createElement("link");
     link.href =
-      "https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Sans+JP:wght@300;400;500&display=swap";
+      "https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Oswald:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500&display=swap";
     link.rel = "stylesheet";
     document.head.appendChild(link);
   }, []);
@@ -222,7 +222,7 @@ function Header({
           style={{
             textDecoration: "none",
             color: C.text,
-            fontFamily: fontMincho,
+            fontFamily: fontGothic,
             fontSize: isMobile ? 16 : 18,
             fontWeight: 500,
             letterSpacing: "0.15em",
@@ -347,7 +347,7 @@ function Header({
               style={{
                 textDecoration: "none",
                 color: C.text,
-                fontFamily: fontMincho,
+                fontFamily: fontGothic,
                 fontSize: 16,
                 letterSpacing: "0.12em",
               }}
@@ -385,9 +385,9 @@ function HeroSection({ isMobile }: { isMobile: boolean }) {
       <div style={{ maxWidth: 1100, margin: "0 auto", width: "100%" }}>
         <h1
           style={{
-            fontFamily: fontMincho,
+            fontFamily: fontGothic,
             fontSize: isMobile ? 36 : 72,
-            fontWeight: 600,
+            fontWeight: 700,
             lineHeight: 1.2,
             letterSpacing: "0.08em",
             color: C.text,
@@ -443,7 +443,7 @@ function HeroSection({ isMobile }: { isMobile: boolean }) {
             fontSize: 10,
             letterSpacing: "0.2em",
             color: C.muted,
-            fontFamily: fontPlayfair,
+            fontFamily: fontOswald,
           }}
         >
           SCROLL
@@ -502,7 +502,7 @@ function ServicesSection({
       <SectionLabel label="Services" visible={iv.visible} />
       <h2
         style={{
-          fontFamily: fontMincho,
+          fontFamily: fontGothic,
           fontSize: isMobile ? 24 : 32,
           fontWeight: 500,
           marginBottom: isMobile ? 48 : 80,
@@ -547,7 +547,7 @@ function ServiceItem({
     >
       <span
         style={{
-          fontFamily: fontPlayfair,
+          fontFamily: fontOswald,
           fontSize: isMobile ? 48 : 72,
           fontWeight: 400,
           color: C.light,
@@ -564,14 +564,14 @@ function ServiceItem({
       <div style={{ flex: 1, ...fadeUpStyle(iv.visible, 0.25) }}>
         <h3
           style={{
-            fontFamily: fontMincho,
+            fontFamily: fontGothic,
             fontSize: isMobile ? 18 : 20,
-            fontWeight: 500,
+            fontWeight: 700,
             marginBottom: 16,
             letterSpacing: "0.06em",
           }}
         >
-          {s.title}
+          <span style={{ color: C.accent, marginRight: 8 }}>▸</span>{s.title}
         </h3>
         <p
           style={{
@@ -621,7 +621,7 @@ function StrengthsSection({
         <SectionLabel label="Strengths" visible={iv.visible} />
         <h2
           style={{
-            fontFamily: fontMincho,
+            fontFamily: fontGothic,
             fontSize: isMobile ? 24 : 32,
             fontWeight: 500,
             marginBottom: isMobile ? 48 : 80,
@@ -685,7 +685,7 @@ function StrengthItem({
           }}
         >
           <img
-            src={`/images/strength-0${index + 1}.webp`}
+            src={`/keikamotsu-new-templates/images/strength-0${index + 1}.webp`}
             alt={s.title}
             style={{
               position: "absolute",
@@ -704,7 +704,7 @@ function StrengthItem({
       <div style={{ flex: 1, ...fadeUpStyle(iv.visible, 0.3) }}>
         <span
           style={{
-            fontFamily: fontPlayfair,
+            fontFamily: fontOswald,
             fontSize: isMobile ? 40 : 64,
             color: C.light,
             lineHeight: 1,
@@ -716,9 +716,9 @@ function StrengthItem({
         </span>
         <h3
           style={{
-            fontFamily: fontMincho,
+            fontFamily: fontGothic,
             fontSize: isMobile ? 20 : 24,
-            fontWeight: 500,
+            fontWeight: 700,
             marginBottom: 20,
             letterSpacing: "0.06em",
             lineHeight: 1.5,
@@ -770,7 +770,7 @@ function CeoSection({
       <SectionLabel label="Message" visible={iv.visible} />
       <h2
         style={{
-          fontFamily: fontMincho,
+          fontFamily: fontGothic,
           fontSize: isMobile ? 24 : 32,
           fontWeight: 500,
           marginBottom: isMobile ? 48 : 80,
@@ -785,7 +785,7 @@ function CeoSection({
         {/* large quotation mark */}
         <span
           style={{
-            fontFamily: fontMincho,
+            fontFamily: fontGothic,
             fontSize: isMobile ? 80 : 140,
             color: C.light,
             position: "absolute",
@@ -809,7 +809,7 @@ function CeoSection({
             <p
               key={i}
               style={{
-                fontFamily: fontMincho,
+                fontFamily: fontGothic,
                 fontSize: isMobile ? 15 : 17,
                 lineHeight: 2.2,
                 color: C.text,
@@ -825,7 +825,7 @@ function CeoSection({
         {/* closing quote */}
         <span
           style={{
-            fontFamily: fontMincho,
+            fontFamily: fontGothic,
             fontSize: isMobile ? 80 : 140,
             color: C.light,
             position: "absolute",
@@ -864,7 +864,7 @@ function CeoSection({
             <p
               style={{
                 margin: "4px 0 0",
-                fontFamily: fontMincho,
+                fontFamily: fontGothic,
                 fontSize: isMobile ? 18 : 22,
                 fontWeight: 500,
                 letterSpacing: "0.12em",
@@ -927,7 +927,7 @@ function CompanySection({
       <SectionLabel label="Company" visible={iv.visible} />
       <h2
         style={{
-          fontFamily: fontMincho,
+          fontFamily: fontGothic,
           fontSize: isMobile ? 24 : 32,
           fontWeight: 500,
           marginBottom: isMobile ? 48 : 80,
@@ -957,7 +957,7 @@ function CompanySection({
                 style={{
                   textAlign: "left",
                   fontWeight: 400,
-                  fontFamily: fontMincho,
+                  fontFamily: fontGothic,
                   fontSize: isMobile ? 13 : 14,
                   color: C.sub,
                   padding: isMobile ? "16px 8px 16px 0" : "20px 24px 20px 0",
@@ -967,16 +967,17 @@ function CompanySection({
                   letterSpacing: "0.06em",
                 }}
               >
-                {row.dt}
+                <span style={{ marginRight: 6 }}>▪</span>{row.dt}
               </th>
               <td
                 style={{
                   padding: isMobile ? "16px 0" : "20px 0",
                   fontSize: isMobile ? 13 : 14,
                   color: C.text,
+                  whiteSpace: "pre-line",
                 }}
               >
-                {row.dd}
+                {typeof row.dd === "string" ? row.dd.split("\n").map((line: string, li: number) => <span key={li}>{line}{li < row.dd.split("\n").length - 1 && <br />}</span>) : row.dd}
               </td>
             </tr>
           ))}
@@ -1013,7 +1014,7 @@ function HistorySection({
       <SectionLabel label="History" visible={iv.visible} />
       <h2
         style={{
-          fontFamily: fontMincho,
+          fontFamily: fontGothic,
           fontSize: isMobile ? 24 : 32,
           fontWeight: 500,
           marginBottom: isMobile ? 48 : 80,
@@ -1067,7 +1068,7 @@ function HistoryItem({
       >
         <span
           style={{
-            fontFamily: fontPlayfair,
+            fontFamily: fontOswald,
             fontSize: isMobile ? 28 : 40,
             fontWeight: 400,
             color: C.accent,
@@ -1147,7 +1148,7 @@ function NumbersSection({
         <SectionLabel label="Numbers" visible={iv.visible} />
         <h2
           style={{
-            fontFamily: fontMincho,
+            fontFamily: fontGothic,
             fontSize: isMobile ? 24 : 32,
             fontWeight: 500,
             marginBottom: isMobile ? 48 : 80,
@@ -1204,7 +1205,7 @@ function NumberItem({
       <div style={{ marginBottom: 8 }}>
         <span
           style={{
-            fontFamily: fontPlayfair,
+            fontFamily: fontOswald,
             fontSize: isMobile ? 36 : 56,
             fontWeight: 400,
             color: C.text,
@@ -1216,7 +1217,7 @@ function NumberItem({
         </span>
         <span
           style={{
-            fontFamily: fontMincho,
+            fontFamily: fontGothic,
             fontSize: isMobile ? 14 : 16,
             color: C.sub,
             marginLeft: 4,
@@ -1266,7 +1267,7 @@ function PartnersSection({
       <SectionLabel label="Partners" visible={iv.visible} />
       <h2
         style={{
-          fontFamily: fontMincho,
+          fontFamily: fontGothic,
           fontSize: isMobile ? 24 : 32,
           fontWeight: 500,
           marginBottom: isMobile ? 48 : 80,
@@ -1315,7 +1316,7 @@ function PartnersSection({
             >
               <span
                 style={{
-                  fontFamily: fontPlayfair,
+                  fontFamily: fontOswald,
                   fontSize: isMobile ? 16 : 20,
                   color: C.muted,
                 }}
@@ -1328,7 +1329,7 @@ function PartnersSection({
                 margin: 0,
                 fontSize: isMobile ? 12 : 13,
                 color: C.text,
-                fontFamily: fontMincho,
+                fontFamily: fontGothic,
                 letterSpacing: "0.04em",
               }}
             >
@@ -1378,7 +1379,7 @@ function NewsSection({
       <SectionLabel label="News" visible={iv.visible} />
       <h2
         style={{
-          fontFamily: fontMincho,
+          fontFamily: fontGothic,
           fontSize: isMobile ? 24 : 32,
           fontWeight: 500,
           marginBottom: isMobile ? 48 : 80,
@@ -1413,7 +1414,7 @@ function NewsSection({
           >
             <span
               style={{
-                fontFamily: fontPlayfair,
+                fontFamily: fontOswald,
                 fontSize: isMobile ? 12 : 13,
                 color: C.muted,
                 flexShrink: 0,
@@ -1422,7 +1423,7 @@ function NewsSection({
                 marginBottom: isMobile ? 6 : 0,
               }}
             >
-              {n.date}
+              ─ {n.date}
             </span>
             <span
               style={{
@@ -1457,71 +1458,77 @@ function RecruitSection({
       style={{
         paddingTop: isMobile ? 80 : 130,
         paddingBottom: isMobile ? 80 : 140,
-        maxWidth: 840,
-        margin: "0 auto",
         paddingLeft: isMobile ? 24 : 48,
         paddingRight: isMobile ? 24 : 48,
         textAlign: "center",
+        position: "relative",
+        backgroundImage: "url(/keikamotsu-new-templates/images/team.webp)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
-      <div style={revealStyle(iv.visible, 0.2)}>
-        <h2
-          style={{
-            fontFamily: fontMincho,
-            fontSize: isMobile ? 20 : 28,
-            fontWeight: 500,
-            lineHeight: 1.6,
-            letterSpacing: "0.06em",
-            marginBottom: 8,
-          }}
-        >
-          <span
+      {/* overlay */}
+      <div style={{ position: "absolute", inset: 0, background: "rgba(250,250,250,0.88)", zIndex: 0 }} />
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 840, margin: "0 auto" }}>
+        <div style={revealStyle(iv.visible, 0.2)}>
+          <h2
             style={{
-              fontSize: isMobile ? 40 : 64,
-              display: "block",
-              lineHeight: 1.3,
-              letterSpacing: "0.1em",
+              fontFamily: fontGothic,
+              fontSize: isMobile ? 20 : 28,
+              fontWeight: 700,
+              lineHeight: 1.6,
+              letterSpacing: "0.06em",
+              marginBottom: 8,
             }}
           >
-            一緒に
-          </span>
-          物流の未来を変えていく仲間を募集
-        </h2>
-      </div>
+            <span
+              style={{
+                fontSize: isMobile ? 40 : 64,
+                display: "block",
+                lineHeight: 1.3,
+                letterSpacing: "0.1em",
+              }}
+            >
+              一緒に
+            </span>
+            物流の未来を変えていく仲間を募集
+          </h2>
+        </div>
 
-      <div style={fadeUpStyle(iv.visible, 0.4)}>
-        <p
-          style={{
-            color: C.sub,
-            whiteSpace: "pre-line",
-            lineHeight: 2.2,
-            marginBottom: 48,
-            fontSize: isMobile ? 13 : 14,
-          }}
-        >
-          {recruit.text}
-        </p>
-        <a
-          href={recruit.link}
-          style={{
-            display: "inline-block",
-            padding: isMobile ? "14px 48px" : "16px 64px",
-            background: C.cta,
-            color: "#fff",
-            textDecoration: "none",
-            fontSize: 13,
-            letterSpacing: "0.12em",
-            transition: "opacity 0.3s",
-          }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.opacity = "0.8")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.opacity = "1")
-          }
-        >
-          {recruit.cta}
-        </a>
+        <div style={fadeUpStyle(iv.visible, 0.4)}>
+          <p
+            style={{
+              color: C.sub,
+              whiteSpace: "pre-line",
+              lineHeight: 2.2,
+              marginBottom: 48,
+              fontSize: isMobile ? 13 : 14,
+            }}
+          >
+            {recruit.text}
+          </p>
+          <a
+            href={recruit.link}
+            style={{
+              display: "inline-block",
+              padding: isMobile ? "14px 48px" : "16px 64px",
+              background: C.cta,
+              color: "#fff",
+              textDecoration: "none",
+              fontSize: 13,
+              letterSpacing: "0.12em",
+              transition: "opacity 0.3s",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.opacity = "0.8")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.opacity = "1")
+            }
+          >
+            {recruit.cta}
+          </a>
+        </div>
       </div>
     </section>
   );
@@ -1571,7 +1578,7 @@ function AccessSection({ isMobile }: { isMobile: boolean }) {
       >
         <h2
           style={{
-            fontFamily: fontMincho,
+            fontFamily: fontGothic,
             fontSize: isMobile ? 18 : 22,
             fontWeight: 500,
             marginBottom: 16,
@@ -1645,7 +1652,7 @@ function ContactSection({
       <SectionLabel label="Contact" visible={iv.visible} />
       <h2
         style={{
-          fontFamily: fontMincho,
+          fontFamily: fontGothic,
           fontSize: isMobile ? 24 : 32,
           fontWeight: 500,
           marginBottom: 24,
@@ -1678,7 +1685,7 @@ function ContactSection({
         >
           <p
             style={{
-              fontFamily: fontMincho,
+              fontFamily: fontGothic,
               fontSize: isMobile ? 18 : 22,
               marginBottom: 16,
             }}
@@ -1705,7 +1712,7 @@ function ContactSection({
                   color: C.muted,
                   letterSpacing: "0.08em",
                   marginBottom: 8,
-                  fontFamily: fontMincho,
+                  fontFamily: fontGothic,
                 }}
               >
                 {f.label}
@@ -1717,7 +1724,7 @@ function ContactSection({
                       fontSize: 10,
                     }}
                   >
-                    *
+                    ＊
                   </span>
                 )}
               </label>
@@ -1821,7 +1828,7 @@ function FooterSection() {
     >
       <p
         style={{
-          fontFamily: fontMincho,
+          fontFamily: fontGothic,
           fontSize: 14,
           letterSpacing: "0.12em",
           marginBottom: 12,
@@ -1836,7 +1843,7 @@ function FooterSection() {
           fontSize: 11,
           color: C.muted,
           letterSpacing: "0.08em",
-          fontFamily: fontPlayfair,
+          fontFamily: fontOswald,
         }}
       >
         &copy; {new Date().getFullYear()} {company.nameEn}
@@ -1859,7 +1866,7 @@ function SectionLabel({
   return (
     <span
       style={{
-        fontFamily: fontPlayfair,
+        fontFamily: fontOswald,
         fontSize: 11,
         letterSpacing: "0.2em",
         color: C.muted,
@@ -1868,7 +1875,7 @@ function SectionLabel({
         ...fadeUpStyle(visible, 0.05),
       }}
     >
-      {label}
+      ── {label} ──
     </span>
   );
 }

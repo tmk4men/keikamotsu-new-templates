@@ -22,10 +22,11 @@ import {
 } from "@/data/siteData";
 
 /* ────────────────────────────────────────
-   BOLD (R-01) — 黒背景×大型写真 採用HP
+   BOLD (R-01) — 黒背景×大型写真 採用HP（無彩色）
    ──────────────────────────────────────── */
 
-const ACCENT = "#f5a623";
+const ACCENT = "#32373c";
+const ACCENT_LIGHT = "#555";
 const BG_DARK = "#0a0a0a";
 const BG_CARD = "#111";
 const TEXT_W = "#ffffff";
@@ -34,6 +35,13 @@ const CTA_BG = "#32373c";
 const BP = 768;
 
 const benefitIcons = ["🚛", "🎁", "💰", "🏠", "📚", "📱"];
+
+/* ─── 画像パス ─── */
+const IMG = {
+  strength: (n: number) => `/keikamotsu-new-templates/images/strength-0${n}.webp`,
+  workplace: "/keikamotsu-new-templates/images/workplace.webp",
+  delivery: "/keikamotsu-new-templates/images/delivery.webp",
+};
 
 export default function R01Page() {
   const [isMobile, setIsMobile] = useState(false);
@@ -97,6 +105,15 @@ export default function R01Page() {
     setFormData({ name: "", phone: "", email: "", message: "" });
   };
 
+  /** テキスト内の \n を <br/> に変換 */
+  const nl2br = (text: string) =>
+    text.split("\n").map((line, i, arr) => (
+      <span key={i}>
+        {line}
+        {i < arr.length - 1 && <br />}
+      </span>
+    ));
+
   return (
     <>
       <style>{`
@@ -122,7 +139,7 @@ export default function R01Page() {
           width: "100%",
           zIndex: 1000,
           background: scrolled ? "#0a0a0a" : "transparent",
-          borderBottom: scrolled ? "1px solid rgba(245,166,35,0.15)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.1)" : "none",
           transition: "background 0.35s ease, border-bottom 0.35s ease",
           padding: isMobile ? "12px 16px" : "14px 48px",
           display: "flex",
@@ -130,7 +147,7 @@ export default function R01Page() {
           justifyContent: "space-between",
         }}
       >
-        <a href="#" style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, fontSize: isMobile ? "20px" : "24px", letterSpacing: "0.08em", color: ACCENT }}>
+        <a href="#" style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, fontSize: isMobile ? "20px" : "24px", letterSpacing: "0.08em", color: TEXT_W }}>
           {company.nameEn}
         </a>
 
@@ -138,14 +155,14 @@ export default function R01Page() {
           <nav style={{ display: "flex", gap: "28px", alignItems: "center" }}>
             {navLinks.map((l) => (
               <a key={l.href} href={l.href} style={{ fontSize: "13px", letterSpacing: "0.05em", color: TEXT_G, transition: "color 0.2s" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = ACCENT)}
+                onMouseEnter={(e) => (e.currentTarget.style.color = TEXT_W)}
                 onMouseLeave={(e) => (e.currentTarget.style.color = TEXT_G)}
               >
                 {l.label}
               </a>
             ))}
             <a href={`tel:${company.phone}`} style={{
-              background: ACCENT, color: BG_DARK, padding: "8px 22px", borderRadius: "4px", fontWeight: 700, fontSize: "13px", letterSpacing: "0.04em",
+              background: CTA_BG, color: TEXT_W, padding: "8px 22px", borderRadius: "4px", fontWeight: 700, fontSize: "13px", letterSpacing: "0.04em",
             }}>
               {company.phone}
             </a>
@@ -154,9 +171,9 @@ export default function R01Page() {
 
         {isMobile && (
           <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px" }}>
-            <div style={{ width: "24px", height: "2px", background: ACCENT, marginBottom: "6px", transition: "transform 0.3s", transform: menuOpen ? "rotate(45deg) translate(4px,5px)" : "none" }} />
-            <div style={{ width: "24px", height: "2px", background: ACCENT, marginBottom: "6px", transition: "opacity 0.3s", opacity: menuOpen ? 0 : 1 }} />
-            <div style={{ width: "24px", height: "2px", background: ACCENT, transition: "transform 0.3s", transform: menuOpen ? "rotate(-45deg) translate(4px,-5px)" : "none" }} />
+            <div style={{ width: "24px", height: "2px", background: TEXT_W, marginBottom: "6px", transition: "transform 0.3s", transform: menuOpen ? "rotate(45deg) translate(4px,5px)" : "none" }} />
+            <div style={{ width: "24px", height: "2px", background: TEXT_W, marginBottom: "6px", transition: "opacity 0.3s", opacity: menuOpen ? 0 : 1 }} />
+            <div style={{ width: "24px", height: "2px", background: TEXT_W, transition: "transform 0.3s", transform: menuOpen ? "rotate(-45deg) translate(4px,-5px)" : "none" }} />
           </button>
         )}
 
@@ -165,7 +182,7 @@ export default function R01Page() {
           <div style={{
             position: "fixed", top: "56px", left: 0, width: "100%", background: "rgba(10,10,10,0.98)",
             padding: "24px 20px 32px", display: "flex", flexDirection: "column", gap: "18px",
-            borderBottom: `2px solid ${ACCENT}`,
+            borderBottom: `2px solid ${ACCENT_LIGHT}`,
           }}>
             {navLinks.map((l) => (
               <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)} style={{ fontSize: "15px", color: TEXT_G, letterSpacing: "0.05em" }}>
@@ -173,7 +190,7 @@ export default function R01Page() {
               </a>
             ))}
             <a href={`tel:${company.phone}`} style={{
-              background: ACCENT, color: BG_DARK, padding: "12px", borderRadius: "4px", textAlign: "center", fontWeight: 700, fontSize: "15px", marginTop: "8px",
+              background: CTA_BG, color: TEXT_W, padding: "12px", borderRadius: "4px", textAlign: "center", fontWeight: 700, fontSize: "15px", marginTop: "8px",
             }}>
               {company.phone}
             </a>
@@ -207,15 +224,15 @@ export default function R01Page() {
           ))}
 
           <div style={{ marginTop: "28px", animation: "heroFade 0.9s 1.1s both" }}>
-            <span style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, color: ACCENT, fontSize: isMobile ? "18px" : "22px", letterSpacing: "0.04em" }}>
+            <span style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, color: TEXT_W, fontSize: isMobile ? "18px" : "22px", letterSpacing: "0.04em" }}>
               月収
             </span>
-            <CounterNum target={hero.salaryMin} style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: ACCENT, fontSize: isMobile ? "64px" : "96px", lineHeight: 1 }} />
-            <span style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, color: ACCENT, fontSize: isMobile ? "18px" : "22px" }}>
+            <CounterNum target={hero.salaryMin} style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: TEXT_W, fontSize: isMobile ? "64px" : "96px", lineHeight: 1 }} />
+            <span style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, color: TEXT_W, fontSize: isMobile ? "18px" : "22px" }}>
               万〜
             </span>
-            <CounterNum target={hero.salaryMax} style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: ACCENT, fontSize: isMobile ? "64px" : "96px", lineHeight: 1 }} />
-            <span style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, color: ACCENT, fontSize: isMobile ? "18px" : "22px" }}>
+            <CounterNum target={hero.salaryMax} style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: TEXT_W, fontSize: isMobile ? "64px" : "96px", lineHeight: 1 }} />
+            <span style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, color: TEXT_W, fontSize: isMobile ? "18px" : "22px" }}>
               万円
             </span>
           </div>
@@ -223,7 +240,7 @@ export default function R01Page() {
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "22px", animation: "heroFade 0.9s 1.5s both" }}>
             {hero.badges.map((b) => (
               <span key={b} style={{
-                background: "rgba(245,166,35,0.15)", border: `1px solid ${ACCENT}`, color: ACCENT,
+                background: ACCENT, border: `1px solid ${ACCENT_LIGHT}`, color: TEXT_W,
                 padding: "6px 16px", borderRadius: "2px", fontSize: "13px", fontWeight: 700, letterSpacing: "0.05em",
               }}>
                 {b}
@@ -233,7 +250,7 @@ export default function R01Page() {
 
           <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", marginTop: "36px", animation: "heroFade 0.9s 1.8s both" }}>
             <a href={`tel:${company.phone}`} style={{
-              background: ACCENT, color: BG_DARK, padding: isMobile ? "14px 28px" : "16px 40px",
+              background: CTA_BG, color: TEXT_W, padding: isMobile ? "14px 28px" : "16px 40px",
               borderRadius: "4px", fontWeight: 800, fontSize: isMobile ? "16px" : "18px", letterSpacing: "0.04em",
               display: "inline-flex", alignItems: "center", gap: "8px",
             }}>
@@ -254,7 +271,7 @@ export default function R01Page() {
       </section>
 
       {/* ===== MARQUEE ===== */}
-      <section style={{ background: BG_CARD, padding: "20px 0", overflow: "hidden", borderTop: `3px solid ${ACCENT}`, borderBottom: `1px solid rgba(255,255,255,0.06)` }}>
+      <section style={{ background: ACCENT, padding: "20px 0", overflow: "hidden", borderTop: `3px solid ${ACCENT_LIGHT}`, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         {[marquee.top, marquee.bottom].map((row, ri) => (
           <div key={ri} style={{ overflow: "hidden", whiteSpace: "nowrap", marginBottom: ri === 0 ? "10px" : 0 }}>
             <div style={{
@@ -264,7 +281,7 @@ export default function R01Page() {
               {[...row, ...row, ...row, ...row].map((t, i) => (
                 <span key={i} style={{
                   fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
-                  fontSize: isMobile ? "15px" : "20px", letterSpacing: "0.06em", color: ri === 0 ? ACCENT : "rgba(255,255,255,0.35)",
+                  fontSize: isMobile ? "15px" : "20px", letterSpacing: "0.06em", color: TEXT_W,
                   paddingRight: "48px",
                 }}>
                   {t}
@@ -282,39 +299,55 @@ export default function R01Page() {
         </div>
 
         <div style={{
-          marginTop: "48px", display: "flex", gap: "0",
-          overflowX: "auto", scrollSnapType: "x mandatory",
-          padding: isMobile ? "0 20px" : "0 48px",
-          WebkitOverflowScrolling: "touch",
+          marginTop: "48px", display: "flex", flexDirection: "column", gap: "24px",
+          padding: isMobile ? "0 20px" : "0 48px", maxWidth: "1200px", margin: "48px auto 0",
         }}>
           {reasons.map((r, i) => (
             <div key={i} data-anim style={{
               ...animStyle(i * 0.15),
-              flex: `0 0 ${isMobile ? "85vw" : "380px"}`,
-              scrollSnapAlign: "start",
-              marginRight: isMobile ? "16px" : "24px",
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              gap: isMobile ? "16px" : "28px",
               background: BG_CARD,
-              borderRadius: i === 0 ? "6px" : i === 1 ? "10px" : "3px",
-              padding: isMobile ? "32px 24px" : "44px 36px",
-              borderTop: `4px solid ${ACCENT}`,
+              borderRadius: "6px",
+              padding: isMobile ? "28px 20px" : "36px 32px",
+              borderTop: `4px solid ${ACCENT_LIGHT}`,
               position: "relative",
+              alignItems: "stretch",
             }}>
-              <span style={{
-                fontFamily: "'Oswald',sans-serif", fontWeight: 800, fontSize: isMobile ? "56px" : "72px",
-                color: "rgba(245,166,35,0.12)", position: "absolute", top: "12px", right: "20px", lineHeight: 1,
+              {/* 画像 */}
+              <div style={{
+                flex: isMobile ? "none" : "0 0 200px",
+                height: isMobile ? "180px" : "auto",
+                minHeight: isMobile ? "auto" : "160px",
+                borderRadius: "4px",
+                overflow: "hidden",
               }}>
-                {r.num}
-              </span>
-              <h3 style={{
-                fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
-                fontSize: isMobile ? "18px" : "21px", lineHeight: 1.35, letterSpacing: "0.05em",
-                color: TEXT_W, marginBottom: "16px",
-              }}>
-                {r.title}
-              </h3>
-              <p style={{ fontSize: "14px", lineHeight: 1.8, color: TEXT_G, letterSpacing: "0.05em" }}>
-                {r.text}
-              </p>
+                <img
+                  src={IMG.strength(i + 1)}
+                  alt={r.title}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
+              </div>
+              {/* テキスト */}
+              <div style={{ flex: 1, position: "relative" }}>
+                <span style={{
+                  fontFamily: "'Oswald',sans-serif", fontWeight: 800, fontSize: isMobile ? "56px" : "72px",
+                  color: "rgba(255,255,255,0.06)", position: "absolute", top: "-8px", right: "0", lineHeight: 1,
+                }}>
+                  {r.num}
+                </span>
+                <h3 style={{
+                  fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
+                  fontSize: isMobile ? "18px" : "21px", lineHeight: 1.35, letterSpacing: "0.05em",
+                  color: TEXT_W, marginBottom: "16px",
+                }}>
+                  ─ {r.title}
+                </h3>
+                <p style={{ fontSize: "14px", lineHeight: 1.8, color: TEXT_G, letterSpacing: "0.05em" }}>
+                  {nl2br(r.text)}
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -325,7 +358,7 @@ export default function R01Page() {
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <SectionTitle label="RECRUIT" title="求人情報" />
           <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "20px", letterSpacing: "0.05em", maxWidth: "700px" }}>
-            {jobs.intro}
+            {nl2br(jobs.intro)}
           </p>
 
           <div style={{
@@ -346,15 +379,15 @@ export default function R01Page() {
                 }}>
                   <dt style={{
                     width: isMobile ? "auto" : "140px", flexShrink: 0,
-                    fontWeight: 700, fontSize: "13px", color: ACCENT, letterSpacing: "0.05em",
+                    fontWeight: 700, fontSize: "13px", color: TEXT_W, letterSpacing: "0.05em",
                   }}>
-                    {row.dt}
+                    ▪ {row.dt}
                   </dt>
                   <dd style={{
-                    fontSize: "14px", lineHeight: 1.7, color: row.accent ? ACCENT : TEXT_G, letterSpacing: "0.05em",
+                    fontSize: "14px", lineHeight: 1.7, color: row.accent ? TEXT_W : TEXT_G, letterSpacing: "0.05em",
                     fontWeight: row.accent ? 700 : 400,
                   }}>
-                    {row.dd}
+                    {nl2br(row.dd)}
                   </dd>
                 </div>
               ))}
@@ -363,15 +396,15 @@ export default function R01Page() {
             {/* Right: salary callout */}
             <div data-anim style={{
               ...animStyle(0.3),
-              background: "rgba(245,166,35,0.08)",
-              border: `1px solid rgba(245,166,35,0.25)`,
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.12)",
               borderRadius: "8px",
               padding: isMobile ? "32px 24px" : "44px 32px",
               textAlign: "center",
               marginTop: isMobile ? "32px" : "0",
             }}>
               <p style={{ fontSize: "14px", color: TEXT_G, letterSpacing: "0.05em", marginBottom: "8px" }}>月収目安</p>
-              <div style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: ACCENT }}>
+              <div style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: TEXT_W }}>
                 <span style={{ fontSize: isMobile ? "56px" : "72px", lineHeight: 1 }}>{hero.salaryMin}</span>
                 <span style={{ fontSize: isMobile ? "20px" : "24px", margin: "0 4px" }}>万〜</span>
                 <span style={{ fontSize: isMobile ? "56px" : "72px", lineHeight: 1 }}>{hero.salaryMax}</span>
@@ -396,9 +429,21 @@ export default function R01Page() {
       </section>
 
       {/* ===== BENEFITS ===== */}
-      <section id="benefits" style={{ padding: isMobile ? "72px 20px 60px" : "110px 48px 90px", background: BG_DARK }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <SectionTitle label="BENEFITS" title="待遇・福利厚生" />
+      <section id="benefits" style={{
+        padding: isMobile ? "72px 20px 60px" : "110px 48px 90px",
+        background: BG_DARK,
+        position: "relative",
+        overflow: "hidden",
+      }}>
+        {/* 背景画像 */}
+        <div style={{
+          position: "absolute", inset: 0,
+          backgroundImage: `url(${IMG.workplace})`,
+          backgroundSize: "cover", backgroundPosition: "center",
+          opacity: 0.08,
+        }} />
+        <div style={{ position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
+          <SectionTitle label="BENEFITS" title="✓ 待遇・福利厚生" />
           <div style={{
             marginTop: "44px",
             display: "grid",
@@ -411,7 +456,7 @@ export default function R01Page() {
                 background: BG_CARD,
                 padding: isMobile ? "28px 22px" : "36px 30px",
                 borderRadius: i % 3 === 0 ? "8px" : i % 3 === 1 ? "4px" : "12px",
-                borderLeft: `3px solid ${ACCENT}`,
+                borderLeft: `3px solid ${ACCENT_LIGHT}`,
                 textAlign: "left",
               }}>
                 <div style={{ fontSize: "32px", marginBottom: "14px" }}>{benefitIcons[i]}</div>
@@ -419,10 +464,10 @@ export default function R01Page() {
                   fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
                   fontSize: "16px", lineHeight: 1.4, letterSpacing: "0.05em", color: TEXT_W, marginBottom: "10px",
                 }}>
-                  {b.title}
+                  ✓ {b.title}
                 </h4>
                 <p style={{ fontSize: "13px", lineHeight: 1.8, color: TEXT_G, letterSpacing: "0.05em" }}>
-                  {b.text}
+                  {nl2br(b.text)}
                 </p>
               </div>
             ))}
@@ -435,14 +480,14 @@ export default function R01Page() {
         <div style={{ maxWidth: "900px", margin: "0 auto" }}>
           <SectionTitle label="DAILY" title="1日の流れ" />
           <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "16px", letterSpacing: "0.05em" }}>
-            {daily.intro}
+            {nl2br(daily.intro)}
           </p>
 
           <div style={{ marginTop: "44px", position: "relative", paddingLeft: isMobile ? "36px" : "48px" }}>
             {/* vertical line */}
             <div style={{
               position: "absolute", left: isMobile ? "14px" : "18px", top: "8px", bottom: "8px",
-              width: "2px", background: `linear-gradient(to bottom, ${ACCENT}, rgba(245,166,35,0.15))`,
+              width: "2px", background: "linear-gradient(to bottom, #555, rgba(85,85,85,0.15))",
             }} />
 
             {daily.steps.map((s, i) => (
@@ -457,14 +502,15 @@ export default function R01Page() {
                   left: isMobile ? "-29px" : "-39px",
                   top: "4px",
                   width: "12px", height: "12px",
-                  background: i === 0 ? ACCENT : BG_DARK,
-                  border: `2px solid ${ACCENT}`,
+                  background: i === 0 ? TEXT_W : BG_DARK,
+                  border: "2px solid #555",
                   borderRadius: "50%",
                 }} />
+                {/* ● 区切り記号 */}
                 <div style={{ display: "flex", gap: "12px", alignItems: "baseline" }}>
                   <span style={{
                     fontFamily: "'Oswald',sans-serif", fontWeight: 700, fontSize: isMobile ? "20px" : "24px",
-                    color: ACCENT, letterSpacing: "0.04em", minWidth: "60px",
+                    color: TEXT_W, letterSpacing: "0.04em", minWidth: "60px",
                   }}>
                     {s.time}
                   </span>
@@ -472,11 +518,11 @@ export default function R01Page() {
                     fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
                     fontSize: isMobile ? "15px" : "17px", color: TEXT_W, letterSpacing: "0.05em",
                   }}>
-                    {s.title}
+                    ● {s.title}
                   </h4>
                 </div>
                 <p style={{ fontSize: "13px", lineHeight: 1.8, color: TEXT_G, letterSpacing: "0.05em", marginTop: "6px" }}>
-                  {s.desc}
+                  {nl2br(s.desc)}
                 </p>
               </div>
             ))}
@@ -489,7 +535,7 @@ export default function R01Page() {
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 20px" : "0 48px" }}>
           <SectionTitle label="GALLERY" title={gallery.heading} />
           <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "16px", letterSpacing: "0.05em" }}>
-            {gallery.intro}
+            {nl2br(gallery.intro)}
           </p>
         </div>
 
@@ -541,7 +587,7 @@ export default function R01Page() {
               <button key={i} onClick={() => setGalleryIdx(i)} style={{
                 width: i === galleryIdx ? "24px" : "8px", height: "8px",
                 borderRadius: "4px", border: "none", cursor: "pointer",
-                background: i === galleryIdx ? ACCENT : "rgba(255,255,255,0.25)",
+                background: i === galleryIdx ? TEXT_W : "rgba(255,255,255,0.25)",
                 transition: "width 0.3s, background 0.3s",
               }} />
             ))}
@@ -570,18 +616,18 @@ export default function R01Page() {
               }}>
                 <span style={{
                   fontFamily: "'Oswald',sans-serif", fontWeight: 800, fontSize: "48px",
-                  color: "rgba(245,166,35,0.15)", position: "absolute", top: "12px", left: "20px", lineHeight: 1,
+                  color: "rgba(255,255,255,0.08)", position: "absolute", top: "12px", left: "20px", lineHeight: 1,
                 }}>
                   &ldquo;
                 </span>
                 <blockquote style={{ fontSize: "14px", lineHeight: 1.85, color: TEXT_G, letterSpacing: "0.05em", marginBottom: "16px", paddingTop: "8px" }}>
-                  {v.text}
+                  {nl2br(v.text)}
                 </blockquote>
                 <p style={{
                   display: "inline-block",
-                  background: "rgba(245,166,35,0.12)", border: `1px solid rgba(245,166,35,0.3)`,
+                  background: ACCENT, border: "1px solid rgba(255,255,255,0.15)",
                   padding: "4px 14px", borderRadius: "2px",
-                  fontSize: "13px", fontWeight: 700, color: ACCENT, letterSpacing: "0.04em",
+                  fontSize: "13px", fontWeight: 700, color: TEXT_W, letterSpacing: "0.04em",
                   marginBottom: "14px",
                 }}>
                   {v.highlight}
@@ -615,16 +661,16 @@ export default function R01Page() {
                   fontSize: "14px", fontWeight: 700, color: TEXT_W, letterSpacing: "0.05em", lineHeight: 1.5,
                 }}>
                   <span style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                    <span style={{ color: ACCENT, fontFamily: "'Oswald',sans-serif", fontWeight: 700, fontSize: "16px", flexShrink: 0 }}>Q.</span>
+                    <span style={{ color: TEXT_G, fontFamily: "'Oswald',sans-serif", fontWeight: 700, fontSize: "16px", flexShrink: 0 }}>▸ Q.</span>
                     {f.q}
                   </span>
-                  <span className="faq-arrow" style={{ color: ACCENT, fontSize: "12px", transition: "transform 0.3s", flexShrink: 0 }}>&#9660;</span>
+                  <span className="faq-arrow" style={{ color: TEXT_G, fontSize: "12px", transition: "transform 0.3s", flexShrink: 0 }}>&#9660;</span>
                 </summary>
                 <div style={{
                   padding: isMobile ? "0 16px 18px 42px" : "0 28px 22px 58px",
                   fontSize: "13px", lineHeight: 1.85, color: TEXT_G, letterSpacing: "0.05em",
                 }}>
-                  {f.a}
+                  {nl2br(f.a)}
                 </div>
               </details>
             ))}
@@ -648,14 +694,14 @@ export default function R01Page() {
                 borderBottom: "1px solid rgba(255,255,255,0.06)",
               }}>
                 <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: "13px", color: TEXT_G, letterSpacing: "0.04em", flexShrink: 0 }}>
-                  {n.date}
+                  ─ {n.date}
                 </span>
                 <span style={{
                   fontSize: "11px", fontWeight: 700, letterSpacing: "0.05em", padding: "2px 10px", borderRadius: "2px",
                   flexShrink: 0,
-                  background: n.tagStyle === "urgent" ? "rgba(220,50,50,0.2)" : n.tagStyle === "new" ? "rgba(245,166,35,0.15)" : "rgba(255,255,255,0.06)",
-                  color: n.tagStyle === "urgent" ? "#e55" : n.tagStyle === "new" ? ACCENT : TEXT_G,
-                  border: `1px solid ${n.tagStyle === "urgent" ? "rgba(220,50,50,0.4)" : n.tagStyle === "new" ? "rgba(245,166,35,0.3)" : "rgba(255,255,255,0.1)"}`,
+                  background: n.tagStyle === "urgent" ? "rgba(220,50,50,0.2)" : n.tagStyle === "new" ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.06)",
+                  color: n.tagStyle === "urgent" ? "#e55" : TEXT_G,
+                  border: `1px solid ${n.tagStyle === "urgent" ? "rgba(220,50,50,0.4)" : "rgba(255,255,255,0.1)"}`,
                 }}>
                   {n.tag}
                 </span>
@@ -705,11 +751,11 @@ export default function R01Page() {
                 flexDirection: isMobile ? "column" : "row",
                 gap: isMobile ? "4px" : "0",
               }}>
-                <dt style={{ width: isMobile ? "auto" : "140px", flexShrink: 0, fontWeight: 700, fontSize: "13px", color: ACCENT, letterSpacing: "0.05em" }}>
+                <dt style={{ width: isMobile ? "auto" : "140px", flexShrink: 0, fontWeight: 700, fontSize: "13px", color: TEXT_W, letterSpacing: "0.05em" }}>
                   {row.dt}
                 </dt>
                 <dd style={{ fontSize: "14px", lineHeight: 1.7, color: TEXT_G, letterSpacing: "0.05em" }}>
-                  {row.dd}
+                  {nl2br(row.dd)}
                 </dd>
               </div>
             ))}
@@ -729,7 +775,7 @@ export default function R01Page() {
             ].map((field) => (
               <div key={field.key}>
                 <label style={{ display: "block", fontSize: "13px", color: TEXT_G, marginBottom: "6px", letterSpacing: "0.05em" }}>
-                  {field.label}{field.required && <span style={{ color: ACCENT, marginLeft: "4px" }}>*</span>}
+                  {field.label}{field.required && <span style={{ color: "#e55", marginLeft: "4px" }}>*</span>}
                 </label>
                 <input
                   type={field.type}
@@ -742,7 +788,7 @@ export default function R01Page() {
                     borderRadius: "4px", color: TEXT_W, fontSize: "14px",
                     outline: "none", transition: "border-color 0.2s",
                   }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = ACCENT)}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = "#888")}
                   onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
                 />
               </div>
@@ -761,12 +807,12 @@ export default function R01Page() {
                   borderRadius: "4px", color: TEXT_W, fontSize: "14px",
                   outline: "none", fontFamily: "'Noto Sans JP',sans-serif", transition: "border-color 0.2s",
                 }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = ACCENT)}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "#888")}
                 onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
               />
             </div>
             <button type="submit" style={{
-              background: ACCENT, color: BG_DARK, padding: "16px",
+              background: CTA_BG, color: TEXT_W, padding: "16px",
               border: "none", borderRadius: "4px", cursor: "pointer",
               fontWeight: 800, fontSize: "16px", letterSpacing: "0.06em",
               fontFamily: "'Noto Sans JP',sans-serif",
@@ -786,9 +832,18 @@ export default function R01Page() {
         padding: isMobile ? "80px 20px 88px" : "120px 48px 130px",
         background: BG_CARD,
         textAlign: "center",
-        borderTop: `3px solid ${ACCENT}`,
+        borderTop: `3px solid ${ACCENT_LIGHT}`,
+        position: "relative",
+        overflow: "hidden",
       }}>
-        <div data-anim style={{ ...animStyle(0), maxWidth: "700px", margin: "0 auto" }}>
+        {/* 背景画像 */}
+        <div style={{
+          position: "absolute", inset: 0,
+          backgroundImage: `url(${IMG.delivery})`,
+          backgroundSize: "cover", backgroundPosition: "center",
+          opacity: 0.1,
+        }} />
+        <div data-anim style={{ ...animStyle(0), maxWidth: "700px", margin: "0 auto", position: "relative", zIndex: 1 }}>
           <h2 style={{
             fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
             fontSize: isMobile ? "20px" : "28px", lineHeight: 1.4, letterSpacing: "0.05em",
@@ -797,12 +852,12 @@ export default function R01Page() {
             {cta.heading}
           </h2>
           <p style={{ fontSize: "14px", lineHeight: 1.85, color: TEXT_G, letterSpacing: "0.05em", marginBottom: "32px" }}>
-            {cta.subtext}
+            {nl2br(cta.subtext)}
           </p>
           <a href={`tel:${cta.phone}`} style={{
             display: "inline-block",
             fontFamily: "'Oswald',sans-serif", fontWeight: 800,
-            fontSize: isMobile ? "36px" : "52px", color: ACCENT, letterSpacing: "0.04em",
+            fontSize: isMobile ? "36px" : "52px", color: TEXT_W, letterSpacing: "0.04em",
             marginBottom: "8px",
           }}>
             {cta.phone}
@@ -811,7 +866,7 @@ export default function R01Page() {
             {company.hours}
           </p>
           <a href="#apply" style={{
-            display: "inline-block", background: ACCENT, color: BG_DARK,
+            display: "inline-block", background: CTA_BG, color: TEXT_W,
             padding: isMobile ? "14px 36px" : "16px 52px",
             borderRadius: "4px", fontWeight: 800, fontSize: "16px", letterSpacing: "0.06em",
             transition: "opacity 0.2s",
@@ -844,7 +899,7 @@ export default function R01Page() {
           }}>
             {navLinks.map((l) => (
               <a key={l.href} href={l.href} style={{ fontSize: "12px", color: TEXT_G, letterSpacing: "0.05em", transition: "color 0.2s" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = ACCENT)}
+                onMouseEnter={(e) => (e.currentTarget.style.color = TEXT_W)}
                 onMouseLeave={(e) => (e.currentTarget.style.color = TEXT_G)}
               >
                 {l.label}
@@ -869,10 +924,10 @@ function SectionTitle({ label, title }: { label: string; title: string }) {
     <div data-anim style={{ opacity: 0, transform: "translateY(12px)", transition: "opacity 0.7s ease-out, transform 0.7s ease-out" }}>
       <span style={{
         fontFamily: "'Oswald',sans-serif", fontWeight: 700, fontSize: "12px",
-        letterSpacing: "0.2em", color: ACCENT, textTransform: "uppercase",
+        letterSpacing: "0.2em", color: TEXT_G, textTransform: "uppercase",
         display: "block", marginBottom: "6px",
       }}>
-        {label}
+        ─ {label} ─
       </span>
       <h2 style={{
         fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
@@ -880,7 +935,7 @@ function SectionTitle({ label, title }: { label: string; title: string }) {
       }}>
         {title}
       </h2>
-      <div style={{ width: "40px", height: "3px", background: ACCENT, marginTop: "12px", borderRadius: "2px" }} />
+      <div style={{ width: "40px", height: "3px", background: ACCENT_LIGHT, marginTop: "12px", borderRadius: "2px" }} />
     </div>
   );
 }

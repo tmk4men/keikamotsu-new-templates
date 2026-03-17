@@ -21,15 +21,16 @@ import {
   meta,
 } from "@/data/siteData";
 
-/* ─── カラー定数 ─── */
+/* ─── カラー定数（無彩色） ─── */
 const C = {
   white: "#ffffff",
   bg: "#f7f8fa",
   text: "#1a1a2e",
   textSub: "#555555",
-  blue: "#0077b6",
-  blueLight: "#00b4d8",
-  bluePale: "#e8f4f8",
+  accent: "#32373c",
+  accentHover: "#3e444a",
+  accentPale: "#eee",
+  accentPaleBorder: "#ddd",
   cta: "#32373c",
   ctaHover: "#3e444a",
   dark: "#1a1a2e",
@@ -41,6 +42,13 @@ const shadowMain = "0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08)";
 const shadowMainHover = "0 3px 10px rgba(0,0,0,0.07), 0 10px 28px rgba(0,0,0,0.1)";
 const shadowSub = "0 1px 3px rgba(0,0,0,0.04)";
 const shadowSubHover = "0 1px 5px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06)";
+
+/* ─── 画像パス ─── */
+const IMG = {
+  strength: (n: number) => `/keikamotsu-new-templates/images/strength-0${n}.webp`,
+  workplace: "/keikamotsu-new-templates/images/workplace.webp",
+  delivery: "/keikamotsu-new-templates/images/delivery.webp",
+};
 
 /* ─── IntersectionObserver フック ─── */
 function useInView(threshold = 0.12) {
@@ -113,6 +121,15 @@ const benefitIcons = [
   <svg key="b5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><rect x="5" y="2" width="14" height="20" rx="2" /><path d="M12 18h.01" /></svg>,
 ];
 
+/** テキスト内の \n を <br/> に変換 */
+const nl2br = (text: string) =>
+  text.split("\n").map((line, i, arr) => (
+    <React.Fragment key={i}>
+      {line}
+      {i < arr.length - 1 && <br />}
+    </React.Fragment>
+  ));
+
 /* ───────────────────────────────────────
    メインコンポーネント
    ─────────────────────────────────────── */
@@ -170,7 +187,7 @@ export default function R02Page() {
         details > summary::-webkit-details-marker { display: none; }
 
         input:focus, textarea:focus, select:focus {
-          outline: 2px solid ${C.blue};
+          outline: 2px solid ${C.accent};
           outline-offset: 1px;
         }
       `}</style>
@@ -208,7 +225,7 @@ export default function R02Page() {
                 width: 36,
                 height: 36,
                 borderRadius: "0.5rem",
-                background: `linear-gradient(135deg, ${C.blue}, ${C.blueLight})`,
+                background: C.accent,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -262,7 +279,7 @@ export default function R02Page() {
                   color: C.textSub,
                   transition: "color 0.2s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = C.blue)}
+                onMouseEnter={(e) => (e.currentTarget.style.color = C.text)}
                 onMouseLeave={(e) => (e.currentTarget.style.color = C.textSub)}
               >
                 {l.label}
@@ -274,13 +291,13 @@ export default function R02Page() {
                 fontSize: 13,
                 fontWeight: 700,
                 color: C.white,
-                background: C.blue,
+                background: C.accent,
                 padding: "8px 20px",
                 borderRadius: 50,
                 transition: "background 0.2s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = C.blueLight)}
-              onMouseLeave={(e) => (e.currentTarget.style.background = C.blue)}
+              onMouseEnter={(e) => (e.currentTarget.style.background = C.accentHover)}
+              onMouseLeave={(e) => (e.currentTarget.style.background = C.accent)}
             >
               応募する
             </a>
@@ -356,7 +373,7 @@ export default function R02Page() {
                 fontSize: 15,
                 fontWeight: 700,
                 color: C.white,
-                background: C.blue,
+                background: C.accent,
                 padding: "12px 0",
                 borderRadius: 50,
                 textAlign: "center",
@@ -404,7 +421,7 @@ export default function R02Page() {
             style={{
               position: "absolute",
               inset: 0,
-              background: "linear-gradient(135deg, rgba(255,255,255,0.88) 0%, rgba(232,244,248,0.82) 100%)",
+              background: "linear-gradient(135deg, rgba(255,255,255,0.88) 0%, rgba(245,245,245,0.85) 100%)",
             }}
           />
 
@@ -433,13 +450,13 @@ export default function R02Page() {
                   key={i}
                   style={{
                     display: "inline-block",
-                    background: C.bluePale,
-                    color: C.blue,
+                    background: C.accentPale,
+                    color: C.accent,
                     fontSize: 13,
                     fontWeight: 700,
                     padding: "6px 18px",
                     borderRadius: 50,
-                    border: `1px solid ${C.blue}22`,
+                    border: `1px solid ${C.accentPaleBorder}`,
                   }}
                 >
                   {b}
@@ -476,7 +493,7 @@ export default function R02Page() {
                     lineHeight: 1.9,
                   }}
                 >
-                  {t}
+                  {nl2br(t)}
                 </p>
               ))}
             </div>
@@ -499,7 +516,7 @@ export default function R02Page() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontWeight: 700,
                   fontSize: "clamp(48px, 8vw, 72px)",
-                  color: C.blue,
+                  color: C.text,
                   lineHeight: 1,
                 }}
               >
@@ -513,7 +530,7 @@ export default function R02Page() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontWeight: 700,
                   fontSize: "clamp(48px, 8vw, 72px)",
-                  color: C.blue,
+                  color: C.text,
                   lineHeight: 1,
                 }}
               >
@@ -539,7 +556,7 @@ export default function R02Page() {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: 8,
-                  background: C.blue,
+                  background: C.accent,
                   color: C.white,
                   fontSize: 16,
                   fontWeight: 700,
@@ -548,10 +565,10 @@ export default function R02Page() {
                   transition: "background 0.2s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = C.blueLight;
+                  e.currentTarget.style.background = C.accentHover;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = C.blue;
+                  e.currentTarget.style.background = C.accent;
                 }}
               >
                 {hero.cta}
@@ -588,7 +605,7 @@ export default function R02Page() {
         <section
           ref={marqueeRef.ref}
           style={{
-            background: C.blue,
+            background: C.accent,
             padding: "14px 0",
             overflow: "hidden",
             ...slideUp(marqueeRef.visible),
@@ -642,13 +659,13 @@ export default function R02Page() {
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: 13,
                 fontWeight: 700,
-                color: C.blue,
+                color: C.textSub,
                 letterSpacing: 3,
                 textTransform: "uppercase",
                 marginBottom: 8,
               }}
             >
-              Why Choose Us
+              ─ Why Choose Us ─
             </p>
             <h2
               style={{
@@ -658,7 +675,7 @@ export default function R02Page() {
                 color: C.text,
               }}
             >
-              選ばれる<span style={{ color: C.blue }}>3つ</span>の理由
+              選ばれる<span style={{ color: C.accent }}>3つ</span>の理由
             </h2>
           </div>
 
@@ -683,10 +700,11 @@ export default function R02Page() {
                   transition: "box-shadow 0.3s, border-color 0.3s",
                   cursor: "default",
                   ...slideRight(reasonsRef.visible, 0.1 + i * 0.15),
+                  flexWrap: "wrap",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.boxShadow = shadowMainHover;
-                  e.currentTarget.style.borderColor = C.blue;
+                  e.currentTarget.style.borderColor = C.accent;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.boxShadow = shadowMain;
@@ -698,7 +716,7 @@ export default function R02Page() {
                     fontFamily: "'DM Sans', sans-serif",
                     fontWeight: 700,
                     fontSize: "clamp(40px, 5vw, 56px)",
-                    color: `${C.blue}18`,
+                    color: `${C.accent}18`,
                     lineHeight: 1,
                     minWidth: 70,
                     flexShrink: 0,
@@ -706,7 +724,21 @@ export default function R02Page() {
                 >
                   {r.num}
                 </div>
-                <div>
+                {/* 画像 */}
+                <div style={{
+                  flex: "0 0 180px",
+                  height: 140,
+                  borderRadius: "0.5rem",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                }}>
+                  <img
+                    src={IMG.strength(i + 1)}
+                    alt={r.title}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  />
+                </div>
+                <div style={{ flex: 1, minWidth: 200 }}>
                   <h3
                     style={{
                       fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
@@ -716,7 +748,7 @@ export default function R02Page() {
                       marginBottom: 10,
                     }}
                   >
-                    {r.title}
+                    ─ {r.title}
                   </h3>
                   <p
                     style={{
@@ -725,7 +757,7 @@ export default function R02Page() {
                       lineHeight: 1.85,
                     }}
                   >
-                    {r.text}
+                    {nl2br(r.text)}
                   </p>
                 </div>
               </div>
@@ -751,13 +783,13 @@ export default function R02Page() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: 13,
                   fontWeight: 700,
-                  color: C.blue,
+                  color: C.textSub,
                   letterSpacing: 3,
                   textTransform: "uppercase",
                   marginBottom: 8,
                 }}
               >
-                Recruit
+                ─ Recruit ─
               </p>
               <h2
                 style={{
@@ -771,7 +803,7 @@ export default function R02Page() {
                 求人情報
               </h2>
               <p style={{ fontSize: 15, color: C.textSub, lineHeight: 1.8 }}>
-                {jobs.intro}
+                {nl2br(jobs.intro)}
               </p>
             </div>
 
@@ -800,26 +832,26 @@ export default function R02Page() {
                           fontSize: 14,
                           fontWeight: 700,
                           color: C.text,
-                          background: row.accent ? `${C.blue}10` : "transparent",
+                          background: row.accent ? `${C.accent}10` : "transparent",
                           borderBottom: `1px solid ${C.border}`,
                           width: "28%",
                           verticalAlign: "top",
                         }}
                       >
-                        {row.dt}
+                        ▪ {row.dt}
                       </th>
                       <td
                         style={{
                           padding: "16px 20px",
                           fontSize: 14,
-                          color: row.accent ? C.blue : C.textSub,
+                          color: row.accent ? C.text : C.textSub,
                           fontWeight: row.accent ? 700 : 400,
-                          background: row.accent ? `${C.blue}10` : "transparent",
+                          background: row.accent ? `${C.accent}10` : "transparent",
                           borderBottom: `1px solid ${C.border}`,
                           lineHeight: 1.7,
                         }}
                       >
-                        {row.dd}
+                        {nl2br(row.dd)}
                       </td>
                     </tr>
                   ))}
@@ -850,8 +882,8 @@ export default function R02Page() {
                       key={i}
                       style={{
                         display: "inline-block",
-                        background: C.bluePale,
-                        color: C.blue,
+                        background: C.accentPale,
+                        color: C.accent,
                         fontSize: 13,
                         fontWeight: 500,
                         padding: "6px 16px",
@@ -877,105 +909,116 @@ export default function R02Page() {
             maxWidth: 1200,
             margin: "0 auto",
             padding: "105px 24px 88px",
+            position: "relative",
           }}
         >
-          <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(benefitsRef.visible) }}>
-            <p
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 13,
-                fontWeight: 700,
-                color: C.blue,
-                letterSpacing: 3,
-                textTransform: "uppercase",
-                marginBottom: 8,
-              }}
-            >
-              Benefits
-            </p>
-            <h2
-              style={{
-                fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                fontWeight: 700,
-                fontSize: "clamp(24px, 4vw, 36px)",
-                color: C.text,
-              }}
-            >
-              待遇・福利厚生
-            </h2>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1.1fr 0.85fr 1.05fr",
-              gap: 24,
-            }}
-            className="benefits-grid"
-          >
-            <style>{`
-              @media (max-width: 768px) {
-                .benefits-grid { grid-template-columns: 1fr !important; }
-              }
-            `}</style>
-            {benefits.map((b, i) => (
-              <div
-                key={i}
+          {/* 背景画像 */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${IMG.workplace})`,
+            backgroundSize: "cover", backgroundPosition: "center",
+            opacity: 0.04,
+            borderRadius: "1.25rem",
+          }} />
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(benefitsRef.visible) }}>
+              <p
                 style={{
-                  background: C.white,
-                  borderRadius: "0.75rem",
-                  padding: "32px 24px",
-                  boxShadow: shadowSub,
-                  border: `1px solid ${C.border}`,
-                  transition: "box-shadow 0.3s, border-color 0.3s",
-                  ...bounceIn(benefitsRef.visible, 0.08 * i),
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = shadowSubHover;
-                  e.currentTarget.style.borderColor = C.blue;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = shadowSub;
-                  e.currentTarget.style.borderColor = C.border;
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: C.textSub,
+                  letterSpacing: 3,
+                  textTransform: "uppercase",
+                  marginBottom: 8,
                 }}
               >
+                ─ Benefits ─
+              </p>
+              <h2
+                style={{
+                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "clamp(24px, 4vw, 36px)",
+                  color: C.text,
+                }}
+              >
+                ✓ 待遇・福利厚生
+              </h2>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1.1fr 0.85fr 1.05fr",
+                gap: 24,
+              }}
+              className="benefits-grid"
+            >
+              <style>{`
+                @media (max-width: 768px) {
+                  .benefits-grid { grid-template-columns: 1fr !important; }
+                }
+              `}</style>
+              {benefits.map((b, i) => (
                 <div
+                  key={i}
                   style={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: "50%",
-                    background: C.bluePale,
-                    color: C.blue,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginBottom: 18,
+                    background: C.white,
+                    borderRadius: "0.75rem",
+                    padding: "32px 24px",
+                    boxShadow: shadowSub,
+                    border: `1px solid ${C.border}`,
+                    transition: "box-shadow 0.3s, border-color 0.3s",
+                    ...bounceIn(benefitsRef.visible, 0.08 * i),
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = shadowSubHover;
+                    e.currentTarget.style.borderColor = C.accent;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = shadowSub;
+                    e.currentTarget.style.borderColor = C.border;
                   }}
                 >
-                  {benefitIcons[i]}
+                  <div
+                    style={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: "50%",
+                      background: C.accentPale,
+                      color: C.accent,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 18,
+                    }}
+                  >
+                    {benefitIcons[i]}
+                  </div>
+                  <h3
+                    style={{
+                      fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
+                      fontWeight: 700,
+                      fontSize: 17,
+                      color: C.text,
+                      marginBottom: 8,
+                    }}
+                  >
+                    ✓ {b.title}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: 14,
+                      color: C.textSub,
+                      lineHeight: 1.8,
+                    }}
+                  >
+                    {nl2br(b.text)}
+                  </p>
                 </div>
-                <h3
-                  style={{
-                    fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                    fontWeight: 700,
-                    fontSize: 17,
-                    color: C.text,
-                    marginBottom: 8,
-                  }}
-                >
-                  {b.title}
-                </h3>
-                <p
-                  style={{
-                    fontSize: 14,
-                    color: C.textSub,
-                    lineHeight: 1.8,
-                  }}
-                >
-                  {b.text}
-                </p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
@@ -997,13 +1040,13 @@ export default function R02Page() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: 13,
                   fontWeight: 700,
-                  color: C.blue,
+                  color: C.textSub,
                   letterSpacing: 3,
                   textTransform: "uppercase",
                   marginBottom: 8,
                 }}
               >
-                Daily Schedule
+                ─ Daily Schedule ─
               </p>
               <h2
                 style={{
@@ -1017,7 +1060,7 @@ export default function R02Page() {
                 1日の流れ
               </h2>
               <p style={{ fontSize: 15, color: C.textSub, lineHeight: 1.8, maxWidth: 600, margin: "0 auto" }}>
-                {daily.intro}
+                {nl2br(daily.intro)}
               </p>
             </div>
 
@@ -1038,7 +1081,7 @@ export default function R02Page() {
                   left: 40,
                   right: 40,
                   height: 3,
-                  background: `${C.blue}30`,
+                  background: `${C.accent}30`,
                   borderRadius: 2,
                 }}
               />
@@ -1077,9 +1120,9 @@ export default function R02Page() {
                         width: 16,
                         height: 16,
                         borderRadius: "50%",
-                        background: C.blue,
+                        background: C.accent,
                         border: `3px solid ${C.white}`,
-                        boxShadow: `0 0 0 3px ${C.blue}40`,
+                        boxShadow: `0 0 0 3px ${C.accent}40`,
                         margin: "0 auto 18px",
                         position: "relative",
                         zIndex: 2,
@@ -1090,7 +1133,7 @@ export default function R02Page() {
                         fontFamily: "'DM Sans', sans-serif",
                         fontWeight: 700,
                         fontSize: 22,
-                        color: C.blue,
+                        color: C.text,
                         marginBottom: 6,
                       }}
                     >
@@ -1104,7 +1147,7 @@ export default function R02Page() {
                         marginBottom: 8,
                       }}
                     >
-                      {s.title}
+                      ● {s.title}
                     </h4>
                     <p
                       style={{
@@ -1114,7 +1157,7 @@ export default function R02Page() {
                         padding: "0 8px",
                       }}
                     >
-                      {s.desc}
+                      {nl2br(s.desc)}
                     </p>
                   </div>
                 ))}
@@ -1141,13 +1184,13 @@ export default function R02Page() {
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: 13,
                 fontWeight: 700,
-                color: C.blue,
+                color: C.textSub,
                 letterSpacing: 3,
                 textTransform: "uppercase",
                 marginBottom: 8,
               }}
             >
-              Workplace
+              ─ Workplace ─
             </p>
             <h2
               style={{
@@ -1161,7 +1204,7 @@ export default function R02Page() {
               {gallery.heading}
             </h2>
             <p style={{ fontSize: 15, color: C.textSub, lineHeight: 1.8 }}>
-              {gallery.intro}
+              {nl2br(gallery.intro)}
             </p>
           </div>
 
@@ -1259,13 +1302,13 @@ export default function R02Page() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: 13,
                   fontWeight: 700,
-                  color: C.blue,
+                  color: C.textSub,
                   letterSpacing: 3,
                   textTransform: "uppercase",
                   marginBottom: 8,
                 }}
               >
-                Voices
+                ─ Voices ─
               </p>
               <h2
                 style={{
@@ -1307,7 +1350,7 @@ export default function R02Page() {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.boxShadow = shadowSubHover;
-                    e.currentTarget.style.borderColor = C.blue;
+                    e.currentTarget.style.borderColor = C.accent;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.boxShadow = shadowSub;
@@ -1323,7 +1366,7 @@ export default function R02Page() {
                       fontFamily: "'DM Sans', serif",
                       fontSize: 72,
                       lineHeight: 1,
-                      color: `${C.blue}15`,
+                      color: `${C.accent}15`,
                       fontWeight: 700,
                       pointerEvents: "none",
                       userSelect: "none",
@@ -1346,7 +1389,7 @@ export default function R02Page() {
                           width: 44,
                           height: 44,
                           borderRadius: "50%",
-                          background: `linear-gradient(135deg, ${C.blue}, ${C.blueLight})`,
+                          background: C.accent,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -1377,14 +1420,14 @@ export default function R02Page() {
                         marginBottom: 14,
                       }}
                     >
-                      {v.text}
+                      {nl2br(v.text)}
                     </p>
 
                     <div
                       style={{
                         display: "inline-block",
-                        background: C.bluePale,
-                        color: C.blue,
+                        background: C.accentPale,
+                        color: C.accent,
                         fontSize: 13,
                         fontWeight: 700,
                         padding: "5px 14px",
@@ -1418,13 +1461,13 @@ export default function R02Page() {
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: 13,
                 fontWeight: 700,
-                color: C.blue,
+                color: C.textSub,
                 letterSpacing: 3,
                 textTransform: "uppercase",
                 marginBottom: 8,
               }}
             >
-              FAQ
+              ─ FAQ ─
             </p>
             <h2
               style={{
@@ -1475,11 +1518,11 @@ export default function R02Page() {
                           fontFamily: "'DM Sans', sans-serif",
                           fontWeight: 700,
                           fontSize: 16,
-                          color: C.blue,
+                          color: C.accent,
                           flexShrink: 0,
                         }}
                       >
-                        Q.
+                        ▸ Q.
                       </span>
                       <span
                         style={{
@@ -1497,8 +1540,8 @@ export default function R02Page() {
                         width: 28,
                         height: 28,
                         borderRadius: "50%",
-                        background: isOpen ? C.blue : C.bluePale,
-                        color: isOpen ? C.white : C.blue,
+                        background: isOpen ? C.accent : C.accentPale,
+                        color: isOpen ? C.white : C.accent,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -1528,7 +1571,7 @@ export default function R02Page() {
                         lineHeight: 1.85,
                       }}
                     >
-                      {item.a}
+                      {nl2br(item.a)}
                     </div>
                   </div>
                 </div>
@@ -1555,13 +1598,13 @@ export default function R02Page() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: 13,
                   fontWeight: 700,
-                  color: C.blue,
+                  color: C.textSub,
                   letterSpacing: 3,
                   textTransform: "uppercase",
                   marginBottom: 8,
                 }}
               >
-                News
+                ─ News ─
               </p>
               <h2
                 style={{
@@ -1579,7 +1622,7 @@ export default function R02Page() {
               {news.map((n, i) => {
                 const tagColors: Record<string, { bg: string; color: string }> = {
                   urgent: { bg: "#fee2e2", color: "#dc2626" },
-                  new: { bg: C.bluePale, color: C.blue },
+                  new: { bg: C.accentPale, color: C.accent },
                   default: { bg: "#f3f4f6", color: C.textSub },
                 };
                 const tc = tagColors[n.tagStyle] || tagColors.default;
@@ -1599,7 +1642,7 @@ export default function R02Page() {
                       transition: "border-color 0.2s",
                       ...slideLeft(newsRef.visible, 0.08 * i),
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = C.blue)}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = C.accent)}
                     onMouseLeave={(e) => (e.currentTarget.style.borderColor = C.border)}
                   >
                     <span
@@ -1610,7 +1653,7 @@ export default function R02Page() {
                         flexShrink: 0,
                       }}
                     >
-                      {n.date}
+                      ─ {n.date}
                     </span>
                     <span
                       style={{
@@ -1649,7 +1692,7 @@ export default function R02Page() {
           id="access"
           ref={accessRef.ref}
           style={{
-            background: C.blue,
+            background: C.accent,
             padding: "84px 24px 76px",
           }}
         >
@@ -1666,7 +1709,7 @@ export default function R02Page() {
                   marginBottom: 8,
                 }}
               >
-                Access
+                ─ Access ─
               </p>
               <h2
                 style={{
@@ -1732,7 +1775,7 @@ export default function R02Page() {
                       style={{
                         marginTop: 16,
                         fontSize: 13,
-                        color: C.blue,
+                        color: C.accent,
                         fontWeight: 500,
                       }}
                     >
@@ -1778,13 +1821,13 @@ export default function R02Page() {
                 fontFamily: "'DM Sans', sans-serif",
                 fontSize: 13,
                 fontWeight: 700,
-                color: C.blue,
+                color: C.textSub,
                 letterSpacing: 3,
                 textTransform: "uppercase",
                 marginBottom: 8,
               }}
             >
-              Company
+              ─ Company ─
             </p>
             <h2
               style={{
@@ -1840,7 +1883,7 @@ export default function R02Page() {
                         lineHeight: 1.7,
                       }}
                     >
-                      {row.dd}
+                      {nl2br(row.dd)}
                     </td>
                   </tr>
                 ))}
@@ -1867,13 +1910,13 @@ export default function R02Page() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontSize: 13,
                   fontWeight: 700,
-                  color: C.blue,
+                  color: C.textSub,
                   letterSpacing: 3,
                   textTransform: "uppercase",
                   marginBottom: 8,
                 }}
               >
-                Entry
+                ─ Entry ─
               </p>
               <h2
                 style={{
@@ -2017,7 +2060,7 @@ export default function R02Page() {
                     fontSize: 16,
                     fontWeight: 700,
                     color: C.white,
-                    background: C.blue,
+                    background: C.accent,
                     border: "none",
                     borderRadius: 50,
                     cursor: "pointer",
@@ -2025,10 +2068,10 @@ export default function R02Page() {
                     transition: "background 0.2s",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = C.blueLight;
+                    e.currentTarget.style.background = C.accentHover;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = C.blue;
+                    e.currentTarget.style.background = C.accent;
                   }}
                 >
                   送信する
@@ -2044,15 +2087,26 @@ export default function R02Page() {
         <section
           ref={ctaRef.ref}
           style={{
-            background: C.blue,
+            background: C.accent,
             padding: "120px 24px 130px",
+            position: "relative",
+            overflow: "hidden",
           }}
         >
+          {/* 背景画像 */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${IMG.delivery})`,
+            backgroundSize: "cover", backgroundPosition: "center",
+            opacity: 0.1,
+          }} />
           <div
             style={{
               maxWidth: 800,
               margin: "0 auto",
               textAlign: "center",
+              position: "relative",
+              zIndex: 1,
               ...slideUp(ctaRef.visible),
             }}
           >
@@ -2078,7 +2132,7 @@ export default function R02Page() {
                 margin: "0 auto 36px",
               }}
             >
-              {cta.subtext}
+              {nl2br(cta.subtext)}
             </p>
 
             <a
@@ -2088,7 +2142,7 @@ export default function R02Page() {
                 alignItems: "center",
                 gap: 12,
                 background: C.white,
-                color: C.blue,
+                color: C.accent,
                 fontFamily: "'DM Sans', sans-serif",
                 fontWeight: 700,
                 fontSize: "clamp(24px, 4vw, 36px)",
@@ -2171,7 +2225,7 @@ export default function R02Page() {
                   width: 32,
                   height: 32,
                   borderRadius: "0.5rem",
-                  background: `linear-gradient(135deg, ${C.blue}, ${C.blueLight})`,
+                  background: C.accent,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -2229,7 +2283,7 @@ export default function R02Page() {
                     color: `${C.white}88`,
                     transition: "color 0.2s",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = C.blueLight)}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = C.white)}
                   onMouseLeave={(e) => (e.currentTarget.style.color = `${C.white}88`)}
                 >
                   {l.label}
@@ -2260,7 +2314,7 @@ export default function R02Page() {
                 <a
                   href={`tel:${company.phone.replace(/-/g, "")}`}
                   style={{
-                    color: C.blueLight,
+                    color: C.white,
                     fontFamily: "'DM Sans', sans-serif",
                     fontWeight: 700,
                     fontSize: 16,

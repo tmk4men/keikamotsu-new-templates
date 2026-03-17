@@ -20,7 +20,7 @@ import {
 } from "@/data/corporateSiteData";
 
 /* ───────────────────────────────────────────
-   色定数
+   色定数（無彩色ベース）
    ─────────────────────────────────────────── */
 const C = {
   bg1: "#0a0a0a",
@@ -28,13 +28,15 @@ const C = {
   bg3: "#181818",
   text: "#e5e5e5",
   white: "#ffffff",
-  gold: "#c7a44e",
-  goldDark: "#a8893e",
+  accent: "#32373c",
+  accentLight: "#555555",
   cta: "#32373c",
   ctaHover: "#3e444a",
   muted: "#888888",
+  label: "#999999",
   border: "#2a2a2a",
   borderLight: "#333333",
+  decorLine: "#555555",
 };
 
 /* ───────────────────────────────────────────
@@ -99,13 +101,13 @@ function SectionHeading({
           fontFamily: "'Oswald', sans-serif",
           fontSize: "0.8rem",
           letterSpacing: "0.2em",
-          color: C.gold,
+          color: C.label,
           textTransform: "uppercase",
           marginBottom: 8,
           fontWeight: 400,
         }}
       >
-        {en}
+        ─ {en} ─
       </p>
       <h2
         style={{
@@ -123,7 +125,7 @@ function SectionHeading({
         style={{
           width: 48,
           height: 2,
-          background: C.gold,
+          background: C.decorLine,
           marginTop: 16,
           marginLeft: align === "center" ? "auto" : 0,
           marginRight: align === "center" ? "auto" : 0,
@@ -208,7 +210,7 @@ export default function CP01Page() {
               fontFamily: "'Oswald', sans-serif",
               fontSize: "1.4rem",
               fontWeight: 700,
-              color: C.gold,
+              color: C.white,
               letterSpacing: "0.05em",
             }}
           >
@@ -245,7 +247,7 @@ export default function CP01Page() {
                   letterSpacing: "0.05em",
                   transition: "color 0.3s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = C.gold)}
+                onMouseEnter={(e) => (e.currentTarget.style.color = C.white)}
                 onMouseLeave={(e) => (e.currentTarget.style.color = C.text)}
               >
                 {l.label}
@@ -257,7 +259,7 @@ export default function CP01Page() {
                 textDecoration: "none",
                 fontFamily: "'Oswald', sans-serif",
                 fontSize: "0.9rem",
-                color: C.gold,
+                color: C.muted,
                 letterSpacing: "0.08em",
                 borderLeft: `1px solid ${C.border}`,
                 paddingLeft: 24,
@@ -289,7 +291,7 @@ export default function CP01Page() {
                 display: "block",
                 width: 24,
                 height: 2,
-                background: C.gold,
+                background: C.white,
                 transition: "transform 0.3s, opacity 0.3s",
                 transform: menuOpen ? "rotate(45deg) translateY(7px)" : "none",
               }}
@@ -299,7 +301,7 @@ export default function CP01Page() {
                 display: "block",
                 width: 24,
                 height: 2,
-                background: C.gold,
+                background: C.white,
                 transition: "opacity 0.3s",
                 opacity: menuOpen ? 0 : 1,
               }}
@@ -309,7 +311,7 @@ export default function CP01Page() {
                 display: "block",
                 width: 24,
                 height: 2,
-                background: C.gold,
+                background: C.white,
                 transition: "transform 0.3s",
                 transform: menuOpen ? "rotate(-45deg) translateY(-7px)" : "none",
               }}
@@ -353,7 +355,7 @@ export default function CP01Page() {
               textDecoration: "none",
               fontFamily: "'Oswald', sans-serif",
               fontSize: "1.1rem",
-              color: C.gold,
+              color: C.muted,
               letterSpacing: "0.08em",
               marginTop: 8,
             }}
@@ -436,8 +438,8 @@ export default function CP01Page() {
               display: "inline-block",
               marginTop: 36,
               padding: "16px 48px",
-              background: C.gold,
-              color: C.bg1,
+              background: C.cta,
+              color: C.white,
               fontFamily: "'Noto Sans JP', sans-serif",
               fontSize: "0.9rem",
               fontWeight: 700,
@@ -481,7 +483,7 @@ export default function CP01Page() {
           style={{
             width: 1,
             height: 40,
-            background: `linear-gradient(to bottom, ${C.gold}, transparent)`,
+            background: `linear-gradient(to bottom, ${C.muted}, transparent)`,
           }}
         />
       </div>
@@ -527,7 +529,7 @@ export default function CP01Page() {
                 fontFamily: "'Oswald', sans-serif",
                 fontSize: "3rem",
                 fontWeight: 700,
-                color: C.gold,
+                color: C.accentLight,
                 lineHeight: 1,
                 marginBottom: 16,
                 opacity: 0.3,
@@ -546,7 +548,7 @@ export default function CP01Page() {
                 marginBottom: 20,
               }}
             >
-              {services[0].title}
+              ■ {services[0].title}
             </h3>
             <p
               style={{
@@ -555,10 +557,14 @@ export default function CP01Page() {
                 color: C.text,
                 lineHeight: 1.8,
                 letterSpacing: "0.05em",
-                whiteSpace: "pre-line",
               }}
             >
-              {services[0].text}
+              {services[0].text.split("\n").map((line, j) => (
+                <React.Fragment key={j}>
+                  {line}
+                  {j < services[0].text.split("\n").length - 1 && <br />}
+                </React.Fragment>
+              ))}
             </p>
           </div>
           {/* Right – 3 stacked */}
@@ -580,7 +586,7 @@ export default function CP01Page() {
                       fontFamily: "'Oswald', sans-serif",
                       fontSize: "1.5rem",
                       fontWeight: 700,
-                      color: C.gold,
+                      color: C.accentLight,
                       opacity: 0.4,
                       lineHeight: 1,
                     }}
@@ -597,7 +603,7 @@ export default function CP01Page() {
                       letterSpacing: "0.05em",
                     }}
                   >
-                    {s.title}
+                    ▸ {s.title}
                   </h3>
                 </div>
                 <p
@@ -607,10 +613,14 @@ export default function CP01Page() {
                     color: C.text,
                     lineHeight: 1.8,
                     letterSpacing: "0.05em",
-                    whiteSpace: "pre-line",
                   }}
                 >
-                  {s.text}
+                  {s.text.split("\n").map((line, j) => (
+                    <React.Fragment key={j}>
+                      {line}
+                      {j < s.text.split("\n").length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
                 </p>
               </div>
             ))}
@@ -621,6 +631,12 @@ export default function CP01Page() {
   );
 
   /* ─── Strengths ─── */
+  const strengthImages = [
+    "/keikamotsu-new-templates/images/strength-01.webp",
+    "/keikamotsu-new-templates/images/strength-02.webp",
+    "/keikamotsu-new-templates/images/strength-03.webp",
+  ];
+
   const renderStrengths = () => (
     <section
       id="strengths"
@@ -645,47 +661,74 @@ export default function CP01Page() {
               key={s.num}
               style={{
                 ...fadeStyle(strRef.visible, 0.1 + i * 0.12),
-                paddingTop: 24,
-                borderTop: `3px solid ${C.gold}`,
+                borderTop: `3px solid ${C.decorLine}`,
+                overflow: "hidden",
+                borderRadius: "0.5rem",
               }}
             >
-              <span
+              {/* 強み画像 */}
+              <div
                 style={{
-                  fontFamily: "'Oswald', sans-serif",
-                  fontSize: "2.2rem",
-                  fontWeight: 700,
-                  color: C.gold,
-                  lineHeight: 1,
-                  opacity: 0.35,
+                  width: "100%",
+                  height: 180,
+                  overflow: "hidden",
+                  position: "relative",
                 }}
               >
-                {s.num}
-              </span>
-              <h3
-                style={{
-                  fontFamily: "'Noto Sans JP', sans-serif",
-                  fontSize: "1.1rem",
-                  fontWeight: 700,
-                  color: C.white,
-                  lineHeight: 1.3,
-                  letterSpacing: "0.05em",
-                  margin: "16px 0 14px",
-                }}
-              >
-                {s.title}
-              </h3>
-              <p
-                style={{
-                  fontFamily: "'Noto Sans JP', sans-serif",
-                  fontSize: "0.85rem",
-                  color: C.text,
-                  lineHeight: 1.8,
-                  letterSpacing: "0.05em",
-                  whiteSpace: "pre-line",
-                }}
-              >
-                {s.text}
-              </p>
+                <img
+                  src={strengthImages[i] || strengthImages[0]}
+                  alt={s.title}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    filter: "grayscale(30%) brightness(0.7)",
+                  }}
+                />
+              </div>
+              <div style={{ padding: "24px 20px" }}>
+                <span
+                  style={{
+                    fontFamily: "'Oswald', sans-serif",
+                    fontSize: "2.2rem",
+                    fontWeight: 700,
+                    color: C.accentLight,
+                    lineHeight: 1,
+                    opacity: 0.35,
+                  }}
+                >
+                  {s.num}
+                </span>
+                <h3
+                  style={{
+                    fontFamily: "'Noto Sans JP', sans-serif",
+                    fontSize: "1.1rem",
+                    fontWeight: 700,
+                    color: C.white,
+                    lineHeight: 1.3,
+                    letterSpacing: "0.05em",
+                    margin: "16px 0 14px",
+                  }}
+                >
+                  ─ {s.title}
+                </h3>
+                <p
+                  style={{
+                    fontFamily: "'Noto Sans JP', sans-serif",
+                    fontSize: "0.85rem",
+                    color: C.text,
+                    lineHeight: 1.8,
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {s.text.split("\n").map((line, j) => (
+                    <React.Fragment key={j}>
+                      {line}
+                      {j < s.text.split("\n").length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -816,13 +859,13 @@ export default function CP01Page() {
                   fontFamily: "'Noto Sans JP', sans-serif",
                   fontSize: "0.82rem",
                   fontWeight: 600,
-                  color: C.gold,
+                  color: C.label,
                   letterSpacing: "0.08em",
                   marginBottom: isMobile ? 6 : 0,
                   paddingTop: 2,
                 }}
               >
-                {item.dt}
+                ▪ {item.dt}
               </dt>
               <dd
                 style={{
@@ -876,7 +919,7 @@ export default function CP01Page() {
                 top: 0,
                 width: 2,
                 height: hisRef.visible ? "100%" : "0%",
-                background: C.gold,
+                background: C.accent,
                 transition: "height 1.5s ease",
               }}
             />
@@ -898,7 +941,7 @@ export default function CP01Page() {
                     width: 12,
                     height: 12,
                     borderRadius: "50%",
-                    background: C.gold,
+                    background: C.accent,
                     border: `3px solid ${C.bg1}`,
                   }}
                 />
@@ -907,7 +950,7 @@ export default function CP01Page() {
                     fontFamily: "'Oswald', sans-serif",
                     fontSize: "1.3rem",
                     fontWeight: 600,
-                    color: C.gold,
+                    color: C.muted,
                     letterSpacing: "0.05em",
                   }}
                 >
@@ -939,11 +982,30 @@ export default function CP01Page() {
       id="numbers"
       ref={numRef.ref}
       style={{
-        background: `linear-gradient(135deg, ${C.bg2} 0%, #1a1810 100%)`,
+        position: "relative",
+        overflow: "hidden",
         padding: isMobile ? "70px 0" : "100px 0 90px",
       }}
     >
-      <div style={{ ...wrap(isMobile), maxWidth: 960 }}>
+      {/* 背景画像 */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "url(/keikamotsu-new-templates/images/delivery.webp)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          filter: "grayscale(100%) brightness(0.2)",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: "rgba(10,10,10,0.82)",
+        }}
+      />
+      <div style={{ ...wrap(isMobile), maxWidth: 960, position: "relative", zIndex: 1 }}>
         <div style={fadeStyle(numRef.visible)}>
           <SectionHeading en="Numbers" ja="実績" align="center" />
         </div>
@@ -1020,7 +1082,7 @@ export default function CP01Page() {
                   justifyContent: "center",
                   fontFamily: "'Oswald', sans-serif",
                   fontSize: "0.9rem",
-                  color: C.gold,
+                  color: C.muted,
                   fontWeight: 600,
                 }}
               >
@@ -1068,8 +1130,8 @@ export default function CP01Page() {
         <div style={{ maxWidth: 820, ...fadeStyle(newsRef.visible, 0.1) }}>
           {news.map((n, i) => {
             const tagColors: Record<string, string> = {
-              press: "#8b6914",
-              new: "#2d5a3d",
+              press: "#444444",
+              new: "#2d3a3d",
               default: "#3a3a3a",
             };
             return (
@@ -1099,7 +1161,7 @@ export default function CP01Page() {
                     display: "block",
                   }}
                 >
-                  {n.date}
+                  ─ {n.date}
                 </span>
                 <span
                   style={{
@@ -1142,90 +1204,122 @@ export default function CP01Page() {
     <section
       id="recruit"
       ref={recRef.ref}
-      style={{ background: C.bg1, padding: isMobile ? "80px 0 60px" : "130px 0 140px" }}
+      style={{
+        background: C.bg1,
+        padding: isMobile ? "80px 0 60px" : "130px 0 140px",
+      }}
     >
       <div style={{ ...wrap(isMobile), maxWidth: 1100 }}>
         <div
           style={{
             ...fadeStyle(recRef.visible, 0.1),
-            background: `linear-gradient(135deg, ${C.bg3} 0%, #1a1a14 100%)`,
-            border: `1px solid ${C.border}`,
-            borderRadius: "1rem",
-            padding: isMobile ? "40px 24px" : "64px 56px",
             position: "relative",
             overflow: "hidden",
+            borderRadius: "1rem",
           }}
         >
-          {/* Decorative gold line */}
+          {/* 背景に人物写真 */}
           <div
             style={{
               position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              height: 3,
-              background: `linear-gradient(90deg, ${C.gold}, transparent)`,
+              inset: 0,
+              backgroundImage: "url(/keikamotsu-new-templates/images/team.webp)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              filter: "grayscale(40%) brightness(0.25)",
             }}
           />
-          <p
+          <div
             style={{
-              fontFamily: "'Oswald', sans-serif",
-              fontSize: "0.75rem",
-              letterSpacing: "0.2em",
-              color: C.gold,
-              textTransform: "uppercase",
-              marginBottom: 12,
+              position: "absolute",
+              inset: 0,
+              background: "rgba(10,10,10,0.7)",
+            }}
+          />
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              border: `1px solid ${C.border}`,
+              borderRadius: "1rem",
+              padding: isMobile ? "40px 24px" : "64px 56px",
             }}
           >
-            Recruit
-          </p>
-          <h2
-            style={{
-              fontFamily: "'Noto Sans JP', sans-serif",
-              fontSize: isMobile ? "1.3rem" : "1.6rem",
-              fontWeight: 700,
-              color: C.white,
-              lineHeight: 1.3,
-              letterSpacing: "0.05em",
-              marginBottom: 20,
-            }}
-          >
-            {recruit.heading}
-          </h2>
-          <p
-            style={{
-              fontFamily: "'Noto Sans JP', sans-serif",
-              fontSize: "0.88rem",
-              color: C.text,
-              lineHeight: 1.9,
-              letterSpacing: "0.05em",
-              whiteSpace: "pre-line",
-              marginBottom: 32,
-              maxWidth: 560,
-            }}
-          >
-            {recruit.text}
-          </p>
-          <a
-            href={recruit.link}
-            style={{
-              display: "inline-block",
-              padding: "14px 44px",
-              background: C.gold,
-              color: C.bg1,
-              fontFamily: "'Noto Sans JP', sans-serif",
-              fontSize: "0.88rem",
-              fontWeight: 700,
-              letterSpacing: "0.1em",
-              textDecoration: "none",
-              borderRadius: "0.375rem",
-              transition: "opacity 0.15s ease, background-color 0.15s ease",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-          >
-            {recruit.cta}
-          </a>
+            {/* Decorative line */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: 3,
+                background: `linear-gradient(90deg, ${C.decorLine}, transparent)`,
+              }}
+            />
+            <p
+              style={{
+                fontFamily: "'Oswald', sans-serif",
+                fontSize: "0.75rem",
+                letterSpacing: "0.2em",
+                color: C.label,
+                textTransform: "uppercase",
+                marginBottom: 12,
+              }}
+            >
+              ─ Recruit ─
+            </p>
+            <h2
+              style={{
+                fontFamily: "'Noto Sans JP', sans-serif",
+                fontSize: isMobile ? "1.3rem" : "1.6rem",
+                fontWeight: 700,
+                color: C.white,
+                lineHeight: 1.3,
+                letterSpacing: "0.05em",
+                marginBottom: 20,
+              }}
+            >
+              {recruit.heading}
+            </h2>
+            <p
+              style={{
+                fontFamily: "'Noto Sans JP', sans-serif",
+                fontSize: "0.88rem",
+                color: C.text,
+                lineHeight: 1.9,
+                letterSpacing: "0.05em",
+                marginBottom: 32,
+                maxWidth: 560,
+              }}
+            >
+              {recruit.text.split("\n").map((line, j) => (
+                <React.Fragment key={j}>
+                  {line}
+                  {j < recruit.text.split("\n").length - 1 && <br />}
+                </React.Fragment>
+              ))}
+            </p>
+            <a
+              href={recruit.link}
+              style={{
+                display: "inline-block",
+                padding: "14px 44px",
+                background: C.cta,
+                color: C.white,
+                fontFamily: "'Noto Sans JP', sans-serif",
+                fontSize: "0.88rem",
+                fontWeight: 700,
+                letterSpacing: "0.1em",
+                textDecoration: "none",
+                borderRadius: "0.375rem",
+                transition: "opacity 0.15s ease, background-color 0.15s ease",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            >
+              {recruit.cta}
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -1274,7 +1368,7 @@ export default function CP01Page() {
                 style={{
                   fontFamily: "'Noto Sans JP', sans-serif",
                   fontSize: "0.75rem",
-                  color: C.gold,
+                  color: C.label,
                   fontWeight: 600,
                   letterSpacing: "0.08em",
                   marginBottom: 6,
@@ -1301,7 +1395,7 @@ export default function CP01Page() {
                 style={{
                   fontFamily: "'Noto Sans JP', sans-serif",
                   fontSize: "0.75rem",
-                  color: C.gold,
+                  color: C.label,
                   fontWeight: 600,
                   letterSpacing: "0.08em",
                   marginBottom: 6,
@@ -1368,10 +1462,14 @@ export default function CP01Page() {
               letterSpacing: "0.05em",
               textAlign: "center",
               marginBottom: 40,
-              whiteSpace: "pre-line",
             }}
           >
-            {contact.intro}
+            {contact.intro.split("\n").map((line, i) => (
+              <React.Fragment key={i}>
+                {line}
+                {i < contact.intro.split("\n").length - 1 && <br />}
+              </React.Fragment>
+            ))}
           </p>
           <form
             onSubmit={(e) => e.preventDefault()}
@@ -1395,15 +1493,13 @@ export default function CP01Page() {
                   {f.required && (
                     <span
                       style={{
-                        fontSize: "0.65rem",
-                        color: C.bg1,
-                        background: C.gold,
-                        padding: "1px 8px",
-                        borderRadius: "0.25rem",
+                        fontSize: "0.75rem",
+                        color: C.muted,
                         fontWeight: 600,
+                        marginLeft: 4,
                       }}
                     >
-                      必須
+                      ＊
                     </span>
                   )}
                 </label>
@@ -1427,7 +1523,7 @@ export default function CP01Page() {
                       boxSizing: "border-box",
                       transition: "border-color 0.2s ease",
                     }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = C.gold)}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = C.accentLight)}
                     onBlur={(e) => (e.currentTarget.style.borderColor = C.border)}
                   />
                 ) : (
@@ -1448,7 +1544,7 @@ export default function CP01Page() {
                       boxSizing: "border-box",
                       transition: "border-color 0.2s ease",
                     }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = C.gold)}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = C.accentLight)}
                     onBlur={(e) => (e.currentTarget.style.borderColor = C.border)}
                   />
                 )}
@@ -1528,7 +1624,7 @@ export default function CP01Page() {
                 letterSpacing: "0.04em",
                 transition: "color 0.3s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = C.gold)}
+              onMouseEnter={(e) => (e.currentTarget.style.color = C.white)}
               onMouseLeave={(e) => (e.currentTarget.style.color = C.muted)}
             >
               {l.label}
@@ -1628,7 +1724,7 @@ function NumberCard({
             fontFamily: "'Oswald', sans-serif",
             fontSize: "2.8rem",
             fontWeight: 700,
-            color: C.gold,
+            color: C.white,
             lineHeight: 1,
           }}
         >
@@ -1638,7 +1734,7 @@ function NumberCard({
           style={{
             fontFamily: "'Noto Sans JP', sans-serif",
             fontSize: "0.85rem",
-            color: C.gold,
+            color: C.muted,
             fontWeight: 500,
           }}
         >

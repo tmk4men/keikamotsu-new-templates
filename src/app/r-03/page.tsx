@@ -111,7 +111,7 @@ function SectionTitle({
           fontWeight: 400,
         }}
       >
-        {en}
+        ── {en} ──
       </p>
       <h2
         style={{
@@ -502,7 +502,7 @@ export default function R03TrustPage() {
                   flex: "1 1 50%",
                   minWidth: 300,
                   aspectRatio: r.num === "01" ? "3/2" : r.num === "02" ? "4/3" : "16/9",
-                  background: `url(/images/strength-${r.num}.webp) center/cover no-repeat`,
+                  background: `url(/keikamotsu-new-templates/images/strength-${r.num}.webp) center/cover no-repeat`,
                   borderRadius: 4,
                 }}
               />
@@ -523,7 +523,7 @@ export default function R03TrustPage() {
                     fontWeight: 400,
                   }}
                 >
-                  REASON {r.num}
+                  ─ REASON {r.num}
                 </span>
                 <h3
                   style={{
@@ -545,7 +545,9 @@ export default function R03TrustPage() {
                     lineHeight: 2,
                   }}
                 >
-                  {r.text}
+                  {typeof r.text === 'string' && r.text.includes('\n')
+                    ? r.text.split('\n').map((line, li) => <span key={li}>{line}{li < r.text.split('\n').length - 1 && <br />}</span>)
+                    : r.text}
                 </p>
               </div>
             </div>
@@ -596,7 +598,7 @@ export default function R03TrustPage() {
                         whiteSpace: "nowrap",
                       }}
                     >
-                      {row.dt}
+                      <span style={{ color: C.accent, marginRight: 8 }}>▪</span>{row.dt}
                     </th>
                     <td
                       style={{
@@ -707,7 +709,9 @@ export default function R03TrustPage() {
                         lineHeight: 1.9,
                       }}
                     >
-                      {b.text}
+                      {typeof b.text === 'string' && b.text.includes('\n')
+                        ? b.text.split('\n').map((line, li) => <span key={li}>{line}{li < b.text.split('\n').length - 1 && <br />}</span>)
+                        : b.text}
                     </p>
                   </div>
                 </li>
@@ -766,7 +770,7 @@ export default function R03TrustPage() {
                       lineHeight: 1.2,
                     }}
                   >
-                    {s.time}
+                    <span style={{ fontSize: 10, verticalAlign: "middle", marginRight: 6 }}>●</span>{s.time}
                   </span>
                   <div>
                     <h4
@@ -787,7 +791,9 @@ export default function R03TrustPage() {
                         lineHeight: 1.9,
                       }}
                     >
-                      {s.desc}
+                      {typeof s.desc === 'string' && s.desc.includes('\n')
+                        ? s.desc.split('\n').map((line, li) => <span key={li}>{line}{li < s.desc.split('\n').length - 1 && <br />}</span>)
+                        : s.desc}
                     </p>
                   </div>
                 </div>
@@ -843,7 +849,9 @@ export default function R03TrustPage() {
                       marginBottom: 24,
                     }}
                   >
-                    {v.text}
+                    {typeof v.text === 'string' && v.text.includes('\n')
+                      ? v.text.split('\n').map((line, li) => <span key={li}>{line}{li < v.text.split('\n').length - 1 && <br />}</span>)
+                      : v.text}
                   </p>
                   <div
                     style={{
@@ -964,7 +972,7 @@ export default function R03TrustPage() {
                       gap: 16,
                     }}
                   >
-                    <span>{item.q}</span>
+                    <span><span style={{ color: C.sub, marginRight: 8 }}>&#x25B8;</span>{item.q}</span>
                     <span
                       style={{
                         fontSize: 18,
@@ -985,7 +993,9 @@ export default function R03TrustPage() {
                       lineHeight: 2,
                     }}
                   >
-                    {item.a}
+                    {typeof item.a === 'string' && item.a.includes('\n')
+                      ? item.a.split('\n').map((line, li) => <span key={li}>{line}{li < item.a.split('\n').length - 1 && <br />}</span>)
+                      : item.a}
                   </div>
                 </details>
               </FadeIn>
@@ -1025,7 +1035,7 @@ export default function R03TrustPage() {
                       fontVariantNumeric: "tabular-nums",
                     }}
                   >
-                    {n.date}
+                    <span style={{ marginRight: 6 }}>─</span>{n.date}
                   </span>
                   <span
                     style={{
@@ -1338,10 +1348,9 @@ export default function R03TrustPage() {
           ============================================ */}
       <section
         style={{
-          background: C.white,
+          background: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7)), url(/keikamotsu-new-templates/images/delivery.webp) center/cover no-repeat`,
           padding: "125px 24px",
           textAlign: "center",
-          borderTop: `1px solid ${C.lineSoft}`,
         }}
       >
         <FadeIn>
@@ -1349,7 +1358,7 @@ export default function R03TrustPage() {
             style={{
               fontSize: "clamp(18px, 3.5vw, 24px)",
               fontWeight: 600,
-              color: C.text,
+              color: "#fff",
               fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
               lineHeight: 1.7,
               marginBottom: 20,
@@ -1360,7 +1369,7 @@ export default function R03TrustPage() {
           <p
             style={{
               fontSize: 15,
-              color: C.sub,
+              color: "rgba(255,255,255,0.65)",
               lineHeight: 2,
               maxWidth: 560,
               margin: "0 auto 40px",
@@ -1374,7 +1383,7 @@ export default function R03TrustPage() {
               display: "block",
               fontSize: "clamp(28px, 5vw, 40px)",
               fontWeight: 600,
-              color: C.text,
+              color: "#fff",
               textDecoration: "none",
               fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
               letterSpacing: 3,
@@ -1386,7 +1395,7 @@ export default function R03TrustPage() {
           <p
             style={{
               fontSize: 13,
-              color: C.sub,
+              color: "rgba(255,255,255,0.5)",
               marginBottom: 36,
             }}
           >

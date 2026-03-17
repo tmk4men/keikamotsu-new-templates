@@ -21,10 +21,11 @@ import {
 } from "@/data/corporateSiteData";
 
 /* ───────────────────── CONSTANTS ───────────────────── */
-const ACCENT = "#e63946";
+const ACCENT = "#32373c";
 const DARK = "#0d1117";
 const LIGHT = "#ffffff";
 const CTA_BG = "#32373c";
+const SUB_DARK = "#2d2d2d";
 const BP = 768;
 
 /* ───────────────────── HOOK: isMobile ───────────────────── */
@@ -163,7 +164,7 @@ export default function CP04Page() {
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
           {company.name.slice(0, 8)}
-          <span style={{ color: ACCENT, marginLeft: 2 }}>.</span>
+          <span style={{ color: "#888", marginLeft: 2 }}>.</span>
         </div>
 
         {/* Desktop nav */}
@@ -182,7 +183,7 @@ export default function CP04Page() {
                   transition: "color .2s",
                   fontFamily: "'Noto Sans JP', sans-serif",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = ACCENT)}
+                onMouseEnter={(e) => (e.currentTarget.style.color = LIGHT)}
                 onMouseLeave={(e) =>
                   (e.currentTarget.style.color = "rgba(255,255,255,0.8)")
                 }
@@ -193,7 +194,7 @@ export default function CP04Page() {
             <button
               onClick={() => scrollTo("#contact")}
               style={{
-                background: ACCENT,
+                background: CTA_BG,
                 color: LIGHT,
                 border: "none",
                 padding: "10px 26px",
@@ -320,7 +321,7 @@ export default function CP04Page() {
               style={{
                 width: 48,
                 height: 4,
-                background: ACCENT,
+                background: "#555",
                 marginBottom: 28,
               }}
             />
@@ -350,7 +351,7 @@ export default function CP04Page() {
             <button
               onClick={() => scrollTo("#contact")}
               style={{
-                background: ACCENT,
+                background: CTA_BG,
                 color: LIGHT,
                 border: "none",
                 padding: isMobile ? "16px 32px" : "18px 44px",
@@ -430,20 +431,26 @@ export default function CP04Page() {
       <Section
         id="strengths"
         bg={DARK}
-        style={{ padding: isMobile ? "72px 20px" : "120px 48px 110px" }}
+        style={{
+          padding: isMobile ? "72px 20px" : "120px 48px 110px",
+          backgroundImage: "url(/keikamotsu-new-templates/images/strength-01.webp)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundBlendMode: "overlay",
+        }}
       >
         <div style={{ maxWidth: 1100, margin: "0 auto" }}>
           <p
             style={{
               ...headingStyle,
               fontSize: 13,
-              color: ACCENT,
+              color: "rgba(255,255,255,0.5)",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
               marginBottom: 8,
             }}
           >
-            Our Strengths
+            ── Our Strengths ──
           </p>
           <h2
             style={{
@@ -508,7 +515,7 @@ export default function CP04Page() {
               style={{
                 width: 40,
                 height: 4,
-                background: ACCENT,
+                background: "#555",
                 marginBottom: 24,
               }}
             />
@@ -522,7 +529,7 @@ export default function CP04Page() {
                 marginBottom: 8,
               }}
             >
-              CEO Message
+              ── CEO Message ──
             </p>
             <h2
               style={{
@@ -584,7 +591,7 @@ export default function CP04Page() {
               marginBottom: 8,
             }}
           >
-            Company
+            ── Company ──
           </p>
           <h2
             style={{
@@ -622,7 +629,7 @@ export default function CP04Page() {
                       verticalAlign: "top",
                     }}
                   >
-                    {row.dt}
+                    <span style={{ marginRight: 6 }}>▪</span>{row.dt}
                   </td>
                   <td
                     style={{
@@ -630,9 +637,10 @@ export default function CP04Page() {
                       fontSize: 14,
                       color: "#444",
                       padding: isMobile ? "16px 8px" : "20px 24px",
+                      whiteSpace: "pre-line",
                     }}
                   >
-                    {row.dd}
+                    {typeof row.dd === "string" ? row.dd.split("\n").map((line: string, li: number) => <span key={li}>{line}{li < row.dd.split("\n").length - 1 && <br />}</span>) : row.dd}
                   </td>
                 </tr>
               ))}
@@ -665,7 +673,7 @@ export default function CP04Page() {
               marginBottom: 8,
             }}
           >
-            History
+            ── History ──
           </p>
           <h2
             style={{
@@ -705,7 +713,7 @@ export default function CP04Page() {
                   flex: 1,
                   background: LIGHT,
                   padding: isMobile ? "18px 20px" : "24px 32px",
-                  borderLeft: `4px solid ${ACCENT}`,
+                  borderLeft: `4px solid #555`,
                   boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
                 }}
               >
@@ -726,7 +734,7 @@ export default function CP04Page() {
     return (
       <Section
         id="numbers"
-        bg={ACCENT}
+        bg={CTA_BG}
         style={{ padding: isMobile ? "72px 20px 56px" : "105px 48px 90px" }}
         clip="polygon(0 8%, 100% 0, 100% 92%, 0 100%)"
       >
@@ -800,7 +808,7 @@ export default function CP04Page() {
               marginBottom: 8,
             }}
           >
-            Partners
+            ── Partners ──
           </p>
           <h2
             style={{
@@ -888,8 +896,8 @@ export default function CP04Page() {
   const newsEl = (() => {
     const [ref, vis] = useReveal();
     const tagColors: Record<string, string> = {
-      press: ACCENT,
-      new: "#22c55e",
+      press: "#555",
+      new: "#555",
       default: CTA_BG,
     };
     return (
@@ -903,13 +911,13 @@ export default function CP04Page() {
             style={{
               ...headingStyle,
               fontSize: 12,
-              color: ACCENT,
+              color: "rgba(255,255,255,0.5)",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
               marginBottom: 8,
             }}
           >
-            News
+            ── News ──
           </p>
           <h2
             style={{
@@ -937,7 +945,7 @@ export default function CP04Page() {
                 cursor: "pointer",
               }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.borderBottomColor = ACCENT)
+                (e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.3)")
               }
               onMouseLeave={(e) =>
                 (e.currentTarget.style.borderBottomColor =
@@ -952,7 +960,7 @@ export default function CP04Page() {
                   minWidth: 100,
                 }}
               >
-                {n.date}
+                ─ {n.date}
               </span>
               <span
                 style={{
@@ -996,11 +1004,11 @@ export default function CP04Page() {
             minHeight: isMobile ? "auto" : 420,
           }}
         >
-          {/* Left — dark */}
+          {/* Left — dark with bg image */}
           <div
             style={{
               flex: 1,
-              background: DARK,
+              background: `linear-gradient(rgba(13,17,23,0.85), rgba(13,17,23,0.85)), url(/keikamotsu-new-templates/images/team.webp) center/cover no-repeat`,
               padding: isMobile ? "64px 24px" : "80px 64px",
               display: "flex",
               flexDirection: "column",
@@ -1031,11 +1039,11 @@ export default function CP04Page() {
               {recruit.text}
             </p>
           </div>
-          {/* Right — red */}
+          {/* Right — dark */}
           <div
             style={{
               flex: isMobile ? "none" : "0 0 40%",
-              background: ACCENT,
+              background: SUB_DARK,
               clipPath: isMobile
                 ? "polygon(0 8%, 100% 0, 100% 100%, 0 100%)"
                 : "polygon(15% 0, 100% 0, 100% 100%, 0 100%)",
@@ -1097,7 +1105,7 @@ export default function CP04Page() {
               marginBottom: 8,
             }}
           >
-            Access
+            ── Access ──
           </p>
           <h2
             style={{
@@ -1171,7 +1179,7 @@ export default function CP04Page() {
                 <p style={{ ...jpHeading, fontSize: 14, color: DARK, marginBottom: 6 }}>
                   電話番号
                 </p>
-                <p style={{ ...headingStyle, fontSize: 22, color: ACCENT, margin: 0 }}>
+                <p style={{ ...headingStyle, fontSize: 22, color: DARK, margin: 0 }}>
                   {company.phone}
                 </p>
                 <p style={{ ...bodyFont, fontSize: 12, color: "#999", marginTop: 4 }}>
@@ -1233,13 +1241,13 @@ export default function CP04Page() {
             style={{
               ...headingStyle,
               fontSize: 12,
-              color: ACCENT,
+              color: "rgba(255,255,255,0.5)",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
               marginBottom: 8,
             }}
           >
-            Contact
+            ── Contact ──
           </p>
           <h2
             style={{
@@ -1268,7 +1276,7 @@ export default function CP04Page() {
                 padding: 48,
                 textAlign: "center",
                 background: "rgba(255,255,255,0.04)",
-                border: `1px solid ${ACCENT}`,
+                border: `1px solid rgba(255,255,255,0.2)`,
               }}
             >
               <p style={{ ...jpHeading, fontSize: 20, color: LIGHT }}>
@@ -1312,12 +1320,12 @@ export default function CP04Page() {
                     {f.required && (
                       <span
                         style={{
-                          color: ACCENT,
+                          color: "rgba(255,255,255,0.5)",
                           fontSize: 11,
                           marginLeft: 8,
                         }}
                       >
-                        必須
+                        ＊必須
                       </span>
                     )}
                   </label>
@@ -1328,7 +1336,7 @@ export default function CP04Page() {
                       rows={5}
                       style={{ ...inputStyle, resize: "vertical" }}
                       onFocus={(e) =>
-                        (e.currentTarget.style.borderColor = ACCENT)
+                        (e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)")
                       }
                       onBlur={(e) =>
                         (e.currentTarget.style.borderColor =
@@ -1342,7 +1350,7 @@ export default function CP04Page() {
                       required={f.required}
                       style={inputStyle}
                       onFocus={(e) =>
-                        (e.currentTarget.style.borderColor = ACCENT)
+                        (e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)")
                       }
                       onBlur={(e) =>
                         (e.currentTarget.style.borderColor =
@@ -1355,7 +1363,7 @@ export default function CP04Page() {
               <button
                 type="submit"
                 style={{
-                  background: ACCENT,
+                  background: CTA_BG,
                   color: LIGHT,
                   border: "none",
                   padding: "18px 0",
@@ -1410,7 +1418,7 @@ export default function CP04Page() {
             }}
           >
             {company.name.slice(0, 8)}
-            <span style={{ color: ACCENT }}>.</span>
+            <span style={{ color: "#888" }}>.</span>
           </div>
           <p
             style={{
@@ -1442,7 +1450,7 @@ export default function CP04Page() {
                 cursor: "pointer",
                 transition: "color .2s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = ACCENT)}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
               onMouseLeave={(e) =>
                 (e.currentTarget.style.color = "rgba(255,255,255,0.5)")
               }
@@ -1482,7 +1490,7 @@ export default function CP04Page() {
         *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
         html { scroll-behavior:smooth; }
         body { overflow-x:hidden; -webkit-font-smoothing:antialiased; }
-        ::selection { background:${ACCENT}; color:#fff; }
+        ::selection { background:${CTA_BG}; color:#fff; }
       `}</style>
       {headerEl}
       <main>
@@ -1584,13 +1592,13 @@ function ServiceRow({
             marginTop: 16,
           }}
         >
-          {s.title}
+          <span style={{ marginRight: 8 }}>▸</span>{s.title}
         </h3>
         <div
           style={{
             width: 32,
             height: 3,
-            background: ACCENT,
+            background: "#555",
             marginBottom: 20,
           }}
         />
@@ -1700,7 +1708,7 @@ function StrengthItem({
           style={{
             width: 28,
             height: 3,
-            background: ACCENT,
+            background: "#555",
             marginBottom: 16,
           }}
         />
