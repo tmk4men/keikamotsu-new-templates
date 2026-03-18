@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   company,
   meta,
@@ -26,23 +26,43 @@ import {
    ──────────────────────────────────────── */
 
 const ACCENT = "#32373c";
-const ACCENT_LIGHT = "#555";
+const ACCENT_HOVER = "#3e444a";
+const ACCENT_LIGHT = "#555555";
 const BG_DARK = "#0a0a0a";
-const BG_CARD = "#111";
+const BG_CARD = "#111111";
+const BG_ALT = "#181818";
 const TEXT_W = "#ffffff";
-const TEXT_G = "#ccc";
+const TEXT_G = "#cccccc";
 const CTA_BG = "#32373c";
 const BP = 768;
-
-const benefitIcons = ["🚛", "🎁", "💰", "🏠", "📚", "📱"];
 
 /* ─── 画像パス ─── */
 const IMG = {
   strength: (n: number) => `/keikamotsu-new-templates/images/strength-0${n}.webp`,
+  heroBg: "/keikamotsu-new-templates/images/hero-bg.webp",
+  heroVideo: "/keikamotsu-new-templates/videos/hero-nightcity.mp4",
+  jobs: "/keikamotsu-new-templates/images/jobs.webp",
+  benefits: "/keikamotsu-new-templates/images/benefits.webp",
   workplace: "/keikamotsu-new-templates/images/workplace.webp",
-  delivery: "/keikamotsu-new-templates/images/delivery.webp",
+  dailyFlow: "/keikamotsu-new-templates/images/daily-flow.webp",
+  deliveryVideo: "/keikamotsu-new-templates/videos/delivery-scene.mp4",
+  voices: "/keikamotsu-new-templates/images/voices.webp",
+  faq: "/keikamotsu-new-templates/images/faq.webp",
+  company: "/keikamotsu-new-templates/images/company.webp",
+  footerBg: "/keikamotsu-new-templates/images/footer-bg.webp",
 };
 
+/* ─── Benefit SVG アイコン ─── */
+const benefitIcons = [
+  <svg key="b0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><path d="M5 17h14M5 17a2 2 0 01-2-2V9a2 2 0 012-2h1l2-3h8l2 3h1a2 2 0 012 2v6a2 2 0 01-2 2M5 17a2 2 0 100 4 2 2 0 000-4zm14 0a2 2 0 100 4 2 2 0 000-4z" /></svg>,
+  <svg key="b1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><circle cx="12" cy="12" r="10" /><path d="M8 12h8M12 8v8" /></svg>,
+  <svg key="b2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><rect x="2" y="6" width="20" height="14" rx="2" /><path d="M2 10h20M16 14h2" /></svg>,
+  <svg key="b3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>,
+  <svg key="b4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><path d="M22 10l-10-5L2 10l10 5 10-5zM6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5" /></svg>,
+  <svg key="b5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><rect x="5" y="2" width="14" height="20" rx="2" /><path d="M12 18h.01" /></svg>,
+];
+
+/* ─── Typewriter フック ─── */
 function useTypewriter(text: string, speed = 80, delay = 500) {
   const [displayed, setDisplayed] = useState("");
   const [done, setDone] = useState(false);
@@ -66,12 +86,189 @@ function useTypewriter(text: string, speed = 80, delay = 500) {
   return { displayed, done };
 }
 
+/* ─── FadeIn コンポーネント（IntersectionObserver） ─── */
+function FadeIn({
+  children,
+  delay = 0,
+  direction = "up",
+  style,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  direction?: "up" | "left" | "right" | "scale";
+  style?: React.CSSProperties;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setVisible(true);
+          obs.unobserve(el);
+        }
+      },
+      { threshold: 0.12 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  const transforms = {
+    up: "translateY(24px)",
+    left: "translateX(40px)",
+    right: "translateX(-40px)",
+    scale: "scale(0.92)",
+  };
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "none" : transforms[direction],
+        transition: `opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}s, transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}s`,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ─── SVG 三角区切りコンポーネント ─── */
+function TriangleDivider({ fromColor, toColor }: { fromColor: string; toColor: string }) {
+  return (
+    <div style={{ lineHeight: 0, background: fromColor }}>
+      <svg
+        viewBox="0 0 1440 40"
+        preserveAspectRatio="none"
+        style={{ width: "100%", height: 40, display: "block" }}
+      >
+        <polygon points="0,0 720,40 1440,0 1440,40 0,40" fill={toColor} />
+      </svg>
+    </div>
+  );
+}
+
+/* ─── セクションタイトル ─── */
+function SectionTitle({ label, title, num }: { label: string; title: string; num?: string }) {
+  return (
+    <FadeIn>
+      <div style={{ position: "relative" }}>
+        {num && (
+          <span
+            style={{
+              position: "absolute",
+              top: -32,
+              left: 0,
+              fontSize: 110,
+              fontWeight: 900,
+              color: "rgba(255,255,255,0.03)",
+              fontFamily: "'Oswald',sans-serif",
+              lineHeight: 1,
+              pointerEvents: "none",
+              userSelect: "none",
+            }}
+          >
+            {num}
+          </span>
+        )}
+        <span
+          style={{
+            fontFamily: "'Oswald',sans-serif",
+            fontWeight: 700,
+            fontSize: "12px",
+            letterSpacing: "0.2em",
+            color: TEXT_G,
+            textTransform: "uppercase",
+            display: "block",
+            marginBottom: "6px",
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          ─ {label} ─
+        </span>
+        <h2
+          style={{
+            fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+            fontWeight: 800,
+            fontSize: "28px",
+            lineHeight: 1.2,
+            letterSpacing: "0.05em",
+            color: TEXT_W,
+            position: "relative",
+            zIndex: 1,
+            textShadow: "0 2px 12px rgba(0,0,0,0.3)",
+          }}
+        >
+          {title}
+        </h2>
+        <div
+          style={{
+            width: "48px",
+            height: "3px",
+            background: `linear-gradient(to right, ${ACCENT_LIGHT}, transparent)`,
+            marginTop: "12px",
+            borderRadius: "2px",
+          }}
+        />
+      </div>
+    </FadeIn>
+  );
+}
+
+/* ─── カウンターコンポーネント ─── */
+function CounterNum({ target, style }: { target: number; style: React.CSSProperties }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const counted = useRef(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !counted.current) {
+          counted.current = true;
+          const duration = 1800;
+          const startTime = performance.now();
+          const tick = (now: number) => {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = String(Math.round(eased * target));
+            if (progress < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [target]);
+  return <span ref={ref} style={style}>0</span>;
+}
+
+/* ─── テキスト改行変換 ─── */
+const nl2br = (text: string) =>
+  text.split("\n").map((line, i, arr) => (
+    <React.Fragment key={i}>
+      {line}
+      {i < arr.length - 1 && <br />}
+    </React.Fragment>
+  ));
+
+/* ───────────────────────────────────────
+   メインコンポーネント
+   ─────────────────────────────────────── */
 export default function R01Page() {
   const [isMobile, setIsMobile] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [galleryIdx, setGalleryIdx] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
   const heroTyped = useTypewriter(hero.headlineParts[0], 80, 500);
 
@@ -98,45 +295,11 @@ export default function R01Page() {
     return () => clearInterval(iv);
   }, []);
 
-  // IntersectionObserver
-  useEffect(() => {
-    const els = document.querySelectorAll("[data-anim]");
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            (e.target as HTMLElement).style.opacity = "1";
-            (e.target as HTMLElement).style.transform = "translateY(0)";
-            obs.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.15 }
-    );
-    els.forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
-
-  const animStyle = (delay = 0): React.CSSProperties => ({
-    opacity: 0,
-    transform: "translateY(12px)",
-    transition: `opacity 0.7s ${delay}s ease-out, transform 0.7s ${delay}s ease-out`,
-  });
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert("送信が完了しました。担当者より折り返しご連絡いたします。");
     setFormData({ name: "", phone: "", email: "", message: "" });
   };
-
-  /** テキスト内の \n を <br/> に変換 */
-  const nl2br = (text: string) =>
-    text.split("\n").map((line, i, arr) => (
-      <span key={i}>
-        {line}
-        {i < arr.length - 1 && <br />}
-      </span>
-    ));
 
   return (
     <>
@@ -145,22 +308,22 @@ export default function R01Page() {
         html { scroll-behavior: smooth; }
         body { background:${BG_DARK}; color:${TEXT_W}; font-family:'Noto Sans JP',sans-serif; font-weight:400; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
         a { color:inherit; text-decoration:none; }
-        @keyframes marqueeLeft { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
-        @keyframes marqueeRight { 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
-        @keyframes heroFade { 0%{opacity:0;transform:translateY(12px)} 100%{opacity:1;transform:translateY(0)} }
-        @keyframes counterPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
-        @keyframes float1 { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-20px) rotate(2deg)} }
-        @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px) rotate(-1.5deg)} }
-        @keyframes scrollChevron { 0%,100%{opacity:0.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(10px)} }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes shimmer { 0%{left:-100%} 100%{left:200%} }
         @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(50,55,60,0.4)} 50%{box-shadow:0 0 0 12px rgba(50,55,60,0)} }
+        @keyframes float1 { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-20px) rotate(2deg)} }
+        @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px) rotate(-1.5deg)} }
         @keyframes grainShift { 0%,100%{transform:translate(0,0)} 25%{transform:translate(-2%,-2%)} 50%{transform:translate(2%,1%)} 75%{transform:translate(-1%,2%)} }
+        @keyframes scrollChevron { 0%,100%{opacity:0.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(10px)} }
         @keyframes neonGlow { 0%,100%{box-shadow:0 0 8px rgba(85,85,85,0.3), inset 0 0 8px rgba(85,85,85,0.05)} 50%{box-shadow:0 0 20px rgba(85,85,85,0.5), inset 0 0 12px rgba(85,85,85,0.1)} }
-        @keyframes clipRevealLTR { from{clip-path:inset(0 100% 0 0)} to{clip-path:inset(0 0 0 0)} }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-        details summary { cursor:pointer; list-style:none; }
-        details summary::-webkit-details-marker { display:none; }
-        details[open] summary .faq-arrow { transform:rotate(180deg); }
+        @keyframes heroFade { 0%{opacity:0;transform:translateY(12px)} 100%{opacity:1;transform:translateY(0)} }
+        @keyframes counterPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+        @keyframes marqueeLeft { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        @keyframes marqueeRight { 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
+        @keyframes navUnderline { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+        .nav-link { position:relative; }
+        .nav-link::after { content:''; position:absolute; bottom:-2px; left:0; width:100%; height:1px; background:${TEXT_W}; transform:scaleX(0); transform-origin:left; transition:transform 0.3s ease; }
+        .nav-link:hover::after { transform:scaleX(1); }
         @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
       `}</style>
 
@@ -172,60 +335,157 @@ export default function R01Page() {
           left: 0,
           width: "100%",
           zIndex: 1000,
-          background: scrolled ? "#0a0a0a" : "transparent",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.1)" : "none",
-          transition: "background 0.35s ease, border-bottom 0.35s ease",
+          background: scrolled ? "rgba(10,10,10,0.95)" : "transparent",
+          backdropFilter: scrolled ? "blur(12px)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.08)" : "none",
+          transition: "background 0.35s ease, border-bottom 0.35s ease, backdrop-filter 0.35s ease",
           padding: isMobile ? "12px 16px" : "14px 48px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
-        <a href="#" style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, fontSize: isMobile ? "20px" : "24px", letterSpacing: "0.08em", color: TEXT_W }}>
+        <a
+          href="#"
+          style={{
+            fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+            fontWeight: 800,
+            fontSize: isMobile ? "20px" : "24px",
+            letterSpacing: "0.08em",
+            color: TEXT_W,
+          }}
+        >
           {company.nameEn}
         </a>
 
         {!isMobile && (
           <nav style={{ display: "flex", gap: "28px", alignItems: "center" }}>
             {navLinks.map((l) => (
-              <a key={l.href} href={l.href} style={{ fontSize: "13px", letterSpacing: "0.05em", color: TEXT_G, transition: "color 0.2s" }}
+              <a
+                key={l.href}
+                href={l.href}
+                className="nav-link"
+                style={{
+                  fontSize: "13px",
+                  letterSpacing: "0.05em",
+                  color: TEXT_G,
+                  transition: "color 0.2s",
+                }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = TEXT_W)}
                 onMouseLeave={(e) => (e.currentTarget.style.color = TEXT_G)}
               >
                 {l.label}
               </a>
             ))}
-            <a href={`tel:${company.phone}`} style={{
-              background: CTA_BG, color: TEXT_W, padding: "8px 22px", borderRadius: "4px", fontWeight: 700, fontSize: "13px", letterSpacing: "0.04em",
-            }}>
+            <a
+              href={`tel:${company.phone}`}
+              style={{
+                background: CTA_BG,
+                color: TEXT_W,
+                padding: "8px 22px",
+                borderRadius: "4px",
+                fontWeight: 700,
+                fontSize: "13px",
+                letterSpacing: "0.04em",
+                transition: "background 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = ACCENT_HOVER)}
+              onMouseLeave={(e) => (e.currentTarget.style.background = CTA_BG)}
+            >
               {company.phone}
             </a>
           </nav>
         )}
 
         {isMobile && (
-          <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: "none", border: "none", cursor: "pointer", padding: "8px" }}>
-            <div style={{ width: "24px", height: "2px", background: TEXT_W, marginBottom: "6px", transition: "transform 0.3s", transform: menuOpen ? "rotate(45deg) translate(4px,5px)" : "none" }} />
-            <div style={{ width: "24px", height: "2px", background: TEXT_W, marginBottom: "6px", transition: "opacity 0.3s", opacity: menuOpen ? 0 : 1 }} />
-            <div style={{ width: "24px", height: "2px", background: TEXT_W, transition: "transform 0.3s", transform: menuOpen ? "rotate(-45deg) translate(4px,-5px)" : "none" }} />
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="メニュー"
+            style={{ background: "none", border: "none", cursor: "pointer", padding: "8px" }}
+          >
+            <div
+              style={{
+                width: "24px",
+                height: "2px",
+                background: TEXT_W,
+                marginBottom: "6px",
+                transition: "transform 0.3s",
+                transform: menuOpen ? "rotate(45deg) translate(4px,5px)" : "none",
+              }}
+            />
+            <div
+              style={{
+                width: "24px",
+                height: "2px",
+                background: TEXT_W,
+                marginBottom: "6px",
+                transition: "opacity 0.3s",
+                opacity: menuOpen ? 0 : 1,
+              }}
+            />
+            <div
+              style={{
+                width: "24px",
+                height: "2px",
+                background: TEXT_W,
+                transition: "transform 0.3s",
+                transform: menuOpen ? "rotate(-45deg) translate(4px,-5px)" : "none",
+              }}
+            />
           </button>
         )}
 
         {/* Mobile menu */}
-        {isMobile && menuOpen && (
-          <div style={{
-            position: "fixed", top: "56px", left: 0, width: "100%", background: "rgba(10,10,10,0.98)",
-            padding: "24px 20px 32px", display: "flex", flexDirection: "column", gap: "18px",
-            borderBottom: `2px solid ${ACCENT_LIGHT}`,
-          }}>
-            {navLinks.map((l) => (
-              <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)} style={{ fontSize: "15px", color: TEXT_G, letterSpacing: "0.05em" }}>
+        {isMobile && (
+          <div
+            style={{
+              position: "fixed",
+              top: "56px",
+              left: 0,
+              width: "100%",
+              background: "rgba(10,10,10,0.98)",
+              backdropFilter: "blur(16px)",
+              padding: "24px 20px 32px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "18px",
+              borderBottom: `2px solid ${ACCENT_LIGHT}`,
+              transform: menuOpen ? "translateY(0)" : "translateY(-120%)",
+              opacity: menuOpen ? 1 : 0,
+              transition: "transform 0.35s ease, opacity 0.35s ease",
+              pointerEvents: menuOpen ? "auto" : "none",
+            }}
+          >
+            {navLinks.map((l, i) => (
+              <a
+                key={l.href}
+                href={l.href}
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  fontSize: "15px",
+                  color: TEXT_G,
+                  letterSpacing: "0.05em",
+                  transform: menuOpen ? "translateX(0)" : "translateX(-20px)",
+                  opacity: menuOpen ? 1 : 0,
+                  transition: `transform 0.3s ease ${i * 0.04}s, opacity 0.3s ease ${i * 0.04}s`,
+                }}
+              >
                 {l.label}
               </a>
             ))}
-            <a href={`tel:${company.phone}`} style={{
-              background: CTA_BG, color: TEXT_W, padding: "12px", borderRadius: "4px", textAlign: "center", fontWeight: 700, fontSize: "15px", marginTop: "8px",
-            }}>
+            <a
+              href={`tel:${company.phone}`}
+              style={{
+                background: CTA_BG,
+                color: TEXT_W,
+                padding: "12px",
+                borderRadius: "4px",
+                textAlign: "center",
+                fontWeight: 700,
+                fontSize: "15px",
+                marginTop: "8px",
+              }}
+            >
               {company.phone}
             </a>
           </div>
@@ -234,138 +494,458 @@ export default function R01Page() {
 
       {/* ===== HERO ===== */}
       <section style={{ position: "relative", height: "100vh", minHeight: "600px", overflow: "hidden" }}>
+        {/* Video background */}
         <video
-          autoPlay muted loop playsInline
-          poster="/keikamotsu-new-templates/images/hero-bg.webp"
-          style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" }}
-          src="/keikamotsu-new-templates/videos/hero-nightcity.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={IMG.heroBg}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+          src={IMG.heroVideo}
         />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.85) 100%)" }} />
+        {/* Dark gradient overlay */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(to bottom, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.85) 100%)",
+          }}
+        />
 
-        {/* ノイズテクスチャ */}
-        <div style={{
-          position: "absolute", inset: 0, opacity: 0.04, zIndex: 1,
-          backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          backgroundSize: "128px 128px", animation: "grainShift 8s steps(10) infinite", pointerEvents: "none",
-        }} />
+        {/* Noise texture */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.04,
+            zIndex: 1,
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            backgroundSize: "128px 128px",
+            animation: "grainShift 8s steps(10) infinite",
+            pointerEvents: "none",
+          }}
+        />
 
-        {/* 浮遊装飾要素 */}
-        <div style={{ position: "absolute", top: "12%", left: "5%", width: 100, height: 100, border: "1px solid rgba(255,255,255,0.06)", borderRadius: "50%", animation: "float1 9s ease-in-out infinite", zIndex: 1 }} />
-        <div style={{ position: "absolute", bottom: "18%", right: "8%", width: 160, height: 1, background: "linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)", animation: "float2 7s ease-in-out infinite", zIndex: 1 }} />
-        <div style={{ position: "absolute", top: "35%", right: "12%", width: 8, height: 8, background: "rgba(255,255,255,0.12)", borderRadius: "50%", animation: "float1 11s ease-in-out infinite 3s", zIndex: 1 }} />
-        <div style={{ position: "absolute", bottom: "30%", left: "15%", width: 4, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: "50%", animation: "float2 8s ease-in-out infinite 1s", zIndex: 1 }} />
+        {/* Floating geometric elements */}
+        <div
+          style={{
+            position: "absolute",
+            top: "12%",
+            left: "5%",
+            width: 100,
+            height: 100,
+            border: "1px solid rgba(255,255,255,0.06)",
+            borderRadius: "50%",
+            animation: "float1 9s ease-in-out infinite",
+            zIndex: 1,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "18%",
+            right: "8%",
+            width: 160,
+            height: 1,
+            background: "linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)",
+            animation: "float2 7s ease-in-out infinite",
+            zIndex: 1,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: "35%",
+            right: "12%",
+            width: 8,
+            height: 8,
+            background: "rgba(255,255,255,0.12)",
+            borderRadius: "50%",
+            animation: "float1 11s ease-in-out infinite 3s",
+            zIndex: 1,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "30%",
+            left: "15%",
+            width: 4,
+            height: 4,
+            background: "rgba(255,255,255,0.08)",
+            borderRadius: "50%",
+            animation: "float2 8s ease-in-out infinite 1s",
+            zIndex: 1,
+          }}
+        />
+        {/* Diamond shape */}
+        <div
+          style={{
+            position: "absolute",
+            top: "22%",
+            right: "22%",
+            width: 40,
+            height: 40,
+            border: "1px solid rgba(255,255,255,0.04)",
+            transform: "rotate(45deg)",
+            animation: "float2 10s ease-in-out infinite 2s",
+            zIndex: 1,
+          }}
+        />
 
-        {/* 大きな背景テキスト */}
-        <div style={{
-          position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
-          fontSize: isMobile ? "80px" : "220px", fontWeight: 900, color: "rgba(255,255,255,0.02)",
-          fontFamily: "'Oswald',sans-serif", letterSpacing: "0.15em", whiteSpace: "nowrap",
-          zIndex: 1, pointerEvents: "none", textTransform: "uppercase",
-        }}>
+        {/* Large "RECRUIT" background text */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            fontSize: isMobile ? "80px" : "220px",
+            fontWeight: 900,
+            color: "rgba(255,255,255,0.02)",
+            fontFamily: "'Oswald',sans-serif",
+            letterSpacing: "0.15em",
+            whiteSpace: "nowrap",
+            zIndex: 1,
+            pointerEvents: "none",
+            textTransform: "uppercase",
+            userSelect: "none",
+          }}
+        >
           RECRUIT
         </div>
 
-        <div style={{
-          position: "relative", zIndex: 2, height: "100%",
-          display: "flex", flexDirection: "column", justifyContent: "center",
-          padding: isMobile ? "0 20px" : "0 8%", maxWidth: "1200px", margin: "0 auto",
-        }}>
-          <h1 style={{
-            fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
-            fontSize: isMobile ? "28px" : "52px", lineHeight: 1.1, letterSpacing: "0.05em",
-            color: TEXT_W,
-            marginBottom: "8px",
-          }}>
+        {/* Hero content */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 2,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            padding: isMobile ? "0 20px" : "0 8%",
+            maxWidth: "1200px",
+            margin: "0 auto",
+          }}
+        >
+          {/* Typewriter headline */}
+          <h1
+            style={{
+              fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+              fontWeight: 800,
+              fontSize: isMobile ? "28px" : "52px",
+              lineHeight: 1.1,
+              letterSpacing: "0.05em",
+              color: TEXT_W,
+              marginBottom: "8px",
+            }}
+          >
             {heroTyped.displayed}
-            {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
+            {!heroTyped.done && (
+              <span style={{ animation: "blink 1s step-end infinite", color: ACCENT_LIGHT }}>|</span>
+            )}
           </h1>
           {heroTyped.done && (
-            <h1 style={{
-              fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
-              fontSize: isMobile ? "28px" : "52px", lineHeight: 1.1, letterSpacing: "0.05em",
-              color: TEXT_W, animation: "heroFade 0.9s 0.1s both",
-              marginBottom: "0",
-            }}>
+            <h1
+              style={{
+                fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+                fontWeight: 800,
+                fontSize: isMobile ? "28px" : "52px",
+                lineHeight: 1.1,
+                letterSpacing: "0.05em",
+                color: TEXT_W,
+                animation: "heroFade 0.9s 0.1s both",
+                marginBottom: "0",
+              }}
+            >
               {hero.headlineParts[1]}
             </h1>
           )}
 
+          {/* Sub text */}
+          <div style={{ marginTop: "20px", animation: "heroFade 0.9s 0.8s both" }}>
+            {hero.subtext.map((t, i) => (
+              <p
+                key={i}
+                style={{
+                  fontSize: isMobile ? "13px" : "15px",
+                  color: TEXT_G,
+                  letterSpacing: "0.05em",
+                  lineHeight: 1.8,
+                }}
+              >
+                {t}
+              </p>
+            ))}
+          </div>
+
+          {/* Salary counter */}
           <div style={{ marginTop: "28px", animation: "heroFade 0.9s 1.1s both" }}>
-            <span style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, color: TEXT_W, fontSize: isMobile ? "18px" : "22px", letterSpacing: "0.04em" }}>
+            <span
+              style={{
+                fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+                fontWeight: 800,
+                color: TEXT_W,
+                fontSize: isMobile ? "18px" : "22px",
+                letterSpacing: "0.04em",
+              }}
+            >
               月収
             </span>
-            <CounterNum target={hero.salaryMin} style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: TEXT_W, fontSize: isMobile ? "64px" : "96px", lineHeight: 1 }} />
-            <span style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, color: TEXT_W, fontSize: isMobile ? "18px" : "22px" }}>
+            <CounterNum
+              target={hero.salaryMin}
+              style={{
+                fontFamily: "'Oswald',sans-serif",
+                fontWeight: 800,
+                color: TEXT_W,
+                fontSize: isMobile ? "64px" : "96px",
+                lineHeight: 1,
+              }}
+            />
+            <span
+              style={{
+                fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+                fontWeight: 800,
+                color: TEXT_W,
+                fontSize: isMobile ? "18px" : "22px",
+              }}
+            >
               万〜
             </span>
-            <CounterNum target={hero.salaryMax} style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: TEXT_W, fontSize: isMobile ? "64px" : "96px", lineHeight: 1 }} />
-            <span style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, color: TEXT_W, fontSize: isMobile ? "18px" : "22px" }}>
+            <CounterNum
+              target={hero.salaryMax}
+              style={{
+                fontFamily: "'Oswald',sans-serif",
+                fontWeight: 800,
+                color: TEXT_W,
+                fontSize: isMobile ? "64px" : "96px",
+                lineHeight: 1,
+              }}
+            />
+            <span
+              style={{
+                fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+                fontWeight: 800,
+                color: TEXT_W,
+                fontSize: isMobile ? "18px" : "22px",
+              }}
+            >
               万円
             </span>
           </div>
 
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginTop: "22px", animation: "heroFade 0.9s 1.5s both" }}>
-            {hero.badges.map((b) => (
-              <span key={b} style={{
-                background: ACCENT, border: `1px solid ${ACCENT_LIGHT}`, color: TEXT_W,
-                padding: "6px 16px", borderRadius: "2px", fontSize: "13px", fontWeight: 700, letterSpacing: "0.05em",
-              }}>
+          {/* Badge stagger animation */}
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              flexWrap: "wrap",
+              marginTop: "22px",
+            }}
+          >
+            {hero.badges.map((b, i) => (
+              <span
+                key={b}
+                style={{
+                  background: ACCENT,
+                  border: `1px solid ${ACCENT_LIGHT}`,
+                  color: TEXT_W,
+                  padding: "6px 16px",
+                  borderRadius: "2px",
+                  fontSize: "13px",
+                  fontWeight: 700,
+                  letterSpacing: "0.05em",
+                  animation: `heroFade 0.6s ${1.4 + i * 0.15}s both`,
+                }}
+              >
                 {b}
               </span>
             ))}
           </div>
 
-          <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", marginTop: "36px", animation: "heroFade 0.9s 1.8s both" }}>
-            <a href={`tel:${company.phone}`} style={{
-              background: CTA_BG, color: TEXT_W, padding: isMobile ? "14px 28px" : "16px 40px",
-              borderRadius: "4px", fontWeight: 800, fontSize: isMobile ? "16px" : "18px", letterSpacing: "0.04em",
-              display: "inline-flex", alignItems: "center", gap: "8px",
-            }}>
-              <span style={{ fontSize: "20px" }}>&#9742;</span> {company.phone}
-            </a>
-            <a href="#apply" style={{
-              border: `2px solid ${TEXT_W}`, color: TEXT_W, padding: isMobile ? "14px 28px" : "16px 40px",
-              borderRadius: "4px", fontWeight: 700, fontSize: isMobile ? "14px" : "16px", letterSpacing: "0.04em",
-              transition: "background 0.2s, color 0.2s",
+          {/* CTA buttons */}
+          <div
+            style={{
+              display: "flex",
+              gap: "14px",
+              flexWrap: "wrap",
+              marginTop: "36px",
+              animation: "heroFade 0.9s 2s both",
             }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = TEXT_W; e.currentTarget.style.color = BG_DARK; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = TEXT_W; }}
+          >
+            <a
+              href={`tel:${company.phone}`}
+              style={{
+                background: CTA_BG,
+                color: TEXT_W,
+                padding: isMobile ? "14px 28px" : "16px 40px",
+                borderRadius: "4px",
+                fontWeight: 800,
+                fontSize: isMobile ? "16px" : "18px",
+                letterSpacing: "0.04em",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                position: "relative",
+                overflow: "hidden",
+                transition: "transform 0.3s, box-shadow 0.3s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.4)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              <span
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "50%",
+                  height: "100%",
+                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
+                  animation: "shimmer 3s ease-in-out infinite",
+                }}
+              />
+              <span style={{ fontSize: "20px", position: "relative", zIndex: 1 }}>&#9742;</span>
+              <span style={{ position: "relative", zIndex: 1 }}>{company.phone}</span>
+            </a>
+            <a
+              href="#apply"
+              style={{
+                border: `2px solid ${TEXT_W}`,
+                color: TEXT_W,
+                padding: isMobile ? "14px 28px" : "16px 40px",
+                borderRadius: "4px",
+                fontWeight: 700,
+                fontSize: isMobile ? "14px" : "16px",
+                letterSpacing: "0.04em",
+                transition: "background 0.25s, color 0.25s, transform 0.25s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = TEXT_W;
+                e.currentTarget.style.color = BG_DARK;
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = TEXT_W;
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
             >
               {hero.cta}
             </a>
           </div>
         </div>
 
-        {/* スクロールインジケーター */}
-        <div style={{
-          position: "absolute", bottom: 36, left: "50%", transform: "translateX(-50%)",
-          zIndex: 3, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-          animation: "heroFade 0.9s 2.2s both",
-        }}>
-          <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: "0.2em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>Scroll</span>
-          <svg width="16" height="24" viewBox="0 0 16 24" fill="none" style={{ animation: "scrollChevron 2s ease-in-out infinite" }}>
+        {/* Scroll indicator */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 36,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 3,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 8,
+            animation: "heroFade 0.9s 2.4s both",
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "'Oswald',sans-serif",
+              fontSize: 10,
+              letterSpacing: "0.2em",
+              color: "rgba(255,255,255,0.4)",
+              textTransform: "uppercase",
+            }}
+          >
+            Scroll
+          </span>
+          <svg
+            width="16"
+            height="24"
+            viewBox="0 0 16 24"
+            fill="none"
+            style={{ animation: "scrollChevron 2s ease-in-out infinite" }}
+          >
             <path d="M8 0v18M2 14l6 6 6-6" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" />
           </svg>
         </div>
       </section>
 
       {/* ===== MARQUEE ===== */}
-      <section style={{ background: ACCENT, padding: "20px 0", overflow: "hidden", borderTop: `3px solid ${ACCENT_LIGHT}`, borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative" }}>
-        {/* グラデーションフェードエッジ */}
-        <div style={{ position: "absolute", top: 0, left: 0, width: 80, height: "100%", background: `linear-gradient(to right, ${ACCENT}, transparent)`, zIndex: 2, pointerEvents: "none" }} />
-        <div style={{ position: "absolute", top: 0, right: 0, width: 80, height: "100%", background: `linear-gradient(to left, ${ACCENT}, transparent)`, zIndex: 2, pointerEvents: "none" }} />
+      <section
+        style={{
+          background: ACCENT,
+          padding: "20px 0",
+          overflow: "hidden",
+          borderTop: `3px solid ${ACCENT_LIGHT}`,
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          position: "relative",
+        }}
+      >
+        {/* Gradient fade edges */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: 100,
+            height: "100%",
+            background: `linear-gradient(to right, ${ACCENT}, transparent)`,
+            zIndex: 2,
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            width: 100,
+            height: "100%",
+            background: `linear-gradient(to left, ${ACCENT}, transparent)`,
+            zIndex: 2,
+            pointerEvents: "none",
+          }}
+        />
         {[marquee.top, marquee.bottom].map((row, ri) => (
           <div key={ri} style={{ overflow: "hidden", whiteSpace: "nowrap", marginBottom: ri === 0 ? "10px" : 0 }}>
-            <div style={{
-              display: "inline-flex", gap: "48px",
-              animation: `${ri === 0 ? "marqueeLeft" : "marqueeRight"} ${ri === 0 ? 30 : 35}s linear infinite`,
-            }}>
+            <div
+              style={{
+                display: "inline-flex",
+                gap: "48px",
+                animation: `${ri === 0 ? "marqueeLeft" : "marqueeRight"} ${ri === 0 ? 30 : 35}s linear infinite`,
+              }}
+            >
               {[...row, ...row, ...row, ...row].map((t, i) => (
-                <span key={i} style={{
-                  fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
-                  fontSize: isMobile ? "15px" : "20px", letterSpacing: "0.06em", color: TEXT_W,
-                  paddingRight: "48px",
-                }}>
+                <span
+                  key={i}
+                  style={{
+                    fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+                    fontWeight: 800,
+                    fontSize: isMobile ? "15px" : "20px",
+                    letterSpacing: "0.06em",
+                    color: TEXT_W,
+                    paddingRight: "48px",
+                  }}
+                >
                   {t}
                 </span>
               ))}
@@ -374,776 +954,1538 @@ export default function R01Page() {
         ))}
       </section>
 
-      {/* ── SVG三角区切り ── */}
-      <div style={{ lineHeight: 0, background: ACCENT }}>
-        <svg viewBox="0 0 1440 40" preserveAspectRatio="none" style={{ width: "100%", height: 40, display: "block" }}>
-          <polygon points="0,0 720,40 1440,0 1440,40 0,40" fill={BG_DARK} />
-        </svg>
-      </div>
+      {/* ── Marquee -> Reasons divider ── */}
+      <TriangleDivider fromColor={ACCENT} toColor={BG_DARK} />
 
       {/* ===== REASONS ===== */}
-      <section id="reasons" data-anim style={{ ...animStyle(0), padding: isMobile ? "48px 0 40px" : "60px 0 60px", background: BG_DARK }}>
+      <section
+        id="reasons"
+        style={{
+          padding: isMobile ? "60px 0 48px" : "80px 0 72px",
+          background: BG_DARK,
+        }}
+      >
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 20px" : "0 48px" }}>
           <SectionTitle label="WHY US" title="選ばれる理由" num="01" />
         </div>
 
-        <div style={{
-          marginTop: "48px", display: "flex", flexDirection: "column", gap: "24px",
-          padding: isMobile ? "0 20px" : "0 48px", maxWidth: "1200px", margin: "48px auto 0",
-        }}>
+        <div
+          style={{
+            marginTop: "48px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px",
+            padding: isMobile ? "0 20px" : "0 48px",
+            maxWidth: "1200px",
+            margin: "48px auto 0",
+          }}
+        >
           {reasons.map((r, i) => (
-            <div key={i} data-anim style={{
-              ...animStyle(i * 0.15),
-              display: "flex",
-              flexDirection: isMobile ? "column" : "row",
-              gap: isMobile ? "16px" : "28px",
-              background: BG_CARD,
-              borderRadius: "6px",
-              padding: isMobile ? "28px 20px" : "36px 32px",
-              borderTop: `4px solid ${ACCENT_LIGHT}`,
-              position: "relative",
-              alignItems: "stretch",
-            }}>
-              {/* 画像 */}
-              <div style={{
-                flex: isMobile ? "none" : "0 0 200px",
-                height: isMobile ? "180px" : "auto",
-                minHeight: isMobile ? "auto" : "160px",
-                borderRadius: "4px",
-                overflow: "hidden",
-              }}>
-                <img
-                  src={IMG.strength(i + 1)}
-                  alt={r.title}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                />
+            <FadeIn key={i} delay={i * 0.15} direction={i % 2 === 0 ? "left" : "right"}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: isMobile ? "column" : "row",
+                  gap: isMobile ? "16px" : "28px",
+                  background: BG_CARD,
+                  borderRadius: "6px",
+                  padding: isMobile ? "28px 20px" : "36px 32px",
+                  borderTop: `4px solid ${ACCENT_LIGHT}`,
+                  position: "relative",
+                  alignItems: "stretch",
+                  transition: "box-shadow 0.4s ease, transform 0.3s ease",
+                  cursor: "default",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = "0 0 24px rgba(85,85,85,0.2)";
+                  e.currentTarget.style.transform = "translateY(-3px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
+              >
+                {/* Image */}
+                <div
+                  style={{
+                    flex: isMobile ? "none" : "0 0 200px",
+                    height: isMobile ? "180px" : "auto",
+                    minHeight: isMobile ? "auto" : "160px",
+                    borderRadius: "4px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={IMG.strength(i + 1)}
+                    alt={r.title}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                  />
+                </div>
+                {/* Text */}
+                <div style={{ flex: 1, position: "relative" }}>
+                  <span
+                    style={{
+                      fontFamily: "'Oswald',sans-serif",
+                      fontWeight: 800,
+                      fontSize: isMobile ? "56px" : "72px",
+                      color: "rgba(255,255,255,0.06)",
+                      position: "absolute",
+                      top: "-8px",
+                      right: "0",
+                      lineHeight: 1,
+                      pointerEvents: "none",
+                    }}
+                  >
+                    {r.num}
+                  </span>
+                  <h3
+                    style={{
+                      fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+                      fontWeight: 800,
+                      fontSize: isMobile ? "18px" : "21px",
+                      lineHeight: 1.35,
+                      letterSpacing: "0.05em",
+                      color: TEXT_W,
+                      marginBottom: "16px",
+                    }}
+                  >
+                    ─ {r.title}
+                  </h3>
+                  <p style={{ fontSize: "14px", lineHeight: 1.8, color: TEXT_G, letterSpacing: "0.05em" }}>
+                    {nl2br(r.text)}
+                  </p>
+                </div>
               </div>
-              {/* テキスト */}
-              <div style={{ flex: 1, position: "relative" }}>
-                <span style={{
-                  fontFamily: "'Oswald',sans-serif", fontWeight: 800, fontSize: isMobile ? "56px" : "72px",
-                  color: "rgba(255,255,255,0.06)", position: "absolute", top: "-8px", right: "0", lineHeight: 1,
-                }}>
-                  {r.num}
-                </span>
-                <h3 style={{
-                  fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
-                  fontSize: isMobile ? "18px" : "21px", lineHeight: 1.35, letterSpacing: "0.05em",
-                  color: TEXT_W, marginBottom: "16px",
-                }}>
-                  ─ {r.title}
-                </h3>
-                <p style={{ fontSize: "14px", lineHeight: 1.8, color: TEXT_G, letterSpacing: "0.05em" }}>
-                  {nl2br(r.text)}
-                </p>
-              </div>
-            </div>
+            </FadeIn>
           ))}
         </div>
       </section>
 
-      {/* ── 区切り ── */}
-      <div style={{ lineHeight: 0, background: BG_DARK }}>
-        <svg viewBox="0 0 1440 32" preserveAspectRatio="none" style={{ width: "100%", height: 32, display: "block" }}>
-          <polygon points="0,0 1440,32 1440,32 0,32" fill={BG_CARD} />
-        </svg>
-      </div>
+      {/* ── Reasons -> Jobs divider ── */}
+      <TriangleDivider fromColor={BG_DARK} toColor={BG_CARD} />
 
       {/* ===== JOBS ===== */}
-      <section id="jobs" data-anim style={{ ...animStyle(0), padding: isMobile ? "72px 20px 56px" : "110px 48px 90px", background: BG_CARD, position: "relative", overflow: "hidden" }}>
-        {/* 背景画像 */}
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(/keikamotsu-new-templates/images/jobs.webp)", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.05, pointerEvents: "none" }} />
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+      <section
+        id="jobs"
+        style={{
+          padding: isMobile ? "60px 20px 56px" : "80px 48px 72px",
+          background: BG_CARD,
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Background image */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${IMG.jobs})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.05,
+            pointerEvents: "none",
+          }}
+        />
+        <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
           <SectionTitle label="RECRUIT" title="求人情報" num="02" />
-          <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "20px", letterSpacing: "0.05em", maxWidth: "700px" }}>
-            {nl2br(jobs.intro)}
-          </p>
+          <FadeIn delay={0.1}>
+            <p
+              style={{
+                fontSize: "14px",
+                lineHeight: 1.8,
+                color: TEXT_G,
+                marginTop: "20px",
+                letterSpacing: "0.05em",
+                maxWidth: "700px",
+              }}
+            >
+              {nl2br(jobs.intro)}
+            </p>
+          </FadeIn>
 
-          <div style={{
-            marginTop: "40px",
-            display: isMobile ? "block" : "grid",
-            gridTemplateColumns: "1.2fr 0.8fr",
-            gap: "40px",
-            alignItems: "start",
-          }}>
+          <div
+            style={{
+              marginTop: "40px",
+              display: isMobile ? "block" : "grid",
+              gridTemplateColumns: "1.2fr 0.8fr",
+              gap: "40px",
+              alignItems: "start",
+            }}
+          >
             {/* Left: dl */}
-            <dl data-anim style={{ ...animStyle(0.15) }}>
-              {jobs.rows.map((row, i) => (
-                <div key={i} style={{
-                  display: "flex", borderBottom: "1px solid rgba(255,255,255,0.08)",
-                  padding: "16px 0",
-                  flexDirection: isMobile ? "column" : "row",
-                  gap: isMobile ? "4px" : "0",
-                }}>
-                  <dt style={{
-                    width: isMobile ? "auto" : "140px", flexShrink: 0,
-                    fontWeight: 700, fontSize: "13px", color: TEXT_W, letterSpacing: "0.05em",
-                  }}>
-                    ▪ {row.dt}
+            <FadeIn delay={0.15}>
+              <dl>
+                {jobs.rows.map((row, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      borderBottom: "1px solid rgba(255,255,255,0.08)",
+                      padding: "16px 0",
+                      flexDirection: isMobile ? "column" : "row",
+                      gap: isMobile ? "4px" : "0",
+                    }}
+                  >
+                    <dt
+                      style={{
+                        width: isMobile ? "auto" : "140px",
+                        flexShrink: 0,
+                        fontWeight: 700,
+                        fontSize: "13px",
+                        color: TEXT_W,
+                        letterSpacing: "0.05em",
+                      }}
+                    >
+                      ▪ {row.dt}
+                    </dt>
+                    <dd
+                      style={{
+                        fontSize: "14px",
+                        lineHeight: 1.7,
+                        color: row.accent ? TEXT_W : TEXT_G,
+                        letterSpacing: "0.05em",
+                        fontWeight: row.accent ? 700 : 400,
+                      }}
+                    >
+                      {nl2br(row.dd)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </FadeIn>
+
+            {/* Right: salary callout */}
+            <FadeIn delay={0.3} direction="scale">
+              <div
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: "8px",
+                  padding: isMobile ? "32px 24px" : "44px 32px",
+                  textAlign: "center",
+                  marginTop: isMobile ? "32px" : "0",
+                  transition: "box-shadow 0.4s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = "0 0 30px rgba(85,85,85,0.2)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                <p style={{ fontSize: "14px", color: TEXT_G, letterSpacing: "0.05em", marginBottom: "8px" }}>
+                  月収目安
+                </p>
+                <div style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: TEXT_W }}>
+                  <span style={{ fontSize: isMobile ? "56px" : "72px", lineHeight: 1 }}>{hero.salaryMin}</span>
+                  <span style={{ fontSize: isMobile ? "20px" : "24px", margin: "0 4px" }}>万〜</span>
+                  <span style={{ fontSize: isMobile ? "56px" : "72px", lineHeight: 1 }}>{hero.salaryMax}</span>
+                  <span style={{ fontSize: isMobile ? "20px" : "24px" }}>万円</span>
+                </div>
+                <p
+                  style={{
+                    fontSize: "12px",
+                    color: TEXT_G,
+                    marginTop: "12px",
+                    lineHeight: 1.7,
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  日給18,000円〜 or 個数制150〜180円/個
+                </p>
+                <div
+                  style={{
+                    marginTop: "24px",
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "8px",
+                    justifyContent: "center",
+                  }}
+                >
+                  {jobs.requirements.map((r, i) => (
+                    <span
+                      key={i}
+                      style={{
+                        fontSize: "11px",
+                        color: TEXT_G,
+                        background: "rgba(255,255,255,0.06)",
+                        padding: "4px 12px",
+                        borderRadius: "20px",
+                        letterSpacing: "0.04em",
+                      }}
+                    >
+                      {r}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Jobs -> Benefits divider ── */}
+      <TriangleDivider fromColor={BG_CARD} toColor={BG_DARK} />
+
+      {/* ===== BENEFITS ===== */}
+      <section
+        id="benefits"
+        style={{
+          padding: isMobile ? "60px 20px 56px" : "80px 48px 72px",
+          background: BG_DARK,
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Parallax background */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${IMG.benefits})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundAttachment: isMobile ? "scroll" : "fixed",
+            opacity: 0.06,
+            pointerEvents: "none",
+          }}
+        />
+        {/* Workplace overlay */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            width: "35%",
+            height: "100%",
+            backgroundImage: `url(${IMG.workplace})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.04,
+            pointerEvents: "none",
+            maskImage: "linear-gradient(to left, rgba(0,0,0,0.5), transparent)",
+            WebkitMaskImage: "linear-gradient(to left, rgba(0,0,0,0.5), transparent)",
+          }}
+        />
+        <div style={{ position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
+          <SectionTitle label="BENEFITS" title="待遇・福利厚生" num="03" />
+          <div
+            style={{
+              marginTop: "44px",
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+              gap: isMobile ? "16px" : "20px",
+            }}
+          >
+            {benefits.map((b, i) => (
+              <FadeIn key={i} delay={i * 0.1} direction={i % 2 === 0 ? "up" : "scale"}>
+                <div
+                  style={{
+                    background: BG_CARD,
+                    padding: isMobile ? "28px 22px" : "36px 30px",
+                    borderRadius: "6px",
+                    borderLeft: `3px solid ${ACCENT_LIGHT}`,
+                    textAlign: "left",
+                    transition: "transform 0.3s, box-shadow 0.4s",
+                    cursor: "default",
+                    height: "100%",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-4px)";
+                    e.currentTarget.style.boxShadow =
+                      "0 0 24px rgba(85,85,85,0.25), inset 0 0 12px rgba(85,85,85,0.05)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <div style={{ color: ACCENT_LIGHT, marginBottom: "14px" }}>{benefitIcons[i]}</div>
+                  <h4
+                    style={{
+                      fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+                      fontWeight: 800,
+                      fontSize: "16px",
+                      lineHeight: 1.4,
+                      letterSpacing: "0.05em",
+                      color: TEXT_W,
+                      marginBottom: "10px",
+                    }}
+                  >
+                    {b.title}
+                  </h4>
+                  <p style={{ fontSize: "13px", lineHeight: 1.8, color: TEXT_G, letterSpacing: "0.05em" }}>
+                    {nl2br(b.text)}
+                  </p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Benefits -> Daily divider ── */}
+      <TriangleDivider fromColor={BG_DARK} toColor={BG_ALT} />
+
+      {/* ===== DAILY ===== */}
+      <section
+        id="daily"
+        style={{
+          padding: isMobile ? "60px 20px 52px" : "80px 48px 72px",
+          background: BG_ALT,
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Background image */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${IMG.dailyFlow})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.05,
+            pointerEvents: "none",
+          }}
+        />
+        <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 1 }}>
+          <SectionTitle label="DAILY" title="1日の流れ" num="04" />
+          <FadeIn delay={0.1}>
+            <p
+              style={{
+                fontSize: "14px",
+                lineHeight: 1.8,
+                color: TEXT_G,
+                marginTop: "16px",
+                letterSpacing: "0.05em",
+              }}
+            >
+              {nl2br(daily.intro)}
+            </p>
+          </FadeIn>
+
+          <div style={{ marginTop: "44px", position: "relative", paddingLeft: isMobile ? "36px" : "48px" }}>
+            {/* Vertical line */}
+            <div
+              style={{
+                position: "absolute",
+                left: isMobile ? "14px" : "18px",
+                top: "8px",
+                bottom: "8px",
+                width: "2px",
+                background: `linear-gradient(to bottom, ${ACCENT_LIGHT}, rgba(85,85,85,0.15))`,
+              }}
+            />
+
+            {daily.steps.map((s, i) => (
+              <FadeIn key={i} delay={i * 0.1} direction={i % 2 === 0 ? "left" : "right"}>
+                <div
+                  style={{
+                    marginBottom: i < daily.steps.length - 1 ? "36px" : "48px",
+                    position: "relative",
+                  }}
+                >
+                  {/* Dot */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      left: isMobile ? "-29px" : "-39px",
+                      top: "4px",
+                      width: "12px",
+                      height: "12px",
+                      background: i === 0 ? TEXT_W : BG_ALT,
+                      border: `2px solid ${ACCENT_LIGHT}`,
+                      borderRadius: "50%",
+                    }}
+                  />
+                  <div style={{ display: "flex", gap: "12px", alignItems: "baseline" }}>
+                    <span
+                      style={{
+                        fontFamily: "'Oswald',sans-serif",
+                        fontWeight: 700,
+                        fontSize: isMobile ? "20px" : "24px",
+                        color: TEXT_W,
+                        letterSpacing: "0.04em",
+                        minWidth: "60px",
+                      }}
+                    >
+                      {s.time}
+                    </span>
+                    <h4
+                      style={{
+                        fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+                        fontWeight: 800,
+                        fontSize: isMobile ? "15px" : "17px",
+                        color: TEXT_W,
+                        letterSpacing: "0.05em",
+                      }}
+                    >
+                      {s.title}
+                    </h4>
+                  </div>
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      lineHeight: 1.8,
+                      color: TEXT_G,
+                      letterSpacing: "0.05em",
+                      marginTop: "6px",
+                    }}
+                  >
+                    {nl2br(s.desc)}
+                  </p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+
+          {/* Inline delivery video */}
+          <FadeIn delay={0.3} direction="scale">
+            <div style={{ marginTop: "16px", borderRadius: "8px", overflow: "hidden" }}>
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                style={{ width: "100%", display: "block", filter: "brightness(0.9)" }}
+              >
+                <source src={IMG.deliveryVideo} type="video/mp4" />
+              </video>
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: TEXT_G,
+                  letterSpacing: "0.05em",
+                  marginTop: "8px",
+                  textAlign: "center",
+                }}
+              >
+                実際の配達風景
+              </p>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ── Daily -> Gallery divider ── */}
+      <TriangleDivider fromColor={BG_ALT} toColor={BG_DARK} />
+
+      {/* ===== GALLERY ===== */}
+      <section
+        id="gallery"
+        style={{
+          padding: isMobile ? "56px 0 48px" : "80px 0 70px",
+          background: BG_DARK,
+        }}
+      >
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 20px" : "0 48px" }}>
+          <SectionTitle label="GALLERY" title={gallery.heading} num="05" />
+          <FadeIn delay={0.1}>
+            <p
+              style={{
+                fontSize: "14px",
+                lineHeight: 1.8,
+                color: TEXT_G,
+                marginTop: "16px",
+                letterSpacing: "0.05em",
+              }}
+            >
+              {nl2br(gallery.intro)}
+            </p>
+          </FadeIn>
+        </div>
+
+        {/* Swipe carousel */}
+        <FadeIn delay={0.2}>
+          <div
+            style={{ marginTop: "40px", position: "relative", overflow: "hidden" }}
+            onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
+            onTouchEnd={(e) => {
+              const diff = touchStart - e.changedTouches[0].clientX;
+              if (Math.abs(diff) > 50) {
+                setGalleryIdx((p) =>
+                  diff > 0
+                    ? (p + 1) % gallery.images.length
+                    : (p - 1 + gallery.images.length) % gallery.images.length
+                );
+              }
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                transition: "transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94)",
+                transform: `translateX(calc(-${galleryIdx * (isMobile ? 85 : 60)}vw + ${isMobile ? 7.5 : 20}vw))`,
+              }}
+            >
+              {gallery.images.map((img, i) => (
+                <div
+                  key={i}
+                  style={{
+                    flex: `0 0 ${isMobile ? "85vw" : "60vw"}`,
+                    padding: "0 8px",
+                    transition: "opacity 0.4s, transform 0.4s",
+                    opacity: i === galleryIdx ? 1 : 0.4,
+                    transform: i === galleryIdx ? "scale(1)" : "scale(0.95)",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "relative",
+                      borderRadius: "6px",
+                      overflow: "hidden",
+                      aspectRatio: "16/9",
+                      background: "#1a1a1a",
+                    }}
+                  >
+                    <img
+                      src={img.src}
+                      alt={img.alt}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        background: "linear-gradient(transparent, rgba(0,0,0,0.75))",
+                        padding: "20px 16px 14px",
+                      }}
+                    >
+                      <p style={{ fontSize: "13px", color: TEXT_G, letterSpacing: "0.05em" }}>{img.caption}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Navigation arrows */}
+            {!isMobile && (
+              <>
+                <button
+                  onClick={() =>
+                    setGalleryIdx((p) => (p - 1 + gallery.images.length) % gallery.images.length)
+                  }
+                  style={{
+                    position: "absolute",
+                    left: 16,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "rgba(10,10,10,0.7)",
+                    border: `1px solid ${ACCENT_LIGHT}`,
+                    color: TEXT_W,
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                    fontSize: "18px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "background 0.2s",
+                    zIndex: 3,
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(50,55,60,0.9)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(10,10,10,0.7)")}
+                >
+                  &#8249;
+                </button>
+                <button
+                  onClick={() => setGalleryIdx((p) => (p + 1) % gallery.images.length)}
+                  style={{
+                    position: "absolute",
+                    right: 16,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "rgba(10,10,10,0.7)",
+                    border: `1px solid ${ACCENT_LIGHT}`,
+                    color: TEXT_W,
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                    fontSize: "18px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "background 0.2s",
+                    zIndex: 3,
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(50,55,60,0.9)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(10,10,10,0.7)")}
+                >
+                  &#8250;
+                </button>
+              </>
+            )}
+
+            {/* Dots */}
+            <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "20px" }}>
+              {gallery.images.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setGalleryIdx(i)}
+                  style={{
+                    width: i === galleryIdx ? "24px" : "8px",
+                    height: "8px",
+                    borderRadius: "4px",
+                    border: "none",
+                    cursor: "pointer",
+                    background: i === galleryIdx ? TEXT_W : "rgba(255,255,255,0.25)",
+                    transition: "width 0.3s, background 0.3s",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </FadeIn>
+      </section>
+
+      {/* ── Gallery -> Voices divider ── */}
+      <TriangleDivider fromColor={BG_DARK} toColor={BG_CARD} />
+
+      {/* ===== VOICES ===== */}
+      <section
+        id="voices"
+        style={{
+          padding: isMobile ? "60px 20px 48px" : "80px 48px 72px",
+          background: BG_CARD,
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Section decoration image */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "30%",
+            height: "100%",
+            backgroundImage: `url(${IMG.voices})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.04,
+            pointerEvents: "none",
+            maskImage: "linear-gradient(to right, rgba(0,0,0,0.5), transparent)",
+            WebkitMaskImage: "linear-gradient(to right, rgba(0,0,0,0.5), transparent)",
+          }}
+        />
+        <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
+          <SectionTitle label="VOICES" title="先輩の声" num="06" />
+
+          <div
+            style={{
+              marginTop: "44px",
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+              gap: isMobile ? "20px" : "28px",
+            }}
+          >
+            {voices.map((v, i) => (
+              <FadeIn key={i} delay={i * 0.12} direction={i % 2 === 0 ? "left" : "right"}>
+                <div
+                  style={{
+                    background: BG_DARK,
+                    padding: isMobile ? "28px 22px" : "40px 36px",
+                    borderRadius: "6px",
+                    position: "relative",
+                    transition: "box-shadow 0.4s, transform 0.3s",
+                    cursor: "default",
+                    height: "100%",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow =
+                      "0 0 20px rgba(85,85,85,0.2), inset 0 0 8px rgba(85,85,85,0.05)";
+                    e.currentTarget.style.transform = "translateY(-3px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: "'Oswald',sans-serif",
+                      fontWeight: 800,
+                      fontSize: "48px",
+                      color: "rgba(255,255,255,0.08)",
+                      position: "absolute",
+                      top: "12px",
+                      left: "20px",
+                      lineHeight: 1,
+                      pointerEvents: "none",
+                    }}
+                  >
+                    &ldquo;
+                  </span>
+                  <blockquote
+                    style={{
+                      fontSize: "14px",
+                      lineHeight: 1.85,
+                      color: TEXT_G,
+                      letterSpacing: "0.05em",
+                      marginBottom: "16px",
+                      paddingTop: "8px",
+                    }}
+                  >
+                    {nl2br(v.text)}
+                  </blockquote>
+                  <p
+                    style={{
+                      display: "inline-block",
+                      background: ACCENT,
+                      border: "1px solid rgba(255,255,255,0.15)",
+                      padding: "4px 14px",
+                      borderRadius: "2px",
+                      fontSize: "13px",
+                      fontWeight: 700,
+                      color: TEXT_W,
+                      letterSpacing: "0.04em",
+                      marginBottom: "14px",
+                    }}
+                  >
+                    {v.highlight}
+                  </p>
+                  <div style={{ fontSize: "13px", color: TEXT_G, letterSpacing: "0.05em" }}>
+                    <span style={{ color: TEXT_W, fontWeight: 700, marginRight: "8px" }}>{v.name}</span>
+                    {v.age}・{v.prev}
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Voices -> FAQ divider ── */}
+      <TriangleDivider fromColor={BG_CARD} toColor={BG_DARK} />
+
+      {/* ===== FAQ ===== */}
+      <section
+        id="faq"
+        style={{
+          padding: isMobile ? "60px 20px 56px" : "80px 48px 72px",
+          background: BG_DARK,
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* FAQ decoration image */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+            width: "25%",
+            height: "60%",
+            backgroundImage: `url(${IMG.faq})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.04,
+            pointerEvents: "none",
+            maskImage: "linear-gradient(to left, rgba(0,0,0,0.4), transparent)",
+            WebkitMaskImage: "linear-gradient(to left, rgba(0,0,0,0.4), transparent)",
+          }}
+        />
+        <div style={{ maxWidth: "860px", margin: "0 auto", position: "relative", zIndex: 1 }}>
+          <SectionTitle label="FAQ" title="よくある質問" num="07" />
+
+          <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "12px" }}>
+            {faq.map((f, i) => {
+              const isOpen = openFaq === i;
+              return (
+                <FadeIn key={i} delay={i * 0.06}>
+                  <div
+                    style={{
+                      background: BG_CARD,
+                      borderRadius: "6px",
+                      overflow: "hidden",
+                      transition: "box-shadow 0.3s",
+                      boxShadow: isOpen ? "0 0 16px rgba(85,85,85,0.15)" : "none",
+                    }}
+                  >
+                    <button
+                      onClick={() => setOpenFaq(isOpen ? null : i)}
+                      style={{
+                        width: "100%",
+                        padding: isMobile ? "18px 16px" : "22px 28px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "12px",
+                        fontSize: "14px",
+                        fontWeight: 700,
+                        color: TEXT_W,
+                        letterSpacing: "0.05em",
+                        lineHeight: 1.5,
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        fontFamily: "'Noto Sans JP',sans-serif",
+                      }}
+                    >
+                      <span style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
+                        <span
+                          style={{
+                            color: TEXT_G,
+                            fontFamily: "'Oswald',sans-serif",
+                            fontWeight: 700,
+                            fontSize: "16px",
+                            flexShrink: 0,
+                          }}
+                        >
+                          Q.
+                        </span>
+                        {f.q}
+                      </span>
+                      <span
+                        style={{
+                          color: TEXT_G,
+                          fontSize: "12px",
+                          transition: "transform 0.3s ease",
+                          transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                          flexShrink: 0,
+                        }}
+                      >
+                        &#9660;
+                      </span>
+                    </button>
+                    <div
+                      style={{
+                        maxHeight: isOpen ? "400px" : "0px",
+                        overflow: "hidden",
+                        transition: "max-height 0.4s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.3s ease",
+                        opacity: isOpen ? 1 : 0,
+                      }}
+                    >
+                      <div
+                        style={{
+                          padding: isMobile ? "0 16px 18px 42px" : "0 28px 22px 58px",
+                          fontSize: "13px",
+                          lineHeight: 1.85,
+                          color: TEXT_G,
+                          letterSpacing: "0.05em",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: ACCENT_LIGHT,
+                            fontFamily: "'Oswald',sans-serif",
+                            fontWeight: 700,
+                            marginRight: "8px",
+                          }}
+                        >
+                          A.
+                        </span>
+                        {nl2br(f.a)}
+                      </div>
+                    </div>
+                  </div>
+                </FadeIn>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ -> News divider ── */}
+      <TriangleDivider fromColor={BG_DARK} toColor={BG_CARD} />
+
+      {/* ===== NEWS ===== */}
+      <section
+        id="news"
+        style={{
+          padding: isMobile ? "52px 20px 44px" : "72px 48px 64px",
+          background: BG_CARD,
+        }}
+      >
+        <div style={{ maxWidth: "860px", margin: "0 auto" }}>
+          <SectionTitle label="NEWS" title="お知らせ" num="08" />
+
+          <div style={{ marginTop: "36px" }}>
+            {news.map((n, i) => (
+              <FadeIn key={i} delay={i * 0.08}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: isMobile ? "flex-start" : "center",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: isMobile ? "6px" : "20px",
+                    padding: "18px 0",
+                    borderBottom: "1px solid rgba(255,255,255,0.06)",
+                    transition: "background 0.2s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  <span
+                    style={{
+                      fontFamily: "'Oswald',sans-serif",
+                      fontSize: "13px",
+                      color: TEXT_G,
+                      letterSpacing: "0.04em",
+                      flexShrink: 0,
+                    }}
+                  >
+                    ─ {n.date}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      letterSpacing: "0.05em",
+                      padding: "2px 10px",
+                      borderRadius: "2px",
+                      flexShrink: 0,
+                      background:
+                        n.tagStyle === "urgent"
+                          ? "rgba(220,50,50,0.2)"
+                          : n.tagStyle === "new"
+                          ? "rgba(255,255,255,0.1)"
+                          : "rgba(255,255,255,0.06)",
+                      color: n.tagStyle === "urgent" ? "#e55" : TEXT_G,
+                      border: `1px solid ${
+                        n.tagStyle === "urgent" ? "rgba(220,50,50,0.4)" : "rgba(255,255,255,0.1)"
+                      }`,
+                    }}
+                  >
+                    {n.tag}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: "14px",
+                      color: TEXT_W,
+                      letterSpacing: "0.05em",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {n.title}
+                  </span>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── News -> Access divider ── */}
+      <TriangleDivider fromColor={BG_CARD} toColor={BG_DARK} />
+
+      {/* ===== ACCESS ===== */}
+      <section
+        id="access"
+        style={{
+          padding: isMobile ? "56px 20px 48px" : "72px 48px 64px",
+          background: BG_DARK,
+        }}
+      >
+        <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+          <SectionTitle label="ACCESS" title={access.heading} num="09" />
+          <FadeIn delay={0.1}>
+            <div style={{ marginTop: "28px" }}>
+              <p
+                style={{
+                  fontSize: "14px",
+                  color: TEXT_G,
+                  lineHeight: 1.8,
+                  letterSpacing: "0.05em",
+                  marginBottom: "6px",
+                }}
+              >
+                〒{company.postalCode} {company.address}
+              </p>
+              <p style={{ fontSize: "13px", color: TEXT_G, letterSpacing: "0.05em", marginBottom: "6px" }}>
+                {access.nearestStation}
+              </p>
+              <p
+                style={{
+                  fontSize: "12px",
+                  color: "rgba(255,255,255,0.4)",
+                  letterSpacing: "0.05em",
+                  marginBottom: "24px",
+                }}
+              >
+                {access.mapNote}
+              </p>
+              <div style={{ borderRadius: "8px", overflow: "hidden", aspectRatio: isMobile ? "4/3" : "21/9" }}>
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3272.5!2d135.6281!3d34.7667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDQ2JzAwLjAiTiAxMzXCsDM3JzQxLjAiRQ!5e0!3m2!1sja!2sjp!4v1"
+                  width="100%"
+                  height="100%"
+                  style={{
+                    border: 0,
+                    display: "block",
+                    filter: "invert(0.9) hue-rotate(180deg) brightness(0.95) contrast(1.1)",
+                  }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ── Access -> Company divider ── */}
+      <TriangleDivider fromColor={BG_DARK} toColor={BG_CARD} />
+
+      {/* ===== COMPANY ===== */}
+      <section
+        id="company"
+        style={{
+          padding: isMobile ? "56px 20px 44px" : "72px 48px 64px",
+          background: BG_CARD,
+        }}
+      >
+        <div style={{ maxWidth: "860px", margin: "0 auto" }}>
+          <SectionTitle label="COMPANY" title="会社概要" num="10" />
+          {/* Full-width company image */}
+          <FadeIn delay={0.1} direction="scale">
+            <div
+              style={{
+                marginTop: "28px",
+                marginBottom: "28px",
+                borderRadius: "6px",
+                overflow: "hidden",
+                aspectRatio: "21/9",
+              }}
+            >
+              <img
+                src={IMG.company}
+                alt="会社"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                  filter: "brightness(0.85)",
+                }}
+              />
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <dl style={{ marginTop: "36px" }}>
+              {companyInfo.map((row, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: "flex",
+                    borderBottom: "1px solid rgba(255,255,255,0.06)",
+                    padding: "16px 0",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: isMobile ? "4px" : "0",
+                  }}
+                >
+                  <dt
+                    style={{
+                      width: isMobile ? "auto" : "140px",
+                      flexShrink: 0,
+                      fontWeight: 700,
+                      fontSize: "13px",
+                      color: TEXT_W,
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    {row.dt}
                   </dt>
-                  <dd style={{
-                    fontSize: "14px", lineHeight: 1.7, color: row.accent ? TEXT_W : TEXT_G, letterSpacing: "0.05em",
-                    fontWeight: row.accent ? 700 : 400,
-                  }}>
+                  <dd
+                    style={{
+                      fontSize: "14px",
+                      lineHeight: 1.7,
+                      color: TEXT_G,
+                      letterSpacing: "0.05em",
+                    }}
+                  >
                     {nl2br(row.dd)}
                   </dd>
                 </div>
               ))}
             </dl>
-
-            {/* Right: salary callout */}
-            <div data-anim style={{
-              ...animStyle(0.3),
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: "8px",
-              padding: isMobile ? "32px 24px" : "44px 32px",
-              textAlign: "center",
-              marginTop: isMobile ? "32px" : "0",
-            }}>
-              <p style={{ fontSize: "14px", color: TEXT_G, letterSpacing: "0.05em", marginBottom: "8px" }}>月収目安</p>
-              <div style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: TEXT_W }}>
-                <span style={{ fontSize: isMobile ? "56px" : "72px", lineHeight: 1 }}>{hero.salaryMin}</span>
-                <span style={{ fontSize: isMobile ? "20px" : "24px", margin: "0 4px" }}>万〜</span>
-                <span style={{ fontSize: isMobile ? "56px" : "72px", lineHeight: 1 }}>{hero.salaryMax}</span>
-                <span style={{ fontSize: isMobile ? "20px" : "24px" }}>万円</span>
-              </div>
-              <p style={{ fontSize: "12px", color: TEXT_G, marginTop: "12px", lineHeight: 1.7, letterSpacing: "0.05em" }}>
-                日給18,000円〜 or 個数制150〜180円/個
-              </p>
-              <div style={{ marginTop: "24px", display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center" }}>
-                {jobs.requirements.map((r, i) => (
-                  <span key={i} style={{
-                    fontSize: "11px", color: TEXT_G, background: "rgba(255,255,255,0.06)",
-                    padding: "4px 12px", borderRadius: "20px", letterSpacing: "0.04em",
-                  }}>
-                    {r}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
 
-      {/* ── 区切り ── */}
-      <div style={{ lineHeight: 0, background: BG_CARD }}>
-        <svg viewBox="0 0 1440 32" preserveAspectRatio="none" style={{ width: "100%", height: 32, display: "block" }}>
-          <polygon points="0,32 1440,0 1440,32 0,32" fill={BG_DARK} />
-        </svg>
-      </div>
+      {/* ── Company -> Apply divider ── */}
+      <TriangleDivider fromColor={BG_CARD} toColor={BG_DARK} />
 
-      {/* ===== BENEFITS ===== */}
-      <section id="benefits" style={{
-        padding: isMobile ? "72px 20px 60px" : "110px 48px 90px",
-        background: BG_DARK,
-        position: "relative",
-        overflow: "hidden",
-      }}>
-        {/* 背景画像 */}
-        <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: `url(${IMG.workplace})`,
-          backgroundSize: "cover", backgroundPosition: "center",
-          opacity: 0.08,
-        }} />
-        <div style={{ position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
-          <SectionTitle label="BENEFITS" title="✓ 待遇・福利厚生" num="03" />
-          <div style={{
-            marginTop: "44px",
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1.1fr 0.85fr 1.05fr",
-            gap: isMobile ? "16px" : "20px",
-          }}>
-            {benefits.map((b, i) => (
-              <div key={i} data-anim style={{
-                ...animStyle(i * 0.08),
-                background: BG_CARD,
-                padding: isMobile ? "28px 22px" : "36px 30px",
-                borderRadius: i % 3 === 0 ? "8px" : i % 3 === 1 ? "4px" : "12px",
-                borderLeft: `3px solid ${ACCENT_LIGHT}`,
-                textAlign: "left",
-                transition: "transform 0.3s, box-shadow 0.3s",
-                cursor: "default",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-4px)";
-                e.currentTarget.style.boxShadow = "0 0 24px rgba(85,85,85,0.25), inset 0 0 12px rgba(85,85,85,0.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-              >
-                <div style={{ fontSize: "32px", marginBottom: "14px" }}>{benefitIcons[i]}</div>
-                <h4 style={{
-                  fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
-                  fontSize: "16px", lineHeight: 1.4, letterSpacing: "0.05em", color: TEXT_W, marginBottom: "10px",
-                }}>
-                  ✓ {b.title}
-                </h4>
-                <p style={{ fontSize: "13px", lineHeight: 1.8, color: TEXT_G, letterSpacing: "0.05em" }}>
-                  {nl2br(b.text)}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── 区切り ── */}
-      <div style={{ lineHeight: 0, background: BG_DARK }}>
-        <svg viewBox="0 0 1440 32" preserveAspectRatio="none" style={{ width: "100%", height: 32, display: "block" }}>
-          <polygon points="0,0 1440,32 1440,32 0,32" fill={BG_CARD} />
-        </svg>
-      </div>
-
-      {/* ===== DAILY ===== */}
-      <section id="daily" data-anim style={{ ...animStyle(0), padding: isMobile ? "64px 20px 52px" : "100px 48px 80px", background: BG_CARD, position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: 0, right: 0, width: "40%", height: "100%", backgroundImage: "url(/keikamotsu-new-templates/images/daily-flow.webp)", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.06, pointerEvents: "none" }} />
-        <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <SectionTitle label="DAILY" title="1日の流れ" num="04" />
-          <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "16px", letterSpacing: "0.05em" }}>
-            {nl2br(daily.intro)}
-          </p>
-
-          <div style={{ marginTop: "44px", position: "relative", paddingLeft: isMobile ? "36px" : "48px" }}>
-            {/* vertical line */}
-            <div style={{
-              position: "absolute", left: isMobile ? "14px" : "18px", top: "8px", bottom: "8px",
-              width: "2px", background: "linear-gradient(to bottom, #555, rgba(85,85,85,0.15))",
-            }} />
-
-            {daily.steps.map((s, i) => (
-              <div key={i} data-anim style={{
-                ...animStyle(i * 0.1),
-                marginBottom: i < daily.steps.length - 1 ? "36px" : "48px",
-                position: "relative",
-              }}>
-                {/* dot */}
-                <div style={{
-                  position: "absolute",
-                  left: isMobile ? "-29px" : "-39px",
-                  top: "4px",
-                  width: "12px", height: "12px",
-                  background: i === 0 ? TEXT_W : BG_DARK,
-                  border: "2px solid #555",
-                  borderRadius: "50%",
-                }} />
-                {/* ● 区切り記号 */}
-                <div style={{ display: "flex", gap: "12px", alignItems: "baseline" }}>
-                  <span style={{
-                    fontFamily: "'Oswald',sans-serif", fontWeight: 700, fontSize: isMobile ? "20px" : "24px",
-                    color: TEXT_W, letterSpacing: "0.04em", minWidth: "60px",
-                  }}>
-                    {s.time}
-                  </span>
-                  <h4 style={{
-                    fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
-                    fontSize: isMobile ? "15px" : "17px", color: TEXT_W, letterSpacing: "0.05em",
-                  }}>
-                    ● {s.title}
-                  </h4>
-                </div>
-                <p style={{ fontSize: "13px", lineHeight: 1.8, color: TEXT_G, letterSpacing: "0.05em", marginTop: "6px" }}>
-                  {nl2br(s.desc)}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* インライン動画 */}
-          <div data-anim style={{ ...animStyle(0.3), marginTop: "16px", borderRadius: "8px", overflow: "hidden" }}>
-            <video autoPlay muted loop playsInline style={{ width: "100%", display: "block", filter: "brightness(0.9)" }}>
-              <source src="/keikamotsu-new-templates/videos/delivery-scene.mp4" type="video/mp4" />
-            </video>
-            <p style={{ fontSize: "12px", color: TEXT_G, letterSpacing: "0.05em", marginTop: "8px", textAlign: "center" }}>実際の配達風景</p>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== GALLERY ===== */}
-      <section id="gallery" data-anim style={{ ...animStyle(0), padding: isMobile ? "56px 0 48px" : "80px 0 70px", background: BG_DARK }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 20px" : "0 48px" }}>
-          <SectionTitle label="GALLERY" title={gallery.heading} num="05" />
-          <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "16px", letterSpacing: "0.05em" }}>
-            {nl2br(gallery.intro)}
-          </p>
-        </div>
-
-        <div
-          style={{ marginTop: "40px", position: "relative", overflow: "hidden" }}
-          onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
-          onTouchEnd={(e) => {
-            const diff = touchStart - e.changedTouches[0].clientX;
-            if (Math.abs(diff) > 50) {
-              setGalleryIdx((p) =>
-                diff > 0
-                  ? (p + 1) % gallery.images.length
-                  : (p - 1 + gallery.images.length) % gallery.images.length
-              );
-            }
-          }}
-        >
-          <div style={{
-            display: "flex", transition: "transform 0.6s ease",
-            transform: `translateX(calc(-${galleryIdx * (isMobile ? 85 : 60)}vw + ${isMobile ? 7.5 : 20}vw))`,
-          }}>
-            {gallery.images.map((img, i) => (
-              <div key={i} style={{
-                flex: `0 0 ${isMobile ? "85vw" : "60vw"}`,
-                padding: "0 8px",
-                transition: "opacity 0.4s",
-                opacity: i === galleryIdx ? 1 : 0.4,
-              }}>
-                <div style={{
-                  position: "relative", borderRadius: "6px", overflow: "hidden",
-                  aspectRatio: "16/9", background: "#1a1a1a",
-                }}>
-                  <img src={img.src} alt={img.alt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  <div style={{
-                    position: "absolute", bottom: 0, left: 0, right: 0,
-                    background: "linear-gradient(transparent, rgba(0,0,0,0.75))",
-                    padding: "20px 16px 14px",
-                  }}>
-                    <p style={{ fontSize: "13px", color: TEXT_G, letterSpacing: "0.05em" }}>{img.caption}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* dots */}
-          <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "20px" }}>
-            {gallery.images.map((_, i) => (
-              <button key={i} onClick={() => setGalleryIdx(i)} style={{
-                width: i === galleryIdx ? "24px" : "8px", height: "8px",
-                borderRadius: "4px", border: "none", cursor: "pointer",
-                background: i === galleryIdx ? TEXT_W : "rgba(255,255,255,0.25)",
-                transition: "width 0.3s, background 0.3s",
-              }} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== VOICES ===== */}
-      <section id="voices" data-anim style={{ ...animStyle(0), padding: isMobile ? "60px 20px 48px" : "95px 48px 75px", background: BG_CARD }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <SectionTitle label="VOICES" title="先輩の声" num="06" />
-
-          <div style={{
-            marginTop: "44px",
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1.05fr 0.95fr",
-            gap: isMobile ? "20px" : "28px",
-          }}>
-            {voices.map((v, i) => (
-              <div key={i} data-anim style={{
-                ...animStyle(i * 0.12),
-                background: BG_DARK,
-                padding: isMobile ? "28px 22px" : "40px 36px",
-                borderRadius: i % 2 === 0 ? "6px" : "10px",
-                position: "relative",
-              }}>
-                <span style={{
-                  fontFamily: "'Oswald',sans-serif", fontWeight: 800, fontSize: "48px",
-                  color: "rgba(255,255,255,0.08)", position: "absolute", top: "12px", left: "20px", lineHeight: 1,
-                }}>
-                  &ldquo;
-                </span>
-                <blockquote style={{ fontSize: "14px", lineHeight: 1.85, color: TEXT_G, letterSpacing: "0.05em", marginBottom: "16px", paddingTop: "8px" }}>
-                  {nl2br(v.text)}
-                </blockquote>
-                <p style={{
-                  display: "inline-block",
-                  background: ACCENT, border: "1px solid rgba(255,255,255,0.15)",
-                  padding: "4px 14px", borderRadius: "2px",
-                  fontSize: "13px", fontWeight: 700, color: TEXT_W, letterSpacing: "0.04em",
-                  marginBottom: "14px",
-                }}>
-                  {v.highlight}
-                </p>
-                <div style={{ fontSize: "13px", color: TEXT_G, letterSpacing: "0.05em" }}>
-                  <span style={{ color: TEXT_W, fontWeight: 700, marginRight: "8px" }}>{v.name}</span>
-                  {v.age}・{v.prev}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FAQ ===== */}
-      <section id="faq" data-anim style={{ ...animStyle(0), padding: isMobile ? "60px 20px 56px" : "90px 48px 85px", background: BG_DARK }}>
-        <div style={{ maxWidth: "860px", margin: "0 auto" }}>
-          <SectionTitle label="FAQ" title="よくある質問" num="07" />
-
-          <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "12px" }}>
-            {faq.map((f, i) => (
-              <details key={i} data-anim style={{
-                ...animStyle(i * 0.06),
-                background: BG_CARD,
-                borderRadius: i % 2 === 0 ? "6px" : "4px",
-                overflow: "hidden",
-              }}>
-                <summary style={{
-                  padding: isMobile ? "18px 16px" : "22px 28px",
-                  display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
-                  fontSize: "14px", fontWeight: 700, color: TEXT_W, letterSpacing: "0.05em", lineHeight: 1.5,
-                }}>
-                  <span style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
-                    <span style={{ color: TEXT_G, fontFamily: "'Oswald',sans-serif", fontWeight: 700, fontSize: "16px", flexShrink: 0 }}>▸ Q.</span>
-                    {f.q}
-                  </span>
-                  <span className="faq-arrow" style={{ color: TEXT_G, fontSize: "12px", transition: "transform 0.3s", flexShrink: 0 }}>&#9660;</span>
-                </summary>
-                <div style={{
-                  padding: isMobile ? "0 16px 18px 42px" : "0 28px 22px 58px",
-                  fontSize: "13px", lineHeight: 1.85, color: TEXT_G, letterSpacing: "0.05em",
-                }}>
-                  {nl2br(f.a)}
-                </div>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== NEWS ===== */}
-      <section id="news" data-anim style={{ ...animStyle(0), padding: isMobile ? "52px 20px 44px" : "75px 48px 65px", background: BG_CARD }}>
-        <div style={{ maxWidth: "860px", margin: "0 auto" }}>
-          <SectionTitle label="NEWS" title="お知らせ" />
-
-          <div style={{ marginTop: "36px" }}>
-            {news.map((n, i) => (
-              <div key={i} data-anim style={{
-                ...animStyle(i * 0.08),
-                display: "flex", alignItems: isMobile ? "flex-start" : "center",
-                flexDirection: isMobile ? "column" : "row",
-                gap: isMobile ? "6px" : "20px",
-                padding: "18px 0",
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
-              }}>
-                <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: "13px", color: TEXT_G, letterSpacing: "0.04em", flexShrink: 0 }}>
-                  ─ {n.date}
-                </span>
-                <span style={{
-                  fontSize: "11px", fontWeight: 700, letterSpacing: "0.05em", padding: "2px 10px", borderRadius: "2px",
-                  flexShrink: 0,
-                  background: n.tagStyle === "urgent" ? "rgba(220,50,50,0.2)" : n.tagStyle === "new" ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.06)",
-                  color: n.tagStyle === "urgent" ? "#e55" : TEXT_G,
-                  border: `1px solid ${n.tagStyle === "urgent" ? "rgba(220,50,50,0.4)" : "rgba(255,255,255,0.1)"}`,
-                }}>
-                  {n.tag}
-                </span>
-                <span style={{ fontSize: "14px", color: TEXT_W, letterSpacing: "0.05em", lineHeight: 1.5 }}>
-                  {n.title}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== ACCESS ===== */}
-      <section id="access" data-anim style={{ ...animStyle(0), padding: isMobile ? "64px 20px 48px" : "85px 48px 70px", background: BG_DARK }}>
-        <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
-          <SectionTitle label="ACCESS" title={access.heading} />
-          <div data-anim style={{ ...animStyle(0.1), marginTop: "28px" }}>
-            <p style={{ fontSize: "14px", color: TEXT_G, lineHeight: 1.8, letterSpacing: "0.05em", marginBottom: "6px" }}>
-              〒{company.postalCode} {company.address}
-            </p>
-            <p style={{ fontSize: "13px", color: TEXT_G, letterSpacing: "0.05em", marginBottom: "6px" }}>
-              {access.nearestStation}
-            </p>
-            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", letterSpacing: "0.05em", marginBottom: "24px" }}>
-              {access.mapNote}
-            </p>
-            <div style={{ borderRadius: "8px", overflow: "hidden", aspectRatio: isMobile ? "4/3" : "21/9" }}>
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3272.5!2d135.6281!3d34.7667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDQ2JzAwLjAiTiAxMzXCsDM3JzQxLjAiRQ!5e0!3m2!1sja!2sjp!4v1"
-                width="100%" height="100%" style={{ border: 0, display: "block", filter: "invert(0.9) hue-rotate(180deg) brightness(0.95) contrast(1.1)" }}
-                allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== COMPANY ===== */}
-      <section id="company" data-anim style={{ ...animStyle(0), padding: isMobile ? "56px 20px 44px" : "88px 48px 72px", background: BG_CARD }}>
-        <div style={{ maxWidth: "860px", margin: "0 auto" }}>
-          <SectionTitle label="COMPANY" title="会社概要" />
-          {/* 会社画像 */}
-          <div data-anim style={{ ...animStyle(0.1), marginTop: "28px", marginBottom: "28px", borderRadius: "6px", overflow: "hidden", aspectRatio: "21/9" }}>
-            <img src="/keikamotsu-new-templates/images/company.webp" alt="会社" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", filter: "brightness(0.85)" }} />
-          </div>
-          <dl data-anim style={{ ...animStyle(0.15), marginTop: "36px" }}>
-            {companyInfo.map((row, i) => (
-              <div key={i} style={{
-                display: "flex", borderBottom: "1px solid rgba(255,255,255,0.06)",
-                padding: "16px 0",
-                flexDirection: isMobile ? "column" : "row",
-                gap: isMobile ? "4px" : "0",
-              }}>
-                <dt style={{ width: isMobile ? "auto" : "140px", flexShrink: 0, fontWeight: 700, fontSize: "13px", color: TEXT_W, letterSpacing: "0.05em" }}>
-                  {row.dt}
-                </dt>
-                <dd style={{ fontSize: "14px", lineHeight: 1.7, color: TEXT_G, letterSpacing: "0.05em" }}>
-                  {nl2br(row.dd)}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      {/* ===== APPLY ===== */}
-      <section id="apply" data-anim style={{ ...animStyle(0), padding: isMobile ? "68px 20px 52px" : "105px 48px 82px", background: BG_DARK }}>
+      {/* ===== APPLY FORM ===== */}
+      <section
+        id="apply"
+        style={{
+          padding: isMobile ? "60px 20px 52px" : "80px 48px 72px",
+          background: BG_DARK,
+        }}
+      >
         <div style={{ maxWidth: "680px", margin: "0 auto" }}>
-          <SectionTitle label="APPLY" title="Web応募フォーム" />
-          <form onSubmit={handleSubmit} data-anim style={{ ...animStyle(0.15), marginTop: "36px", display: "flex", flexDirection: "column", gap: "20px" }}>
-            {[
-              { key: "name" as const, label: "お名前", type: "text", required: true },
-              { key: "phone" as const, label: "電話番号", type: "tel", required: true },
-              { key: "email" as const, label: "メールアドレス", type: "email", required: false },
-            ].map((field) => (
-              <div key={field.key}>
-                <label style={{ display: "block", fontSize: "13px", color: TEXT_G, marginBottom: "6px", letterSpacing: "0.05em" }}>
-                  {field.label}{field.required && <span style={{ color: "#e55", marginLeft: "4px" }}>*</span>}
-                </label>
-                <input
-                  type={field.type}
-                  required={field.required}
-                  value={formData[field.key]}
-                  onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
+          <SectionTitle label="APPLY" title="Web応募フォーム" num="11" />
+          <FadeIn delay={0.15}>
+            <form
+              onSubmit={handleSubmit}
+              style={{
+                marginTop: "36px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "20px",
+              }}
+            >
+              {[
+                { key: "name" as const, label: "お名前", type: "text", required: true },
+                { key: "phone" as const, label: "電話番号", type: "tel", required: true },
+                { key: "email" as const, label: "メールアドレス", type: "email", required: false },
+              ].map((field) => (
+                <div key={field.key}>
+                  <label
+                    style={{
+                      display: "block",
+                      fontSize: "13px",
+                      color: TEXT_G,
+                      marginBottom: "6px",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    {field.label}
+                    {field.required && <span style={{ color: "#e55", marginLeft: "4px" }}>*</span>}
+                  </label>
+                  <input
+                    type={field.type}
+                    required={field.required}
+                    value={formData[field.key]}
+                    onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "14px 16px",
+                      background: BG_CARD,
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      borderRadius: "4px",
+                      color: TEXT_W,
+                      fontSize: "14px",
+                      outline: "none",
+                      transition: "border-color 0.3s, box-shadow 0.3s",
+                      fontFamily: "'Noto Sans JP',sans-serif",
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = ACCENT_LIGHT;
+                      e.currentTarget.style.boxShadow = `0 0 12px rgba(85,85,85,0.25)`;
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
+                  />
+                </div>
+              ))}
+              <div>
+                <label
                   style={{
-                    width: "100%", padding: "14px 16px",
-                    background: BG_CARD, border: "1px solid rgba(255,255,255,0.12)",
-                    borderRadius: "4px", color: TEXT_W, fontSize: "14px",
-                    outline: "none", transition: "border-color 0.2s",
+                    display: "block",
+                    fontSize: "13px",
+                    color: TEXT_G,
+                    marginBottom: "6px",
+                    letterSpacing: "0.05em",
                   }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = "#888")}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
+                >
+                  メッセージ
+                </label>
+                <textarea
+                  rows={4}
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  style={{
+                    width: "100%",
+                    padding: "14px 16px",
+                    resize: "vertical",
+                    background: BG_CARD,
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: "4px",
+                    color: TEXT_W,
+                    fontSize: "14px",
+                    outline: "none",
+                    fontFamily: "'Noto Sans JP',sans-serif",
+                    transition: "border-color 0.3s, box-shadow 0.3s",
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = ACCENT_LIGHT;
+                    e.currentTarget.style.boxShadow = `0 0 12px rgba(85,85,85,0.25)`;
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
                 />
               </div>
-            ))}
-            <div>
-              <label style={{ display: "block", fontSize: "13px", color: TEXT_G, marginBottom: "6px", letterSpacing: "0.05em" }}>
-                メッセージ
-              </label>
-              <textarea
-                rows={4}
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              <button
+                type="submit"
                 style={{
-                  width: "100%", padding: "14px 16px", resize: "vertical",
-                  background: BG_CARD, border: "1px solid rgba(255,255,255,0.12)",
-                  borderRadius: "4px", color: TEXT_W, fontSize: "14px",
-                  outline: "none", fontFamily: "'Noto Sans JP',sans-serif", transition: "border-color 0.2s",
+                  background: CTA_BG,
+                  color: TEXT_W,
+                  padding: "16px",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontWeight: 800,
+                  fontSize: "16px",
+                  letterSpacing: "0.06em",
+                  fontFamily: "'Noto Sans JP',sans-serif",
+                  transition: "transform 0.3s, box-shadow 0.3s, background 0.3s",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = "#888")}
-                onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)")}
-              />
-            </div>
-            <button type="submit" style={{
-              background: CTA_BG, color: TEXT_W, padding: "16px",
-              border: "none", borderRadius: "4px", cursor: "pointer",
-              fontWeight: 800, fontSize: "16px", letterSpacing: "0.06em",
-              fontFamily: "'Noto Sans JP',sans-serif",
-              transition: "opacity 0.2s",
-            }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-            >
-              送信する
-            </button>
-          </form>
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,0,0,0.4)";
+                  e.currentTarget.style.background = ACCENT_HOVER;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.background = CTA_BG;
+                }}
+              >
+                <span
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: "-100%",
+                    width: "50%",
+                    height: "100%",
+                    background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
+                    animation: "shimmer 3s ease-in-out infinite",
+                  }}
+                />
+                <span style={{ position: "relative", zIndex: 1 }}>送信する</span>
+              </button>
+            </form>
+          </FadeIn>
         </div>
       </section>
+
+      {/* ── Apply -> CTA divider ── */}
+      <TriangleDivider fromColor={BG_DARK} toColor={BG_ALT} />
 
       {/* ===== CTA SECTION ===== */}
-      <section style={{
-        padding: isMobile ? "80px 20px 88px" : "120px 48px 130px",
-        background: BG_CARD,
-        textAlign: "center",
-        borderTop: `3px solid ${ACCENT_LIGHT}`,
-        position: "relative",
-        overflow: "hidden",
-      }}>
-        {/* 背景画像 */}
-        <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: `url(${IMG.delivery})`,
-          backgroundSize: "cover", backgroundPosition: "center",
-          opacity: 0.1,
-        }} />
-        <div data-anim style={{ ...animStyle(0), maxWidth: "700px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <h2 style={{
-            fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
-            fontSize: isMobile ? "20px" : "28px", lineHeight: 1.4, letterSpacing: "0.05em",
-            color: TEXT_W, marginBottom: "20px",
-          }}>
-            {cta.heading}
-          </h2>
-          <p style={{ fontSize: "14px", lineHeight: 1.85, color: TEXT_G, letterSpacing: "0.05em", marginBottom: "32px" }}>
-            {nl2br(cta.subtext)}
-          </p>
-          <a href={`tel:${cta.phone}`} style={{
-            display: "inline-block",
-            fontFamily: "'Oswald',sans-serif", fontWeight: 800,
-            fontSize: isMobile ? "36px" : "52px", color: TEXT_W, letterSpacing: "0.04em",
-            marginBottom: "8px",
-          }}>
-            {cta.phone}
-          </a>
-          <p style={{ fontSize: "12px", color: TEXT_G, letterSpacing: "0.05em", marginBottom: "28px" }}>
-            {company.hours}
-          </p>
-          <a href="#apply" style={{
-            display: "inline-block", background: CTA_BG, color: TEXT_W,
-            padding: isMobile ? "14px 36px" : "16px 52px",
-            borderRadius: "4px", fontWeight: 800, fontSize: "16px", letterSpacing: "0.06em",
-            transition: "transform 0.3s, box-shadow 0.3s, background 0.3s",
-            position: "relative", overflow: "hidden",
-            animation: "pulse 2.5s ease-in-out 2s infinite",
+      <section
+        style={{
+          padding: isMobile ? "80px 20px 88px" : "110px 48px 120px",
+          background: BG_ALT,
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Background image */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${IMG.workplace})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.08,
+            pointerEvents: "none",
           }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-3px)";
-              e.currentTarget.style.boxShadow = "0 8px 28px rgba(0,0,0,0.5)";
-              e.currentTarget.style.background = "#3e444a";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "none";
-              e.currentTarget.style.background = CTA_BG;
-            }}
-          >
-            <span style={{
-              position: "absolute", top: 0, left: "-100%", width: "50%", height: "100%",
-              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)",
-              animation: "shimmer 3s ease-in-out infinite 1s",
-            }} />
-            <span style={{ position: "relative", zIndex: 1 }}>{cta.webLabel}</span>
-          </a>
-        </div>
+        />
+        {/* Noise overlay */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            opacity: 0.03,
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+            backgroundSize: "128px 128px",
+            animation: "grainShift 8s steps(10) infinite",
+            pointerEvents: "none",
+          }}
+        />
+        <FadeIn direction="scale">
+          <div style={{ maxWidth: "700px", margin: "0 auto", position: "relative", zIndex: 1 }}>
+            <h2
+              style={{
+                fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+                fontWeight: 800,
+                fontSize: isMobile ? "20px" : "28px",
+                lineHeight: 1.4,
+                letterSpacing: "0.05em",
+                color: TEXT_W,
+                marginBottom: "20px",
+              }}
+            >
+              {cta.heading}
+            </h2>
+            <p
+              style={{
+                fontSize: "14px",
+                lineHeight: 1.85,
+                color: TEXT_G,
+                letterSpacing: "0.05em",
+                marginBottom: "32px",
+              }}
+            >
+              {nl2br(cta.subtext)}
+            </p>
+            <a
+              href={`tel:${cta.phone}`}
+              style={{
+                display: "inline-block",
+                fontFamily: "'Oswald',sans-serif",
+                fontWeight: 800,
+                fontSize: isMobile ? "36px" : "52px",
+                color: TEXT_W,
+                letterSpacing: "0.04em",
+                marginBottom: "8px",
+                transition: "text-shadow 0.3s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.textShadow = "0 0 20px rgba(255,255,255,0.3)")
+              }
+              onMouseLeave={(e) => (e.currentTarget.style.textShadow = "none")}
+            >
+              {cta.phone}
+            </a>
+            <p
+              style={{
+                fontSize: "12px",
+                color: TEXT_G,
+                letterSpacing: "0.05em",
+                marginBottom: "28px",
+              }}
+            >
+              {company.hours}
+            </p>
+            <a
+              href="#apply"
+              style={{
+                display: "inline-block",
+                background: CTA_BG,
+                color: TEXT_W,
+                padding: isMobile ? "14px 36px" : "16px 52px",
+                borderRadius: "4px",
+                fontWeight: 800,
+                fontSize: "16px",
+                letterSpacing: "0.06em",
+                transition: "transform 0.3s, box-shadow 0.3s, background 0.3s",
+                position: "relative",
+                overflow: "hidden",
+                animation: "pulse 2.5s ease-in-out 2s infinite",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-3px) scale(1.02)";
+                e.currentTarget.style.boxShadow = "0 8px 28px rgba(0,0,0,0.5)";
+                e.currentTarget.style.background = ACCENT_HOVER;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0) scale(1)";
+                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.background = CTA_BG;
+              }}
+            >
+              <span
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "50%",
+                  height: "100%",
+                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)",
+                  animation: "shimmer 3s ease-in-out infinite 1s",
+                }}
+              />
+              <span style={{ position: "relative", zIndex: 1 }}>{cta.webLabel}</span>
+            </a>
+          </div>
+        </FadeIn>
       </section>
 
+      {/* ── CTA -> Footer divider ── */}
+      <TriangleDivider fromColor={BG_ALT} toColor={BG_DARK} />
+
       {/* ===== FOOTER ===== */}
-      <footer style={{
-        background: BG_DARK, padding: isMobile ? "48px 20px 28px" : "60px 48px 32px",
-        borderTop: "none",
-        position: "relative", overflow: "hidden",
-      }}>
-        {/* 背景画像 */}
-        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(/keikamotsu-new-templates/images/footer-bg.webp)", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.05, pointerEvents: "none" }} />
-        {/* グラデーショントップライン */}
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(to right, transparent, ${ACCENT_LIGHT}, transparent)` }} />
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <p style={{
-            fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
-            fontSize: isMobile ? "16px" : "18px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.05em",
-            marginBottom: "28px", lineHeight: 1.5,
-          }}>
-            {footer.catchphrase}
-          </p>
+      <footer
+        style={{
+          background: BG_DARK,
+          padding: isMobile ? "48px 20px 28px" : "60px 48px 32px",
+          borderTop: "none",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Background image */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${IMG.footerBg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.05,
+            pointerEvents: "none",
+          }}
+        />
+        {/* Gradient top line */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: `linear-gradient(to right, transparent, ${ACCENT_LIGHT}, transparent)`,
+          }}
+        />
+        <FadeIn>
+          <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
+            <p
+              style={{
+                fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+                fontWeight: 800,
+                fontSize: isMobile ? "16px" : "18px",
+                color: "rgba(255,255,255,0.35)",
+                letterSpacing: "0.05em",
+                marginBottom: "28px",
+                lineHeight: 1.5,
+              }}
+            >
+              {footer.catchphrase}
+            </p>
 
-          <nav style={{
-            display: "flex", flexWrap: "wrap", gap: isMobile ? "10px 16px" : "12px 28px",
-            marginBottom: "32px",
-          }}>
-            {navLinks.map((l) => (
-              <a key={l.href} href={l.href} style={{ fontSize: "12px", color: TEXT_G, letterSpacing: "0.05em", transition: "color 0.2s" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = TEXT_W)}
-                onMouseLeave={(e) => (e.currentTarget.style.color = TEXT_G)}
-              >
-                {l.label}
-              </a>
-            ))}
-          </nav>
+            <nav
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: isMobile ? "10px 16px" : "12px 28px",
+                marginBottom: "32px",
+              }}
+            >
+              {navLinks.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  className="nav-link"
+                  style={{
+                    fontSize: "12px",
+                    color: TEXT_G,
+                    letterSpacing: "0.05em",
+                    transition: "color 0.2s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = TEXT_W)}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = TEXT_G)}
+                >
+                  {l.label}
+                </a>
+              ))}
+            </nav>
 
-          <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.25)", letterSpacing: "0.04em" }}>
-            &copy; {new Date().getFullYear()} {company.name} All rights reserved.
-          </p>
-        </div>
+            <p style={{ fontSize: "11px", color: "rgba(255,255,255,0.25)", letterSpacing: "0.04em" }}>
+              &copy; {new Date().getFullYear()} {company.name} All rights reserved.
+            </p>
+          </div>
+        </FadeIn>
       </footer>
     </>
   );
-}
-
-
-/* ─── Sub-components ─── */
-
-function SectionTitle({ label, title, num }: { label: string; title: string; num?: string }) {
-  return (
-    <div data-anim style={{ opacity: 0, transform: "translateY(12px)", transition: "opacity 0.7s ease-out, transform 0.7s ease-out", position: "relative" }}>
-      {/* 大きな背景番号 */}
-      {num && (
-        <span style={{
-          position: "absolute", top: -28, left: 0,
-          fontSize: 100, fontWeight: 900, color: "rgba(255,255,255,0.03)",
-          fontFamily: "'Oswald',sans-serif", lineHeight: 1, pointerEvents: "none",
-        }}>
-          {num}
-        </span>
-      )}
-      <span style={{
-        fontFamily: "'Oswald',sans-serif", fontWeight: 700, fontSize: "12px",
-        letterSpacing: "0.2em", color: TEXT_G, textTransform: "uppercase",
-        display: "block", marginBottom: "6px", position: "relative", zIndex: 1,
-      }}>
-        ─ {label} ─
-      </span>
-      <h2 style={{
-        fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
-        fontSize: "28px", lineHeight: 1.2, letterSpacing: "0.05em", color: TEXT_W,
-        position: "relative", zIndex: 1,
-        textShadow: "0 2px 12px rgba(0,0,0,0.3)",
-      }}>
-        {title}
-      </h2>
-      <div style={{
-        width: "48px", height: "3px",
-        background: `linear-gradient(to right, ${ACCENT_LIGHT}, transparent)`,
-        marginTop: "12px", borderRadius: "2px",
-      }} />
-    </div>
-  );
-}
-
-function CounterNum({ target, style }: { target: number; style: React.CSSProperties }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const counted = useRef(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !counted.current) {
-          counted.current = true;
-          let start = 0;
-          const duration = 1800;
-          const startTime = performance.now();
-
-          const tick = (now: number) => {
-            const elapsed = now - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            const current = Math.round(eased * target);
-            el.textContent = String(current);
-            if (progress < 1) requestAnimationFrame(tick);
-          };
-          requestAnimationFrame(tick);
-        }
-      },
-      { threshold: 0.5 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [target]);
-
-  return <span ref={ref} style={style}>0</span>;
 }

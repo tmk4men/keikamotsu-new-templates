@@ -21,35 +21,35 @@ import {
 } from "@/data/corporateSiteData";
 
 /* ───────────────────── CONSTANTS ───────────────────── */
-const ACCENT = "#32373c";
+const ACCENT = "#00e5ff";
 const DARK = "#0d1117";
 const LIGHT = "#ffffff";
-const CTA_BG = "#32373c";
-const SUB_DARK = "#2d2d2d";
+const CTA_BG = "#00e5ff";
+const SUB_DARK = "#161b22";
+const GRAY = "#8b949e";
 const BP = 768;
 
-/* service images */
+/* image paths */
+const IMG = "/keikamotsu-new-templates/images";
+const VID = "/keikamotsu-new-templates/videos";
+
 const SERVICE_IMAGES = [
-  "/keikamotsu-new-templates/images/service-b2b.webp",
-  "/keikamotsu-new-templates/images/service-ec.webp",
-  "/keikamotsu-new-templates/images/service-route.webp",
-  "/keikamotsu-new-templates/images/service-spot.webp",
+  `${IMG}/service-b2b.webp`,
+  `${IMG}/service-ec.webp`,
+  `${IMG}/service-route.webp`,
+  `${IMG}/service-spot.webp`,
 ];
-
-/* strength images */
 const STRENGTH_IMAGES = [
-  "/keikamotsu-new-templates/images/strength-01.webp",
-  "/keikamotsu-new-templates/images/strength-02.webp",
-  "/keikamotsu-new-templates/images/strength-03.webp",
+  `${IMG}/strength-01.webp`,
+  `${IMG}/strength-02.webp`,
+  `${IMG}/strength-03.webp`,
 ];
-
-/* history images */
 const HISTORY_IMAGES: Record<string, string> = {
-  "2021": "/keikamotsu-new-templates/images/history-2021.webp",
-  "2022": "/keikamotsu-new-templates/images/history-2022.webp",
-  "2023": "/keikamotsu-new-templates/images/history-2023.webp",
-  "2024": "/keikamotsu-new-templates/images/history-2024.webp",
-  "2025": "/keikamotsu-new-templates/images/history-2025.webp",
+  "2021": `${IMG}/history-2021.webp`,
+  "2022": `${IMG}/history-2022.webp`,
+  "2023": `${IMG}/history-2023.webp`,
+  "2024": `${IMG}/history-2024.webp`,
+  "2025": `${IMG}/history-2025.webp`,
 };
 
 /* ───────────────────── HOOK: isMobile ───────────────────── */
@@ -78,7 +78,7 @@ function useReveal(): [React.RefObject<HTMLDivElement | null>, boolean] {
           io.disconnect();
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.12 }
     );
     io.observe(el);
     return () => io.disconnect();
@@ -91,7 +91,6 @@ function useCounter(end: number, visible: boolean, duration = 2000) {
   const [count, setCount] = useState(0);
   useEffect(() => {
     if (!visible) return;
-    let start = 0;
     const startTime = performance.now();
     const step = (now: number) => {
       const progress = Math.min((now - startTime) / duration, 1);
@@ -128,33 +127,109 @@ function useTypewriter(text: string, speed = 80, delay = 500) {
   return { displayed, done };
 }
 
-/* ───────────────────── SECTION WRAPPER ───────────────────── */
-function Section({
-  id,
-  bg,
-  children,
-  style,
-  clip,
+/* ───────────────────── DIAGONAL DIVIDER ───────────────────── */
+function DiagDivider({
+  from,
+  to,
+  direction = "left",
+  height = 80,
 }: {
-  id?: string;
-  bg: string;
-  children: React.ReactNode;
-  style?: React.CSSProperties;
-  clip?: string;
+  from: string;
+  to: string;
+  direction?: "left" | "right";
+  height?: number;
 }) {
+  const clip =
+    direction === "left"
+      ? `polygon(0 0, 100% ${height}px, 100% 100%, 0 100%)`
+      : `polygon(0 ${height}px, 100% 0, 100% 100%, 0 100%)`;
   return (
-    <section
-      id={id}
+    <div
       style={{
-        background: bg,
+        height,
+        background: to,
+        clipPath: clip,
+        marginTop: -1,
         position: "relative",
-        overflow: "hidden",
-        clipPath: clip || "none",
-        ...style,
+        zIndex: 2,
+      }}
+    />
+  );
+}
+
+/* ───────────────────── SECTION HEADING ───────────────────── */
+function SectionHeading({
+  num,
+  enTitle,
+  jpTitle,
+  light = false,
+}: {
+  num: string;
+  enTitle: string;
+  jpTitle: string;
+  light?: boolean;
+}) {
+  const [ref, vis] = useReveal();
+  return (
+    <div
+      ref={ref}
+      style={{
+        marginBottom: 48,
+        opacity: vis ? 1 : 0,
+        transform: vis ? "translateY(0)" : "translateY(30px)",
+        transition: "all 0.7s cubic-bezier(.22,1,.36,1)",
       }}
     >
-      {children}
-    </section>
+      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 8 }}>
+        <span
+          style={{
+            fontFamily: "'Oswald', sans-serif",
+            fontSize: 64,
+            fontWeight: 700,
+            color: ACCENT,
+            lineHeight: 1,
+            letterSpacing: "-0.02em",
+            WebkitTextStroke: light ? `1px ${ACCENT}` : "none",
+            WebkitTextFillColor: light ? "transparent" : ACCENT,
+          }}
+        >
+          {num}
+        </span>
+        <div
+          style={{
+            width: 60,
+            height: 3,
+            background: ACCENT,
+            transform: "skewX(-20deg)",
+          }}
+        />
+      </div>
+      <p
+        style={{
+          fontFamily: "'Oswald', 'Zen Kaku Gothic New', sans-serif",
+          fontSize: 13,
+          fontWeight: 300,
+          textTransform: "uppercase" as const,
+          letterSpacing: "0.2em",
+          color: light ? "rgba(255,255,255,0.5)" : GRAY,
+          margin: "0 0 4px",
+        }}
+      >
+        {enTitle}
+      </p>
+      <h2
+        style={{
+          fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+          fontWeight: 900,
+          fontSize: 32,
+          color: light ? LIGHT : DARK,
+          margin: 0,
+          letterSpacing: "0.04em",
+        }}
+      >
+        {jpTitle}
+      </h2>
+    </div>
   );
 }
 
@@ -165,7 +240,15 @@ export default function CP04Page() {
   const isMobile = useIsMobile();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const heroTyped = useTypewriter(hero.headline, 80, 500);
+  const heroTyped = useTypewriter(hero.headline, 80, 600);
+
+  /* form */
+  const [formData, setFormData] = useState<Record<string, string>>({});
+  const [formSent, setFormSent] = useState(false);
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setFormSent(true);
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -179,23 +262,162 @@ export default function CP04Page() {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  /* shared text styles */
-  const headingStyle: React.CSSProperties = {
-    fontFamily: "'Inter', 'Noto Sans JP', sans-serif",
-    fontWeight: 800,
-    margin: 0,
+  /* reveal refs for every section */
+  const [servRef, servVis] = useReveal();
+  const [strRef, strVis] = useReveal();
+  const [ceoRef, ceoVis] = useReveal();
+  const [compRef, compVis] = useReveal();
+  const [histRef, histVis] = useReveal();
+  const [numRef, numVis] = useReveal();
+  const [partRef, partVis] = useReveal();
+  const [newsRef, newsVis] = useReveal();
+  const [recRef, recVis] = useReveal();
+  const [accRef, accVis] = useReveal();
+  const [contRef, contVis] = useReveal();
+
+  /* ─── STYLES ─── */
+  const oswald: React.CSSProperties = {
+    fontFamily: "'Oswald', sans-serif",
+  };
+  const zenKaku: React.CSSProperties = {
+    fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
   };
   const bodyFont: React.CSSProperties = {
     fontFamily: "'Noto Sans JP', sans-serif",
     fontWeight: 400,
     lineHeight: 1.85,
   };
-  const jpHeading: React.CSSProperties = {
-    fontFamily: "'Noto Sans JP', sans-serif",
-    fontWeight: 700,
-  };
 
-  /* ───────── HEADER ───────── */
+  /* CSS keyframes */
+  const cssKeyframes = `
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;700&family=Zen+Kaku+Gothic+New:wght@400;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    @keyframes slideInLeft {
+      from { transform: translateX(-80px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideInRight {
+      from { transform: translateX(80px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes diagonalSlide {
+      from { transform: translateX(-100%) skewX(-20deg); opacity: 0; }
+      to { transform: translateX(0) skewX(-20deg); opacity: 1; }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,229,255,0.4); }
+      50% { box-shadow: 0 0 20px 8px rgba(0,229,255,0.15); }
+    }
+    @keyframes shineSweep {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+    @keyframes drawLine {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+    @keyframes floatTriangle {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    @keyframes expandWidth {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    html { scroll-behavior: smooth; }
+    body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+
+    .edge-btn {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .edge-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 32px rgba(0,229,255,0.3);
+    }
+    .edge-btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+      transition: none;
+    }
+    .edge-btn:hover::after {
+      animation: shineSweep 0.6s ease-out;
+    }
+
+    .edge-card {
+      transition: transform 0.4s cubic-bezier(.22,1,.36,1), box-shadow 0.4s;
+    }
+    .edge-card:hover {
+      transform: perspective(800px) rotateY(-3deg) rotateX(2deg) translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .nav-link {
+      position: relative;
+      text-decoration: none;
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      transition: color 0.3s;
+      padding-bottom: 4px;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: ${ACCENT};
+      transition: width 0.3s;
+    }
+    .nav-link:hover { color: ${ACCENT}; }
+    .nav-link:hover::after { width: 100%; }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: ${SUB_DARK};
+      border: 2px solid transparent;
+      color: ${LIGHT};
+      font-size: 15px;
+      font-family: 'Noto Sans JP', sans-serif;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .form-input:focus {
+      border-color: ${ACCENT};
+      box-shadow: 0 0 0 3px rgba(0,229,255,0.15);
+    }
+
+    .cta-pulse {
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+  `;
+
+  /* ═══════════════ HEADER ═══════════════ */
   const headerEl = (
     <header
       style={{
@@ -206,90 +428,62 @@ export default function CP04Page() {
         zIndex: 1000,
         background: scrolled ? "rgba(13,17,23,0.95)" : "transparent",
         backdropFilter: scrolled ? "blur(12px)" : "none",
-        borderBottom: scrolled ? `1px solid rgba(255,255,255,0.12)` : "none",
-        transition: "background .4s, border-color .4s, backdrop-filter .4s",
+        borderBottom: scrolled ? `1px solid rgba(0,229,255,0.15)` : "none",
+        transition: "all 0.4s",
+        padding: scrolled ? "12px 0" : "20px 0",
       }}
     >
       <div
         style={{
-          maxWidth: 1280,
+          maxWidth: 1200,
           margin: "0 auto",
-          padding: isMobile ? "14px 20px" : "16px 48px",
+          padding: "0 32px",
           display: "flex",
-          alignItems: "center",
           justifyContent: "space-between",
+          alignItems: "center",
         }}
       >
         {/* Logo */}
-        <div
-          style={{
-            ...headingStyle,
-            fontSize: isMobile ? 18 : 22,
-            color: LIGHT,
-            letterSpacing: "0.08em",
-            cursor: "pointer",
-          }}
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        >
-          {company.name.slice(0, 8)}
-          <span style={{ color: "#888", marginLeft: 2 }}>.</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              background: ACCENT,
+              clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)",
+            }}
+          />
+          <span
+            style={{
+              ...oswald,
+              fontWeight: 700,
+              fontSize: 18,
+              color: LIGHT,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase" as const,
+            }}
+          >
+            {company.nameEn.split(" ")[0]}
+          </span>
         </div>
 
         {/* Desktop nav */}
         {!isMobile && (
-          <nav style={{ display: "flex", alignItems: "center", gap: 28 }}>
-            {navLinks.slice(0, 6).map((l) => (
+          <nav style={{ display: "flex", gap: 24 }}>
+            {navLinks.map((l) => (
               <a
                 key={l.href}
-                onClick={() => scrollTo(l.href)}
-                className="cp04-nav-link"
-                style={{
-                  color: "rgba(255,255,255,0.8)",
-                  textDecoration: "none",
-                  fontSize: 13,
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  transition: "color .2s",
-                  fontFamily: "'Noto Sans JP', sans-serif",
-                  position: "relative",
-                  paddingBottom: 4,
+                className="nav-link"
+                href={l.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollTo(l.href);
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = LIGHT)}
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "rgba(255,255,255,0.8)")
-                }
+                style={{ ...oswald, fontWeight: 300, textTransform: "uppercase" as const }}
               >
                 {l.label}
               </a>
             ))}
-            <button
-              onClick={() => scrollTo("#contact")}
-              className="cp04-cta-btn"
-              style={{
-                background: CTA_BG,
-                color: LIGHT,
-                border: "none",
-                padding: "10px 26px",
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: "pointer",
-                fontFamily: "'Noto Sans JP', sans-serif",
-                clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
-                transition: "transform .2s, box-shadow .2s",
-                position: "relative",
-                overflow: "hidden",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.05)";
-                e.currentTarget.style.boxShadow = "0 4px 20px rgba(50,55,60,0.5)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              お問い合わせ
-            </button>
           </nav>
         )}
 
@@ -308,25 +502,33 @@ export default function CP04Page() {
             }}
             aria-label="メニュー"
           >
-            {[0, 1, 2].map((i) => (
-              <span
-                key={i}
-                style={{
-                  display: "block",
-                  width: 24,
-                  height: 2,
-                  background: LIGHT,
-                  transition: "transform .3s, opacity .3s",
-                  transform:
-                    menuOpen && i === 0
-                      ? "rotate(45deg) translate(5px,5px)"
-                      : menuOpen && i === 2
-                        ? "rotate(-45deg) translate(5px,-5px)"
-                        : "none",
-                  opacity: menuOpen && i === 1 ? 0 : 1,
-                }}
-              />
-            ))}
+            <span
+              style={{
+                width: 28,
+                height: 2,
+                background: ACCENT,
+                transition: "transform 0.3s",
+                transform: menuOpen ? "rotate(45deg) translate(5px,5px)" : "none",
+              }}
+            />
+            <span
+              style={{
+                width: 28,
+                height: 2,
+                background: ACCENT,
+                transition: "opacity 0.3s",
+                opacity: menuOpen ? 0 : 1,
+              }}
+            />
+            <span
+              style={{
+                width: 28,
+                height: 2,
+                background: ACCENT,
+                transition: "transform 0.3s",
+                transform: menuOpen ? "rotate(-45deg) translate(5px,-5px)" : "none",
+              }}
+            />
           </button>
         )}
       </div>
@@ -336,25 +538,29 @@ export default function CP04Page() {
         <nav
           style={{
             background: "rgba(13,17,23,0.98)",
-            padding: "20px 24px 32px",
+            padding: "24px 32px",
             display: "flex",
             flexDirection: "column",
-            gap: 18,
+            gap: 16,
           }}
         >
           {navLinks.map((l) => (
             <a
               key={l.href}
-              onClick={() => scrollTo(l.href)}
+              href={l.href}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollTo(l.href);
+              }}
               style={{
-                color: "rgba(255,255,255,0.85)",
+                color: LIGHT,
                 textDecoration: "none",
                 fontSize: 15,
-                fontFamily: "'Noto Sans JP', sans-serif",
-                fontWeight: 500,
-                cursor: "pointer",
-                borderBottom: "1px solid rgba(255,255,255,0.08)",
-                paddingBottom: 14,
+                ...zenKaku,
+                fontWeight: 400,
+                padding: "4px 0",
+                borderLeft: `3px solid ${ACCENT}`,
+                paddingLeft: 12,
               }}
             >
               {l.label}
@@ -365,1307 +571,1242 @@ export default function CP04Page() {
     </header>
   );
 
-  /* ───────── HERO ───────── */
-  const heroEl = (() => {
-    const [ref, vis] = useReveal();
-    return (
-      <Section bg={DARK} style={{ minHeight: "100vh" }}>
+  /* ═══════════════ HERO - TRUE SPLIT SCREEN ═══════════════ */
+  const heroEl = (
+    <section
+      style={{
+        position: "relative",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        overflow: "hidden",
+        background: DARK,
+      }}
+    >
+      {/* LEFT DARK PANEL - content */}
+      <div
+        style={{
+          width: isMobile ? "100%" : "50%",
+          minHeight: isMobile ? "50vh" : "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: isMobile ? "120px 24px 40px" : "0 60px 0 80px",
+          position: "relative",
+          zIndex: 3,
+          background: DARK,
+          clipPath: isMobile ? "none" : "polygon(0 0, 100% 0, 85% 100%, 0 100%)",
+        }}
+      >
+        {/* Decorative triangle */}
         <div
-          ref={ref}
-          style={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            minHeight: "100vh",
-          }}
-        >
-          {/* Left */}
-          <div
-            style={{
-              flex: isMobile ? "none" : 1,
-              background: DARK,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              padding: isMobile ? "120px 24px 48px" : "0 64px",
-              position: "relative",
-              zIndex: 2,
-              clipPath: isMobile
-                ? "none"
-                : "polygon(0 0, 100% 0, 85% 100%, 0 100%)",
-              opacity: vis ? 1 : 0,
-              transform: vis ? "translateX(0)" : "translateX(-60px)",
-              transition: "opacity .8s ease, transform .8s ease",
-            }}
-          >
-            {/* Noise overlay */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                opacity: 0.03,
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-                backgroundRepeat: "repeat",
-                backgroundSize: "128px 128px",
-                pointerEvents: "none",
-              }}
-            />
-
-            {/* Floating geometric triangle */}
-            <div
-              className="cp04-float-geo"
-              style={{
-                position: "absolute",
-                top: "15%",
-                right: "10%",
-                width: 0,
-                height: 0,
-                borderLeft: "30px solid transparent",
-                borderRight: "30px solid transparent",
-                borderBottom: "52px solid rgba(255,255,255,0.03)",
-                pointerEvents: "none",
-              }}
-            />
-
-            {/* Floating parallelogram */}
-            <div
-              className="cp04-float-geo-2"
-              style={{
-                position: "absolute",
-                bottom: "20%",
-                right: "15%",
-                width: 60,
-                height: 40,
-                background: "rgba(255,255,255,0.02)",
-                transform: "skewX(-15deg)",
-                pointerEvents: "none",
-              }}
-            />
-
-            <div
-              style={{
-                width: 48,
-                height: 4,
-                background: "#555",
-                marginBottom: 28,
-              }}
-            />
-            <h1
-              style={{
-                fontFamily: "'Oswald', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
-                fontWeight: 800,
-                fontSize: isMobile ? 32 : 56,
-                color: LIGHT,
-                lineHeight: 1.15,
-                letterSpacing: "-0.02em",
-                marginBottom: 24,
-                textTransform: "uppercase",
-              }}
-            >
-              {heroTyped.displayed}
-              {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
-            </h1>
-            <p
-              style={{
-                ...bodyFont,
-                color: "rgba(255,255,255,0.7)",
-                fontSize: isMobile ? 14 : 16,
-                maxWidth: 480,
-                marginBottom: 40,
-              }}
-            >
-              {hero.subtext[0]}
-            </p>
-            <button
-              onClick={() => scrollTo("#contact")}
-              className="cp04-hero-cta"
-              style={{
-                background: CTA_BG,
-                color: LIGHT,
-                border: "none",
-                padding: isMobile ? "16px 32px" : "18px 44px",
-                fontSize: 15,
-                fontWeight: 700,
-                cursor: "pointer",
-                fontFamily: "'Noto Sans JP', sans-serif",
-                clipPath: "polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
-                alignSelf: "flex-start",
-                transition: "transform .25s, box-shadow .25s",
-                position: "relative",
-                overflow: "hidden",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.06)";
-                e.currentTarget.style.boxShadow = "0 6px 28px rgba(50,55,60,0.6)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              {hero.cta}
-            </button>
-          </div>
-
-          {/* Right - video */}
-          <div
-            style={{
-              flex: isMobile ? "none" : 1,
-              position: "relative",
-              minHeight: isMobile ? 300 : "100vh",
-              overflow: "hidden",
-            }}
-          >
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              poster="/keikamotsu-new-templates/images/hero-bg.webp"
-              style={{
-                position: "absolute",
-                top: 0,
-                left: isMobile ? 0 : "-15%",
-                width: isMobile ? "100%" : "115%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            >
-              <source src="/keikamotsu-new-templates/videos/hero-nightcity.mp4" type="video/mp4" />
-            </video>
-            {/* Noise texture overlay on video */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                opacity: 0.04,
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-                backgroundRepeat: "repeat",
-                backgroundSize: "128px 128px",
-                pointerEvents: "none",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(90deg, rgba(13,17,23,0.4) 0%, transparent 40%)",
-              }}
-            />
-            {/* Floating geometric on video side */}
-            <div
-              className="cp04-float-geo-3"
-              style={{
-                position: "absolute",
-                bottom: "25%",
-                left: "20%",
-                width: 80,
-                height: 80,
-                border: "2px solid rgba(255,255,255,0.08)",
-                transform: "rotate(45deg)",
-                pointerEvents: "none",
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div
-          className="cp04-scroll-indicator"
           style={{
             position: "absolute",
-            bottom: 40,
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 8,
-            zIndex: 10,
+            top: isMobile ? 100 : 120,
+            left: isMobile ? 20 : 60,
+            width: 80,
+            height: 80,
+            border: `2px solid rgba(0,229,255,0.2)`,
+            clipPath: "polygon(50% 0%, 100% 100%, 0% 100%)",
+            animation: "floatTriangle 6s ease-in-out infinite",
           }}
-        >
-          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", letterSpacing: "0.15em", fontFamily: "'Inter', sans-serif" }}>SCROLL</span>
-          <div style={{ width: 1, height: 40, background: "rgba(255,255,255,0.2)", position: "relative", overflow: "hidden" }}>
-            <div className="cp04-scroll-line" style={{ width: 1, height: 20, background: "rgba(255,255,255,0.7)", position: "absolute", top: -20 }} />
-          </div>
-        </div>
-      </Section>
-    );
-  })();
-
-  /* ───────── SERVICES ───────── */
-  const servicesEl = (() => {
-    return (
-      <Section id="services" bg={LIGHT} style={{ paddingTop: isMobile ? 80 : 150, paddingBottom: isMobile ? 60 : 100 }}>
-        {/* Diagonal divider top */}
-        <div style={{
-          position: "absolute",
-          top: -1,
-          left: 0,
-          width: "100%",
-          height: 100,
-          background: DARK,
-          clipPath: "polygon(0 0, 100% 0, 100% 0%, 0 100%)",
-        }} />
-        {/* Decorative diagonal line */}
-        <div className="cp04-diag-line" style={{
-          position: "absolute",
-          top: 80,
-          right: 0,
-          width: 200,
-          height: 2,
-          background: `linear-gradient(90deg, transparent, ${ACCENT})`,
-          transform: "rotate(-3deg)",
-          opacity: 0.15,
-        }} />
-        <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
-          {services.map((s, i) => {
-            const isOdd = i % 2 === 0;
-            const bg = isOdd ? DARK : LIGHT;
-            const fg = isOdd ? LIGHT : DARK;
-            return <ServiceRow key={s.num} s={s} idx={i} isOdd={isOdd} bg={bg} fg={fg} isMobile={isMobile} headingStyle={headingStyle} jpHeading={jpHeading} bodyFont={bodyFont} />;
-          })}
-        </div>
-      </Section>
-    );
-  })();
-
-  /* ───────── STRENGTHS ───────── */
-  const strengthsEl = (() => {
-    return (
-      <Section
-        id="strengths"
-        bg={DARK}
-        style={{
-          padding: isMobile ? "72px 20px" : "120px 48px 110px",
-        }}
-        clip="polygon(0 0, 100% 4%, 100% 96%, 0 100%)"
-      >
-        {/* Background image with overlay */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: "url(/keikamotsu-new-templates/images/strength-01.webp)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          opacity: 0.15,
-        }} />
-        {/* Animated diagonal decoration */}
-        <div className="cp04-diag-deco" style={{
-          position: "absolute",
-          top: "10%",
-          left: -50,
-          width: 300,
-          height: 2,
-          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)",
-          transform: "rotate(-5deg)",
-        }} />
-        <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
-          <p
-            className="cp04-clip-reveal"
-            style={{
-              ...headingStyle,
-              fontSize: 13,
-              color: "rgba(255,255,255,0.5)",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              marginBottom: 8,
-            }}
-          >
-            -- Our Strengths --
-          </p>
-          <h2
-            className="cp04-clip-reveal"
-            style={{
-              ...jpHeading,
-              fontSize: isMobile ? 26 : 36,
-              color: LIGHT,
-              marginBottom: isMobile ? 48 : 72,
-            }}
-          >
-            私たちの強み
-          </h2>
-          {strengths.map((st, idx) => (
-            <StrengthItem key={st.num} st={st} idx={idx} isMobile={isMobile} headingStyle={headingStyle} jpHeading={jpHeading} bodyFont={bodyFont} />
-          ))}
-        </div>
-      </Section>
-    );
-  })();
-
-  /* ───────── CEO MESSAGE ───────── */
-  const ceoEl = (() => {
-    const [ref, vis] = useReveal();
-    return (
-      <Section id="message" bg={LIGHT}>
-        {/* Geometric triangle decoration */}
-        <div style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          width: 0,
-          height: 0,
-          borderTop: "200px solid rgba(13,17,23,0.03)",
-          borderLeft: "200px solid transparent",
-          pointerEvents: "none",
-          zIndex: 1,
-        }} />
+        />
+        {/* Decorative parallelogram */}
         <div
-          ref={ref}
           style={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            minHeight: isMobile ? "auto" : 600,
+            position: "absolute",
+            bottom: isMobile ? 40 : 140,
+            right: isMobile ? 20 : 80,
+            width: 120,
+            height: 40,
+            background: `rgba(0,229,255,0.06)`,
+            transform: "skewX(-20deg)",
+          }}
+        />
+
+        <p
+          style={{
+            ...oswald,
+            fontWeight: 300,
+            fontSize: 13,
+            textTransform: "uppercase" as const,
+            letterSpacing: "0.3em",
+            color: ACCENT,
+            marginBottom: 16,
           }}
         >
-          {/* Left photo */}
-          <div
+          {company.nameEn}
+        </p>
+        <h1
+          style={{
+            ...zenKaku,
+            fontWeight: 900,
+            fontSize: isMobile ? 32 : 48,
+            color: LIGHT,
+            lineHeight: 1.3,
+            margin: "0 0 24px",
+            letterSpacing: "0.04em",
+          }}
+        >
+          {heroTyped.displayed}
+          <span
             style={{
-              flex: isMobile ? "none" : "0 0 45%",
-              minHeight: isMobile ? 320 : 600,
-              background: `url(/keikamotsu-new-templates/images/ceo-portrait.webp) center/cover no-repeat`,
-              clipPath: isMobile
-                ? "polygon(0 0, 100% 0, 100% 90%, 0 100%)"
-                : "polygon(0 0, 100% 0, 88% 100%, 0 100%)",
-              opacity: vis ? 1 : 0,
-              transform: vis ? "translateX(0) skewX(0deg)" : "translateX(-40px) skewX(-2deg)",
-              transition: "opacity .8s ease, transform .8s ease",
+              display: "inline-block",
+              width: 3,
+              height: isMobile ? 32 : 48,
+              background: ACCENT,
+              marginLeft: 4,
+              verticalAlign: "middle",
+              animation: "blink 1s step-end infinite",
             }}
           />
-
-          {/* Right text */}
-          <div
+        </h1>
+        {hero.subtext.map((line, i) => (
+          <p
+            key={i}
             style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              padding: isMobile ? "40px 24px 64px" : "60px 64px 60px 80px",
-              opacity: vis ? 1 : 0,
-              transform: vis ? "translateX(0)" : "translateX(40px)",
-              transition: "opacity .8s ease .2s, transform .8s ease .2s",
+              ...bodyFont,
+              color: "rgba(255,255,255,0.65)",
+              fontSize: 14,
+              margin: "0 0 6px",
+              maxWidth: 440,
             }}
           >
-            <div
-              className="cp04-scaleX-reveal"
-              style={{
-                width: 40,
-                height: 4,
-                background: "#555",
-                marginBottom: 24,
-                transformOrigin: "left",
-                transform: vis ? "scaleX(1)" : "scaleX(0)",
-                transition: "transform .6s ease .3s",
-              }}
-            />
-            <p
-              style={{
-                ...headingStyle,
-                fontSize: 12,
-                color: ACCENT,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                marginBottom: 8,
-              }}
-            >
-              -- CEO Message --
-            </p>
-            <h2
-              style={{
-                ...jpHeading,
-                fontSize: isMobile ? 24 : 32,
-                color: DARK,
-                marginBottom: 32,
-              }}
-            >
-              代表メッセージ
-            </h2>
-            {ceoMessage.message.map((p, i) => (
-              <p
-                key={i}
-                style={{
-                  ...bodyFont,
-                  color: "#444",
-                  fontSize: 15,
-                  marginBottom: 18,
-                  opacity: vis ? 1 : 0,
-                  transform: vis ? "translateY(0)" : "translateY(10px)",
-                  transition: `opacity .5s ease ${0.4 + i * 0.1}s, transform .5s ease ${0.4 + i * 0.1}s`,
-                }}
-              >
-                {p}
-              </p>
-            ))}
-            <p
-              style={{
-                ...jpHeading,
-                fontSize: 16,
-                color: DARK,
-                marginTop: 16,
-              }}
-            >
-              {ceoMessage.title}
-              <span style={{ marginLeft: 16 }}>{ceoMessage.name}</span>
-            </p>
-          </div>
+            {line}
+          </p>
+        ))}
+        <div style={{ marginTop: 32 }}>
+          <button
+            className="edge-btn cta-pulse"
+            onClick={() => scrollTo("#contact")}
+            style={{
+              background: ACCENT,
+              color: DARK,
+              padding: "16px 40px",
+              fontSize: 15,
+              fontWeight: 700,
+              ...oswald,
+              textTransform: "uppercase" as const,
+              letterSpacing: "0.1em",
+              clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 100%, 16px 100%)",
+            }}
+          >
+            {hero.cta}
+          </button>
         </div>
-      </Section>
-    );
-  })();
+      </div>
 
-  /* ───────── COMPANY ───────── */
-  const companyEl = (() => {
-    const [ref, vis] = useReveal();
-    return (
-      <Section
-        id="company"
-        bg={LIGHT}
-        style={{ padding: isMobile ? "64px 20px 56px" : "85px 48px 75px" }}
+      {/* RIGHT VIDEO PANEL */}
+      <div
+        style={{
+          position: isMobile ? "relative" : "absolute",
+          top: 0,
+          right: 0,
+          width: isMobile ? "100%" : "60%",
+          height: isMobile ? "50vh" : "100%",
+          overflow: "hidden",
+        }}
       >
-        {/* Diagonal divider top */}
-        <div style={{
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={`${IMG}/hero-bg.webp`}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        >
+          <source src={`${VID}/hero-nightcity.mp4`} type="video/mp4" />
+        </video>
+        {/* Overlay gradient */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: isMobile
+              ? "linear-gradient(to bottom, rgba(13,17,23,0.4), rgba(13,17,23,0.7))"
+              : "linear-gradient(to right, rgba(13,17,23,0.6) 0%, transparent 40%)",
+          }}
+        />
+      </div>
+
+      {/* Scroll indicator */}
+      <div
+        style={{
           position: "absolute",
-          top: -1,
-          left: 0,
-          width: "100%",
-          height: 80,
+          bottom: 32,
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 5,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 8,
+        }}
+      >
+        <span style={{ ...oswald, fontSize: 11, color: ACCENT, letterSpacing: "0.2em", textTransform: "uppercase" as const }}>
+          Scroll
+        </span>
+        <div style={{ width: 1, height: 40, background: `linear-gradient(to bottom, ${ACCENT}, transparent)` }} />
+      </div>
+    </section>
+  );
+
+  /* ═══════════════ SERVICES - SKEWED BG ═══════════════ */
+  const servicesEl = (
+    <>
+      <DiagDivider from={DARK} to={LIGHT} direction="left" height={90} />
+      <section
+        id="services"
+        style={{
           background: LIGHT,
-          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 0%)",
-          zIndex: 1,
-        }} />
-        <div ref={ref} style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 32 : 48 }}>
-          {/* Left side: company image */}
-          <div style={{
-            flex: isMobile ? "none" : "0 0 40%",
-            minHeight: isMobile ? 220 : 400,
-            background: `url(/keikamotsu-new-templates/images/company.webp) center/cover no-repeat`,
-            clipPath: isMobile ? "none" : "polygon(0 0, 100% 0, 90% 100%, 0 100%)",
-            opacity: vis ? 1 : 0,
-            transform: vis ? "translateX(0)" : "translateX(-30px)",
-            transition: "opacity .7s ease, transform .7s ease",
-          }} />
-          {/* Right side: table */}
-          <div style={{ flex: 1 }}>
-            <p
-              style={{
-                ...headingStyle,
-                fontSize: 12,
-                color: ACCENT,
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                marginBottom: 8,
-              }}
-            >
-              -- Company --
-            </p>
-            <h2
-              style={{
-                ...jpHeading,
-                fontSize: isMobile ? 26 : 36,
-                color: DARK,
-                marginBottom: 48,
-              }}
-            >
-              会社概要
-            </h2>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                opacity: vis ? 1 : 0,
-                transform: vis ? "translateY(0)" : "translateY(12px)",
-                transition: "opacity .7s ease .2s, transform .7s ease .2s",
-              }}
-            >
-              <tbody>
-                {companyOverview.map((row) => (
-                  <tr
-                    key={row.dt}
-                    style={{ borderBottom: `1px solid #e8e8e8` }}
-                  >
-                    <td
+          position: "relative",
+          overflow: "hidden",
+          padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
+        }}
+      >
+        {/* Decorative diagonal lines */}
+        <div
+          style={{
+            position: "absolute",
+            top: 40,
+            right: -40,
+            width: 300,
+            height: 4,
+            background: `linear-gradient(90deg, ${ACCENT}, transparent)`,
+            transform: "rotate(-6deg)",
+            opacity: 0.15,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: 70,
+            right: -20,
+            width: 200,
+            height: 2,
+            background: `linear-gradient(90deg, ${ACCENT}, transparent)`,
+            transform: "rotate(-6deg)",
+            opacity: 0.1,
+          }}
+        />
+
+        <div ref={servRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+          <SectionHeading num="01" enTitle="Services" jpTitle="事業内容" />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+              gap: 32,
+            }}
+          >
+            {services.map((s, i) => {
+              const delay = i * 150;
+              return (
+                <div
+                  key={i}
+                  className="edge-card"
+                  style={{
+                    background: LIGHT,
+                    border: `1px solid #e0e0e0`,
+                    overflow: "hidden",
+                    opacity: servVis ? 1 : 0,
+                    transform: servVis
+                      ? "translateY(0)"
+                      : i % 2 === 0
+                      ? "translateX(-40px)"
+                      : "translateX(40px)",
+                    transition: `all 0.7s cubic-bezier(.22,1,.36,1) ${delay}ms`,
+                  }}
+                >
+                  {/* Image with diagonal overlay */}
+                  <div style={{ position: "relative", height: 200, overflow: "hidden" }}>
+                    <img
+                      src={SERVICE_IMAGES[i]}
+                      alt={s.title}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                    <div
                       style={{
-                        ...jpHeading,
-                        fontSize: 14,
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: 60,
+                        background: LIGHT,
+                        clipPath: "polygon(0 100%, 100% 30%, 100% 100%)",
+                      }}
+                    />
+                    {/* Number badge */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 16,
+                        left: 16,
+                        background: ACCENT,
                         color: DARK,
-                        padding: isMobile ? "16px 8px" : "20px 24px",
-                        whiteSpace: "nowrap",
-                        width: isMobile ? 100 : 160,
-                        verticalAlign: "top",
+                        padding: "6px 16px",
+                        ...oswald,
+                        fontWeight: 700,
+                        fontSize: 18,
+                        clipPath: "polygon(0 0, calc(100% - 8px) 0, 100% 100%, 8px 100%)",
                       }}
                     >
-                      <span style={{ marginRight: 6 }}>&#9642;</span>{row.dt}
-                    </td>
-                    <td
+                      {s.num}
+                    </div>
+                  </div>
+                  <div style={{ padding: "20px 24px 28px" }}>
+                    <h3
+                      style={{
+                        ...zenKaku,
+                        fontWeight: 700,
+                        fontSize: 18,
+                        color: DARK,
+                        margin: "0 0 12px",
+                      }}
+                    >
+                      {s.title}
+                    </h3>
+                    <p
                       style={{
                         ...bodyFont,
                         fontSize: 14,
-                        color: "#444",
-                        padding: isMobile ? "16px 8px" : "20px 24px",
+                        color: "#555",
+                        margin: 0,
                         whiteSpace: "pre-line",
                       }}
                     >
-                      {typeof row.dd === "string" ? row.dd.split("\n").map((line: string, li: number) => <span key={li}>{line}{li < row.dd.split("\n").length - 1 && <br />}</span>) : row.dd}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      {s.text}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-      </Section>
-    );
-  })();
+      </section>
+    </>
+  );
 
-  /* ───────── HISTORY ───────── */
-  const historyEl = (() => {
-    const [ref, vis] = useReveal();
-    return (
-      <Section
-        id="history"
-        bg="#f5f5f5"
+  /* ═══════════════ STRENGTHS - SKEWED DARK BG ═══════════════ */
+  const strengthsEl = (
+    <>
+      <DiagDivider from={LIGHT} to={DARK} direction="right" height={90} />
+      <section
+        id="strengths"
         style={{
-          padding: isMobile ? "48px 20px 40px" : "65px 48px 55px",
+          background: DARK,
+          position: "relative",
+          overflow: "hidden",
+          padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
         }}
       >
-        {/* Skewed top divider */}
-        <div style={{
-          position: "absolute",
-          top: -1,
-          left: 0,
-          width: "100%",
-          height: 60,
-          background: LIGHT,
-          transform: "skewY(-2deg)",
-          transformOrigin: "top left",
-        }} />
-        <div ref={ref} style={{ maxWidth: 940, margin: "0 auto", position: "relative" }}>
-          <p
-            style={{
-              ...headingStyle,
-              fontSize: 12,
-              color: ACCENT,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              marginBottom: 8,
-            }}
-          >
-            -- History --
-          </p>
-          <h2
-            style={{
-              ...jpHeading,
-              fontSize: isMobile ? 26 : 36,
-              color: DARK,
-              marginBottom: 56,
-            }}
-          >
-            沿革
-          </h2>
-          {history.map((h, i) => {
-            const imgSrc = HISTORY_IMAGES[String(h.year)];
+        {/* Large decorative triangle */}
+        <div
+          style={{
+            position: "absolute",
+            top: -60,
+            right: -60,
+            width: 300,
+            height: 300,
+            border: `1px solid rgba(0,229,255,0.08)`,
+            clipPath: "polygon(100% 0, 100% 100%, 0 100%)",
+          }}
+        />
+        <div ref={strRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+          <SectionHeading num="02" enTitle="Strengths" jpTitle="私たちの強み" light />
+          {strengths.map((s, i) => {
+            const isEven = i % 2 === 0;
+            const delay = i * 200;
             return (
               <div
-                key={h.year}
+                key={i}
                 style={{
                   display: "flex",
-                  gap: isMobile ? 16 : 32,
-                  marginBottom: 36,
-                  opacity: vis ? 1 : 0,
-                  transform: vis ? "translateY(0) skewY(0deg)" : "translateY(20px) skewY(1deg)",
-                  transition: `opacity .6s ease ${i * 0.12}s, transform .6s ease ${i * 0.12}s`,
+                  flexDirection: isMobile ? "column" : isEven ? "row" : "row-reverse",
+                  gap: isMobile ? 0 : 0,
+                  marginBottom: i < strengths.length - 1 ? 60 : 0,
+                  opacity: strVis ? 1 : 0,
+                  transform: strVis
+                    ? "translateY(0)"
+                    : `translateY(50px)`,
+                  transition: `all 0.8s cubic-bezier(.22,1,.36,1) ${delay}ms`,
+                  overflow: "hidden",
                 }}
               >
+                {/* Image - 60% */}
                 <div
                   style={{
-                    ...headingStyle,
-                    fontSize: isMobile ? 28 : 40,
-                    color: ACCENT,
-                    minWidth: isMobile ? 70 : 100,
-                    lineHeight: 1,
+                    width: isMobile ? "100%" : "60%",
+                    height: isMobile ? 220 : 320,
+                    position: "relative",
+                    overflow: "hidden",
                   }}
                 >
-                  {h.year}
+                  <img
+                    src={STRENGTH_IMAGES[i]}
+                    alt={s.title}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      clipPath: isMobile
+                        ? "none"
+                        : isEven
+                        ? "polygon(0 0, 95% 0, 100% 100%, 0 100%)"
+                        : "polygon(5% 0, 100% 0, 100% 100%, 0 100%)",
+                    }}
+                  />
+                  {/* Geometric numbered frame */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: 20,
+                      ...(isEven ? { right: isMobile ? 20 : 40 } : { left: isMobile ? 20 : 40 }),
+                      background: "rgba(13,17,23,0.9)",
+                      border: `2px solid ${ACCENT}`,
+                      padding: "8px 20px",
+                      ...oswald,
+                      fontWeight: 700,
+                      fontSize: 28,
+                      color: ACCENT,
+                      clipPath: "polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%)",
+                    }}
+                  >
+                    {s.num}
+                  </div>
                 </div>
+                {/* Text - 40% */}
                 <div
                   style={{
-                    flex: 1,
-                    background: LIGHT,
-                    padding: isMobile ? "18px 20px" : "24px 32px",
-                    borderLeft: `4px solid #555`,
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+                    width: isMobile ? "100%" : "40%",
                     display: "flex",
-                    flexDirection: isMobile ? "column" : "row",
-                    gap: 16,
-                    alignItems: isMobile ? "flex-start" : "center",
-                    transition: "box-shadow .3s, transform .3s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = "0 8px 28px rgba(0,0,0,0.12)";
-                    e.currentTarget.style.transform = "translateX(4px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.06)";
-                    e.currentTarget.style.transform = "translateX(0)";
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    padding: isMobile ? "28px 8px" : isEven ? "32px 32px 32px 48px" : "32px 48px 32px 32px",
                   }}
                 >
-                  {imgSrc && (
-                    <img
-                      src={imgSrc}
-                      alt={`${h.year}年`}
-                      style={{
-                        width: isMobile ? "100%" : 120,
-                        height: isMobile ? 120 : 80,
-                        objectFit: "cover",
-                        clipPath: "polygon(5% 0, 100% 0, 95% 100%, 0 100%)",
-                        flexShrink: 0,
-                      }}
-                    />
-                  )}
-                  <p style={{ ...bodyFont, fontSize: 15, color: "#333", margin: 0 }}>
-                    {h.event}
+                  <h3
+                    style={{
+                      ...zenKaku,
+                      fontWeight: 700,
+                      fontSize: 22,
+                      color: LIGHT,
+                      margin: "0 0 16px",
+                      borderLeft: `4px solid ${ACCENT}`,
+                      paddingLeft: 16,
+                    }}
+                  >
+                    {s.title}
+                  </h3>
+                  <p
+                    style={{
+                      ...bodyFont,
+                      fontSize: 14,
+                      color: "rgba(255,255,255,0.7)",
+                      margin: 0,
+                      whiteSpace: "pre-line",
+                    }}
+                  >
+                    {s.text}
                   </p>
                 </div>
               </div>
             );
           })}
         </div>
-      </Section>
-    );
-  })();
+      </section>
+    </>
+  );
 
-  /* ───────── NUMBERS ───────── */
-  const numbersEl = (() => {
-    const [ref, vis] = useReveal();
-    return (
-      <Section
-        id="numbers"
-        bg={CTA_BG}
-        style={{ padding: isMobile ? "72px 20px 56px" : "105px 48px 90px" }}
-        clip="polygon(0 8%, 100% 0, 100% 92%, 0 100%)"
-      >
-        {/* Background image */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: "url(/keikamotsu-new-templates/images/team.webp)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          opacity: 0.12,
-        }} />
-        {/* Noise texture */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          opacity: 0.05,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "128px 128px",
-          pointerEvents: "none",
-        }} />
-        <div
-          ref={ref}
-          style={{
-            maxWidth: 1100,
-            margin: "0 auto",
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1.1fr 0.9fr" : "0.95fr 1.1fr 0.9fr 1.05fr",
-            gap: isMobile ? 32 : 48,
-            textAlign: "center",
-            position: "relative",
-          }}
-        >
-          {numbers.map((n, i) => (
-            <NumberCard key={n.label} n={n} i={i} vis={vis} isMobile={isMobile} headingStyle={headingStyle} jpHeading={jpHeading} />
-          ))}
-        </div>
-      </Section>
-    );
-  })();
-
-  /* ───────── PARTNERS ───────── */
-  const partnersEl = (() => {
-    const [ref, vis] = useReveal();
-    return (
-      <Section
-        id="partners"
-        bg={LIGHT}
-        style={{ padding: isMobile ? "56px 20px 48px" : "75px 48px 65px" }}
-      >
-        <div ref={ref} style={{ maxWidth: 960, margin: "0 auto", textAlign: "center" }}>
-          <p
-            style={{
-              ...headingStyle,
-              fontSize: 12,
-              color: ACCENT,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              marginBottom: 8,
-            }}
-          >
-            -- Partners --
-          </p>
-          <h2
-            style={{
-              ...jpHeading,
-              fontSize: isMobile ? 26 : 36,
-              color: DARK,
-              marginBottom: 56,
-            }}
-          >
-            主要取引先
-          </h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: isMobile ? "1.05fr 0.95fr" : "1.15fr 0.85fr 1fr",
-              gap: 24,
-              opacity: vis ? 1 : 0,
-              transition: "opacity .8s ease",
-            }}
-          >
-            {partners.map((p, idx) => (
-              <div
-                key={p.name}
-                className="cp04-partner-card"
-                style={{
-                  background: "#f8f8f8",
-                  padding: "32px 20px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 12,
-                  border: "1px solid #eee",
-                  transition: "box-shadow .3s, transform .3s",
-                  opacity: vis ? 1 : 0,
-                  transform: vis ? "translateY(0)" : "translateY(20px)",
-                  transitionDelay: `${idx * 0.08}s`,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.12)";
-                  e.currentTarget.style.transform = "translateY(-4px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = "none";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
-              >
-                <div
-                  style={{
-                    width: 56,
-                    height: 56,
-                    background: DARK,
-                    clipPath: "polygon(10% 0, 100% 0, 90% 100%, 0 100%)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <span
-                    style={{ ...headingStyle, fontSize: 18, color: LIGHT }}
-                  >
-                    {p.name.charAt(p.name.length - 2)}
-                  </span>
-                </div>
-                <p
-                  style={{
-                    ...jpHeading,
-                    fontSize: 13,
-                    color: "#555",
-                    margin: 0,
-                  }}
-                >
-                  {p.name}
-                </p>
-                <span
-                  style={{
-                    fontSize: 11,
-                    color: "#999",
-                    fontFamily: "'Noto Sans JP', sans-serif",
-                  }}
-                >
-                  {p.industry}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Section>
-    );
-  })();
-
-  /* ───────── NEWS ───────── */
-  const newsEl = (() => {
-    const [ref, vis] = useReveal();
-    const tagColors: Record<string, string> = {
-      press: "#555",
-      new: "#555",
-      default: CTA_BG,
-    };
-    return (
-      <Section
-        id="news"
-        bg={DARK}
-        style={{ padding: isMobile ? "52px 20px 44px" : "70px 48px 60px" }}
-      >
-        {/* Skewed divider */}
-        <div style={{
-          position: "absolute",
-          top: -1,
-          left: 0,
-          width: "100%",
-          height: 80,
+  /* ═══════════════ CEO MESSAGE - SPLIT LAYOUT ═══════════════ */
+  const ceoEl = (
+    <>
+      <DiagDivider from={DARK} to={LIGHT} direction="left" height={90} />
+      <section
+        id="message"
+        style={{
           background: LIGHT,
-          clipPath: "polygon(0 0, 100% 0, 100% 30%, 0 100%)",
-        }} />
-        <div ref={ref} style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
-          <p
-            style={{
-              ...headingStyle,
-              fontSize: 12,
-              color: "rgba(255,255,255,0.5)",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              marginBottom: 8,
-            }}
-          >
-            -- News --
-          </p>
-          <h2
-            style={{
-              ...jpHeading,
-              fontSize: isMobile ? 26 : 36,
-              color: LIGHT,
-              marginBottom: 48,
-            }}
-          >
-            お知らせ
-          </h2>
-          {news.map((n, i) => (
-            <div
-              key={i}
-              style={{
-                display: "flex",
-                alignItems: isMobile ? "flex-start" : "center",
-                flexDirection: isMobile ? "column" : "row",
-                gap: isMobile ? 8 : 24,
-                padding: "22px 0",
-                borderBottom: "1px solid rgba(255,255,255,0.08)",
-                opacity: vis ? 1 : 0,
-                transform: vis ? "translateX(0)" : "translateX(-24px)",
-                transition: `opacity .5s ease ${i * 0.1}s, transform .5s ease ${i * 0.1}s`,
-                cursor: "pointer",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.3)";
-                e.currentTarget.style.paddingLeft = "8px";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.08)";
-                e.currentTarget.style.paddingLeft = "0px";
-              }}
-            >
-              <span
-                style={{
-                  ...headingStyle,
-                  fontSize: 13,
-                  color: "rgba(255,255,255,0.45)",
-                  minWidth: 100,
-                }}
-              >
-                - {n.date}
-              </span>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: LIGHT,
-                  background: tagColors[n.tagStyle] || CTA_BG,
-                  padding: "3px 12px",
-                  fontFamily: "'Noto Sans JP', sans-serif",
-                }}
-              >
-                {n.tag}
-              </span>
-              <span
-                style={{
-                  ...bodyFont,
-                  fontSize: 14,
-                  color: "rgba(255,255,255,0.85)",
-                  flex: 1,
-                }}
-              >
-                {n.title}
-              </span>
-            </div>
-          ))}
-        </div>
-      </Section>
-    );
-  })();
-
-  /* ───────── RECRUIT ───────── */
-  const recruitEl = (() => {
-    const [ref, vis] = useReveal();
-    return (
-      <Section id="recruit" bg={DARK}>
-        {/* Diagonal geometric decoration */}
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          clipPath: "polygon(0 0, 30% 0, 25% 100%, 0 100%)",
-          background: "rgba(255,255,255,0.02)",
-          pointerEvents: "none",
-        }} />
-        <div
-          ref={ref}
-          style={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            minHeight: isMobile ? "auto" : 420,
-          }}
-        >
-          {/* Left - with delivery image background */}
-          <div
-            style={{
-              flex: 1,
-              background: `linear-gradient(rgba(13,17,23,0.78), rgba(13,17,23,0.78)), url(/keikamotsu-new-templates/images/delivery.webp) center/cover no-repeat`,
-              padding: isMobile ? "64px 24px" : "80px 64px",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              opacity: vis ? 1 : 0,
-              transform: vis ? "translateX(0)" : "translateX(-40px)",
-              transition: "opacity .7s ease, transform .7s ease",
-            }}
-          >
-            <p
-              style={{
-                ...headingStyle,
-                fontSize: 12,
-                color: "rgba(255,255,255,0.5)",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                marginBottom: 12,
-              }}
-            >
-              -- Recruit --
-            </p>
-            <h2
-              style={{
-                ...jpHeading,
-                fontSize: isMobile ? 24 : 32,
-                color: LIGHT,
-                marginBottom: 24,
-              }}
-            >
-              {recruit.heading}
-            </h2>
-            <p
-              style={{
-                ...bodyFont,
-                fontSize: 14,
-                color: "rgba(255,255,255,0.7)",
-                whiteSpace: "pre-line",
-              }}
-            >
-              {recruit.text}
-            </p>
-          </div>
-          {/* Right - CTA */}
-          <div
-            style={{
-              flex: isMobile ? "none" : "0 0 40%",
-              background: SUB_DARK,
-              clipPath: isMobile
-                ? "polygon(0 8%, 100% 0, 100% 100%, 0 100%)"
-                : "polygon(15% 0, 100% 0, 100% 100%, 0 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: isMobile ? "64px 24px" : "80px 48px",
-              opacity: vis ? 1 : 0,
-              transform: vis ? "translateX(0)" : "translateX(40px)",
-              transition: "opacity .7s ease .15s, transform .7s ease .15s",
-            }}
-          >
-            <button
-              onClick={() => window.open(recruit.link, "_blank")}
-              className="cp04-recruit-cta"
-              style={{
-                background: LIGHT,
-                color: DARK,
-                border: "none",
-                padding: "20px 48px",
-                fontSize: 16,
-                fontWeight: 700,
-                cursor: "pointer",
-                fontFamily: "'Noto Sans JP', sans-serif",
-                clipPath: "polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
-                transition: "transform .25s, box-shadow .25s",
-                position: "relative",
-                overflow: "hidden",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.06)";
-                e.currentTarget.style.boxShadow = "0 8px 32px rgba(255,255,255,0.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
-              {recruit.cta}
-            </button>
-          </div>
-        </div>
-      </Section>
-    );
-  })();
-
-  /* ───────── ACCESS ───────── */
-  const accessEl = (() => {
-    const [ref, vis] = useReveal();
-    return (
-      <Section
-        id="access"
-        bg="#f5f5f5"
-        style={{ padding: isMobile ? "64px 20px 56px" : "95px 48px 80px" }}
+          position: "relative",
+          overflow: "hidden",
+          padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
+        }}
       >
-        {/* Diagonal top divider */}
-        <div style={{
-          position: "absolute",
-          top: -1,
-          left: 0,
-          width: "100%",
-          height: 70,
-          background: DARK,
-          clipPath: "polygon(0 0, 100% 0, 100% 0%, 0 100%)",
-        }} />
-        <div ref={ref} style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
-          <p
-            style={{
-              ...headingStyle,
-              fontSize: 12,
-              color: ACCENT,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              marginBottom: 8,
-            }}
-          >
-            -- Access --
-          </p>
-          <h2
-            style={{
-              ...jpHeading,
-              fontSize: isMobile ? 26 : 36,
-              color: DARK,
-              marginBottom: 48,
-            }}
-          >
-            {access.heading}
-          </h2>
+        <div ref={ceoRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+          <SectionHeading num="03" enTitle="CEO Message" jpTitle="代表メッセージ" />
           <div
             style={{
               display: "flex",
               flexDirection: isMobile ? "column" : "row",
-              gap: isMobile ? 32 : 48,
-              opacity: vis ? 1 : 0,
-              transform: vis ? "translateY(0)" : "translateY(12px)",
-              transition: "opacity .7s ease, transform .7s ease",
+              gap: isMobile ? 32 : 0,
+              opacity: ceoVis ? 1 : 0,
+              transform: ceoVis ? "translateY(0)" : "translateY(40px)",
+              transition: "all 0.8s cubic-bezier(.22,1,.36,1)",
             }}
           >
-            <div style={{ flex: 1 }}>
-              <div style={{ marginBottom: 24 }}>
+            {/* CEO Image - 40% */}
+            <div
+              style={{
+                width: isMobile ? "100%" : "40%",
+                position: "relative",
+              }}
+            >
+              <div
+                style={{
+                  position: "relative",
+                  height: isMobile ? 320 : 480,
+                  overflow: "hidden",
+                  clipPath: isMobile
+                    ? "none"
+                    : "polygon(0 0, 100% 0, 90% 100%, 0 100%)",
+                }}
+              >
+                <img
+                  src={`${IMG}/ceo-portrait.webp`}
+                  alt={ceoMessage.name}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
+              {/* Name plate */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  background: DARK,
+                  padding: "16px 32px",
+                  clipPath: "polygon(0 0, calc(100% - 20px) 0, 100% 100%, 0 100%)",
+                }}
+              >
+                <p style={{ ...oswald, fontWeight: 300, fontSize: 12, color: ACCENT, margin: "0 0 2px", textTransform: "uppercase" as const, letterSpacing: "0.1em" }}>
+                  {ceoMessage.title}
+                </p>
+                <p style={{ ...zenKaku, fontWeight: 700, fontSize: 20, color: LIGHT, margin: 0 }}>
+                  {ceoMessage.name}
+                </p>
+              </div>
+            </div>
+            {/* Message - 60% */}
+            <div
+              style={{
+                width: isMobile ? "100%" : "60%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                padding: isMobile ? "0" : "24px 0 24px 48px",
+              }}
+            >
+              {ceoMessage.message.map((p, i) => (
                 <p
+                  key={i}
                   style={{
-                    ...jpHeading,
-                    fontSize: 14,
-                    color: DARK,
-                    marginBottom: 6,
+                    ...bodyFont,
+                    fontSize: 15,
+                    color: "#333",
+                    margin: "0 0 20px",
+                    opacity: ceoVis ? 1 : 0,
+                    transform: ceoVis ? "translateY(0)" : "translateY(20px)",
+                    transition: `all 0.6s ease ${300 + i * 150}ms`,
                   }}
                 >
-                  所在地
+                  {p}
                 </p>
-                <p style={{ ...bodyFont, fontSize: 15, color: "#444", margin: 0 }}>
-                  〒{company.postalCode}
-                  <br />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+
+  /* ═══════════════ COMPANY OVERVIEW - SKEWED ═══════════════ */
+  const companyEl = (
+    <>
+      <DiagDivider from={LIGHT} to={DARK} direction="right" height={90} />
+      <section
+        id="company"
+        style={{
+          background: DARK,
+          position: "relative",
+          overflow: "hidden",
+          padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
+        }}
+      >
+        {/* Skewed decorative bg strip */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: `linear-gradient(135deg, ${SUB_DARK} 0%, transparent 50%)`,
+            transform: "skewY(-3deg)",
+            transformOrigin: "top left",
+          }}
+        />
+        <div ref={compRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
+          <SectionHeading num="04" enTitle="Company" jpTitle="会社概要" light />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              gap: 40,
+              opacity: compVis ? 1 : 0,
+              transform: compVis ? "translateY(0)" : "translateY(40px)",
+              transition: "all 0.8s cubic-bezier(.22,1,.36,1)",
+            }}
+          >
+            {/* Company image */}
+            <div style={{ width: isMobile ? "100%" : "40%", overflow: "hidden" }}>
+              <img
+                src={`${IMG}/company.webp`}
+                alt="会社外観"
+                style={{
+                  width: "100%",
+                  height: isMobile ? 220 : 360,
+                  objectFit: "cover",
+                  clipPath: "polygon(0 0, 100% 0, 95% 100%, 5% 100%)",
+                }}
+              />
+            </div>
+            {/* Table */}
+            <div style={{ width: isMobile ? "100%" : "60%" }}>
+              <dl style={{ margin: 0 }}>
+                {companyOverview.map((item, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      flexDirection: isMobile ? "column" : "row",
+                      borderBottom: `1px solid rgba(255,255,255,0.08)`,
+                      padding: "14px 0",
+                      opacity: compVis ? 1 : 0,
+                      transform: compVis ? "translateX(0)" : "translateX(20px)",
+                      transition: `all 0.5s ease ${i * 80}ms`,
+                    }}
+                  >
+                    <dt
+                      style={{
+                        ...oswald,
+                        fontWeight: 400,
+                        fontSize: 13,
+                        color: ACCENT,
+                        width: isMobile ? "100%" : 140,
+                        flexShrink: 0,
+                        letterSpacing: "0.05em",
+                        marginBottom: isMobile ? 4 : 0,
+                      }}
+                    >
+                      {item.dt}
+                    </dt>
+                    <dd
+                      style={{
+                        ...bodyFont,
+                        fontSize: 14,
+                        color: "rgba(255,255,255,0.85)",
+                        margin: 0,
+                      }}
+                    >
+                      {item.dd}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+
+  /* ═══════════════ HISTORY - DIAGONAL TIMELINE ═══════════════ */
+  const historyEl = (
+    <>
+      <DiagDivider from={DARK} to={LIGHT} direction="left" height={90} />
+      <section
+        id="history"
+        style={{
+          background: LIGHT,
+          position: "relative",
+          overflow: "hidden",
+          padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
+        }}
+      >
+        {/* Decorative parallelogram */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 60,
+            right: -40,
+            width: 200,
+            height: 100,
+            background: "rgba(0,229,255,0.04)",
+            transform: "skewX(-15deg)",
+          }}
+        />
+        <div ref={histRef} style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
+          <SectionHeading num="05" enTitle="History" jpTitle="沿革" />
+          <div style={{ position: "relative", paddingLeft: isMobile ? 40 : 60 }}>
+            {/* Vertical timeline line */}
+            <div
+              style={{
+                position: "absolute",
+                left: isMobile ? 16 : 24,
+                top: 0,
+                bottom: 0,
+                width: 3,
+                background: `linear-gradient(to bottom, ${ACCENT}, rgba(0,229,255,0.1))`,
+                transformOrigin: "top",
+                transform: histVis ? "scaleY(1)" : "scaleY(0)",
+                transition: "transform 1.2s cubic-bezier(.22,1,.36,1)",
+              }}
+            />
+            {history.map((h, i) => {
+              const delay = 300 + i * 250;
+              return (
+                <div
+                  key={i}
+                  style={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: isMobile ? 12 : 24,
+                    marginBottom: 40,
+                    position: "relative",
+                    opacity: histVis ? 1 : 0,
+                    transform: histVis ? "translateX(0)" : "translateX(-30px)",
+                    transition: `all 0.6s cubic-bezier(.22,1,.36,1) ${delay}ms`,
+                  }}
+                >
+                  {/* Timeline dot */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      left: isMobile ? -32 : -44,
+                      top: 8,
+                      width: 14,
+                      height: 14,
+                      background: ACCENT,
+                      clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)",
+                    }}
+                  />
+                  <div style={{ flexShrink: 0 }}>
+                    <span
+                      style={{
+                        ...oswald,
+                        fontWeight: 700,
+                        fontSize: 32,
+                        color: DARK,
+                        fontVariantNumeric: "tabular-nums",
+                      }}
+                    >
+                      {h.year}
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 20, flex: 1 }}>
+                    {HISTORY_IMAGES[h.year] && (
+                      <img
+                        src={HISTORY_IMAGES[h.year]}
+                        alt={h.year}
+                        style={{
+                          width: isMobile ? "100%" : 200,
+                          height: isMobile ? 160 : 120,
+                          objectFit: "cover",
+                          flexShrink: 0,
+                          clipPath: "polygon(0 0, calc(100% - 12px) 0, 100% 100%, 12px 100%)",
+                        }}
+                      />
+                    )}
+                    <p
+                      style={{
+                        ...bodyFont,
+                        fontSize: 15,
+                        color: "#444",
+                        margin: 0,
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      {h.event}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+
+  /* ═══════════════ NUMBERS - PARALLAX DARK ═══════════════ */
+  const numbersEl = (
+    <>
+      <DiagDivider from={LIGHT} to={DARK} direction="right" height={90} />
+      <section
+        id="numbers"
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          padding: isMobile ? "80px 20px" : "100px 0",
+        }}
+      >
+        {/* Parallax BG */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${IMG}/team.webp)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundAttachment: isMobile ? "scroll" : "fixed",
+          }}
+        />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(13,17,23,0.88)" }} />
+        {/* Skewed accent strip */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: 0,
+            right: 0,
+            height: 120,
+            background: `rgba(0,229,255,0.04)`,
+            transform: "skewY(-4deg)",
+          }}
+        />
+        <div ref={numRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
+            <p style={{ ...oswald, fontWeight: 300, fontSize: 13, color: ACCENT, letterSpacing: "0.2em", textTransform: "uppercase" as const, margin: "0 0 8px" }}>
+              Numbers
+            </p>
+            <h2 style={{ ...zenKaku, fontWeight: 900, fontSize: 28, color: LIGHT, margin: 0 }}>
+              数字で見る実績
+            </h2>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+              gap: 32,
+            }}
+          >
+            {numbers.map((n, i) => {
+              const numVal = parseFloat(n.value.replace(/,/g, ""));
+              const count = useCounter(numVal, numVis);
+              const delay = i * 150;
+              return (
+                <div
+                  key={i}
+                  style={{
+                    textAlign: "center",
+                    opacity: numVis ? 1 : 0,
+                    transform: numVis ? "translateY(0) scale(1)" : "translateY(30px) scale(0.9)",
+                    transition: `all 0.7s cubic-bezier(.22,1,.36,1) ${delay}ms`,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "baseline",
+                      gap: 2,
+                    }}
+                  >
+                    <span
+                      style={{
+                        ...oswald,
+                        fontWeight: 700,
+                        fontSize: isMobile ? 40 : 56,
+                        color: ACCENT,
+                        fontVariantNumeric: "tabular-nums",
+                        lineHeight: 1,
+                      }}
+                    >
+                      {count.toLocaleString()}
+                    </span>
+                    <span
+                      style={{
+                        ...oswald,
+                        fontWeight: 400,
+                        fontSize: 18,
+                        color: ACCENT,
+                      }}
+                    >
+                      {n.suffix}
+                    </span>
+                  </div>
+                  <p
+                    style={{
+                      ...bodyFont,
+                      fontSize: 13,
+                      color: "rgba(255,255,255,0.6)",
+                      marginTop: 8,
+                    }}
+                  >
+                    {n.label}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+
+  /* ═══════════════ PARTNERS ═══════════════ */
+  const partnersEl = (
+    <>
+      <DiagDivider from={DARK} to={LIGHT} direction="left" height={80} />
+      <section
+        id="partners"
+        style={{
+          background: LIGHT,
+          padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div ref={partRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+          <SectionHeading num="06" enTitle="Partners" jpTitle="取引先" />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+              gap: 24,
+            }}
+          >
+            {partners.map((p, i) => (
+              <div
+                key={i}
+                className="edge-card"
+                style={{
+                  background: LIGHT,
+                  border: "1px solid #e8e8e8",
+                  padding: 24,
+                  textAlign: "center",
+                  opacity: partVis ? 1 : 0,
+                  transform: partVis ? "translateY(0)" : "translateY(30px)",
+                  transition: `all 0.6s cubic-bezier(.22,1,.36,1) ${i * 100}ms`,
+                  clipPath: "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
+                }}
+              >
+                <div
+                  style={{
+                    width: 80,
+                    height: 80,
+                    margin: "0 auto 12px",
+                    background: "#f5f5f5",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
+                  }}
+                >
+                  <img
+                    src={p.logo}
+                    alt={p.name}
+                    style={{ maxWidth: 50, maxHeight: 50, objectFit: "contain" }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                </div>
+                <p style={{ ...zenKaku, fontWeight: 700, fontSize: 14, color: DARK, margin: "0 0 4px" }}>
+                  {p.name}
+                </p>
+                <p style={{ ...oswald, fontWeight: 300, fontSize: 12, color: GRAY, margin: 0, textTransform: "uppercase" as const }}>
+                  {p.industry}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+
+  /* ═══════════════ NEWS ═══════════════ */
+  const newsEl = (
+    <>
+      <DiagDivider from={LIGHT} to={SUB_DARK} direction="right" height={80} />
+      <section
+        id="news"
+        style={{
+          background: SUB_DARK,
+          padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Skewed bg accent */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "100%",
+            background: `linear-gradient(135deg, rgba(0,229,255,0.03), transparent 60%)`,
+            transform: "skewY(3deg)",
+            transformOrigin: "top right",
+          }}
+        />
+        <div ref={newsRef} style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
+          <SectionHeading num="07" enTitle="News" jpTitle="お知らせ" light />
+          {news.map((n, i) => {
+            const tagColors: Record<string, string> = {
+              press: "#ff6b35",
+              new: "#00e5ff",
+              default: "#8b949e",
+            };
+            return (
+              <div
+                key={i}
+                style={{
+                  display: "flex",
+                  flexDirection: isMobile ? "column" : "row",
+                  alignItems: isMobile ? "flex-start" : "center",
+                  gap: isMobile ? 8 : 24,
+                  padding: "20px 0",
+                  borderBottom: `1px solid rgba(255,255,255,0.06)`,
+                  opacity: newsVis ? 1 : 0,
+                  transform: newsVis ? "translateX(0)" : "translateX(-30px)",
+                  transition: `all 0.6s ease ${i * 120}ms`,
+                  cursor: "pointer",
+                }}
+              >
+                <span style={{ ...oswald, fontSize: 14, color: GRAY, fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>
+                  {n.date}
+                </span>
+                <span
+                  style={{
+                    ...oswald,
+                    fontSize: 11,
+                    fontWeight: 700,
+                    color: DARK,
+                    background: tagColors[n.tagStyle] || tagColors.default,
+                    padding: "3px 12px",
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase" as const,
+                    clipPath: "polygon(0 0, calc(100% - 6px) 0, 100% 100%, 6px 100%)",
+                    flexShrink: 0,
+                  }}
+                >
+                  {n.tag}
+                </span>
+                <span style={{ ...bodyFont, fontSize: 14, color: "rgba(255,255,255,0.85)" }}>
+                  {n.title}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+    </>
+  );
+
+  /* ═══════════════ RECRUIT - BOLD BG ═══════════════ */
+  const recruitEl = (
+    <>
+      <DiagDivider from={SUB_DARK} to={DARK} direction="left" height={80} />
+      <section
+        id="recruit"
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          padding: isMobile ? "80px 20px" : "100px 0",
+        }}
+      >
+        {/* Background image */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${IMG}/delivery.webp)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(13,17,23,0.85)" }} />
+        {/* Diagonal accent strips */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "100%",
+            overflow: "hidden",
+          }}
+        >
+          <div style={{ position: "absolute", top: "20%", left: "-5%", width: "110%", height: 3, background: `rgba(0,229,255,0.1)`, transform: "rotate(-6deg)" }} />
+          <div style={{ position: "absolute", top: "60%", left: "-5%", width: "110%", height: 2, background: `rgba(0,229,255,0.06)`, transform: "rotate(-6deg)" }} />
+        </div>
+        <div ref={recRef} style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1, textAlign: "center" }}>
+          <div
+            style={{
+              opacity: recVis ? 1 : 0,
+              transform: recVis ? "translateY(0)" : "translateY(40px)",
+              transition: "all 0.8s cubic-bezier(.22,1,.36,1)",
+            }}
+          >
+            <p style={{ ...oswald, fontWeight: 300, fontSize: 13, color: ACCENT, letterSpacing: "0.2em", textTransform: "uppercase" as const, margin: "0 0 12px" }}>
+              Recruit
+            </p>
+            <h2 style={{ ...zenKaku, fontWeight: 900, fontSize: isMobile ? 24 : 32, color: LIGHT, margin: "0 0 24px" }}>
+              {recruit.heading}
+            </h2>
+            <p style={{ ...bodyFont, fontSize: 15, color: "rgba(255,255,255,0.75)", whiteSpace: "pre-line", margin: "0 0 36px" }}>
+              {recruit.text}
+            </p>
+            <a
+              href={recruit.link}
+              className="edge-btn cta-pulse"
+              style={{
+                display: "inline-block",
+                background: ACCENT,
+                color: DARK,
+                padding: "18px 56px",
+                fontSize: 16,
+                fontWeight: 700,
+                ...oswald,
+                textTransform: "uppercase" as const,
+                letterSpacing: "0.1em",
+                textDecoration: "none",
+                clipPath: "polygon(0 0, calc(100% - 20px) 0, 100% 100%, 20px 100%)",
+              }}
+            >
+              {recruit.cta}
+            </a>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+
+  /* ═══════════════ ACCESS ═══════════════ */
+  const accessEl = (
+    <>
+      <DiagDivider from={DARK} to={LIGHT} direction="right" height={80} />
+      <section
+        id="access"
+        style={{
+          background: LIGHT,
+          padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        <div ref={accRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
+          <SectionHeading num="08" enTitle="Access" jpTitle="アクセス" />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: isMobile ? "column" : "row",
+              gap: 40,
+              opacity: accVis ? 1 : 0,
+              transform: accVis ? "translateY(0)" : "translateY(40px)",
+              transition: "all 0.8s cubic-bezier(.22,1,.36,1)",
+            }}
+          >
+            <div style={{ width: isMobile ? "100%" : "40%" }}>
+              <div style={{ borderLeft: `4px solid ${ACCENT}`, paddingLeft: 20, marginBottom: 24 }}>
+                <p style={{ ...bodyFont, fontSize: 16, color: DARK, margin: "0 0 8px", fontWeight: 500 }}>
                   {access.address}
                 </p>
-              </div>
-              <div style={{ marginBottom: 24 }}>
-                <p
-                  style={{
-                    ...jpHeading,
-                    fontSize: 14,
-                    color: DARK,
-                    marginBottom: 6,
-                  }}
-                >
-                  最寄り駅
-                </p>
-                <p style={{ ...bodyFont, fontSize: 15, color: "#444", margin: 0 }}>
+                <p style={{ ...bodyFont, fontSize: 14, color: "#666", margin: "0 0 8px" }}>
                   {access.nearestStation}
                 </p>
-              </div>
-              <div>
-                <p
-                  style={{
-                    ...jpHeading,
-                    fontSize: 14,
-                    color: DARK,
-                    marginBottom: 6,
-                  }}
-                >
-                  駐車場
-                </p>
-                <p style={{ ...bodyFont, fontSize: 15, color: "#444", margin: 0 }}>
+                <p style={{ ...bodyFont, fontSize: 13, color: "#888", margin: 0 }}>
                   {access.mapNote}
                 </p>
               </div>
-              <div style={{ marginTop: 28 }}>
-                <p style={{ ...jpHeading, fontSize: 14, color: DARK, marginBottom: 6 }}>
-                  電話番号
-                </p>
-                <p style={{ ...headingStyle, fontSize: 22, color: DARK, margin: 0 }}>
-                  {company.phone}
-                </p>
-                <p style={{ ...bodyFont, fontSize: 12, color: "#999", marginTop: 4 }}>
-                  {company.hours}
-                </p>
+              <div style={{ ...bodyFont, fontSize: 14, color: "#555" }}>
+                <p style={{ margin: "0 0 4px" }}>TEL: {company.phone}</p>
+                <p style={{ margin: "0 0 4px" }}>FAX: {company.fax}</p>
+                <p style={{ margin: 0 }}>{company.hours}</p>
               </div>
             </div>
             <div
               style={{
-                flex: isMobile ? "none" : "0 0 55%",
-                minHeight: 320,
+                width: isMobile ? "100%" : "60%",
+                height: 320,
+                background: "#f0f0f0",
+                clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%)",
                 overflow: "hidden",
-                clipPath: isMobile ? "none" : "polygon(5% 0, 100% 0, 100% 100%, 0 100%)",
               }}
             >
               <iframe
-                title="Google Map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3278.123456789!2d135.636!3d34.766!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z5aSn6Ziq5bqc5a-d5bGL5bed5biC5rGg55SwMi0xMS01NQ!5e0!3m2!1sja!2sjp!4v1234567890"
-                width="100%"
-                height="100%"
-                style={{ border: 0, minHeight: 320 }}
-                allowFullScreen
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(access.address)}&output=embed`}
+                style={{ width: "100%", height: "100%", border: "none" }}
                 loading="lazy"
+                title="Google Map"
               />
             </div>
           </div>
         </div>
-      </Section>
-    );
-  })();
+      </section>
+    </>
+  );
 
-  /* ───────── CONTACT ───────── */
-  const contactEl = (() => {
-    const [ref, vis] = useReveal();
-    const [submitted, setSubmitted] = useState(false);
-    const handleSubmit = (e: FormEvent) => {
-      e.preventDefault();
-      setSubmitted(true);
-    };
-    const inputStyle: React.CSSProperties = {
-      width: "100%",
-      padding: "14px 16px",
-      fontSize: 15,
-      fontFamily: "'Noto Sans JP', sans-serif",
-      background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.15)",
-      color: LIGHT,
-      outline: "none",
-      transition: "border-color .3s, box-shadow .3s",
-      boxSizing: "border-box",
-    };
-    return (
-      <Section
+  /* ═══════════════ CONTACT - DARK SKEWED ═══════════════ */
+  const contactEl = (
+    <>
+      <DiagDivider from={LIGHT} to={DARK} direction="left" height={90} />
+      <section
         id="contact"
-        bg={DARK}
-        style={{ padding: isMobile ? "80px 20px 80px" : "130px 48px 140px" }}
+        style={{
+          background: DARK,
+          position: "relative",
+          overflow: "hidden",
+          padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
+        }}
       >
-        {/* Geometric decorations */}
-        <div style={{
-          position: "absolute",
-          top: "10%",
-          right: "5%",
-          width: 120,
-          height: 120,
-          border: "1px solid rgba(255,255,255,0.04)",
-          transform: "rotate(45deg)",
-          pointerEvents: "none",
-        }} />
-        <div style={{
-          position: "absolute",
-          bottom: "15%",
-          left: "8%",
-          width: 0,
-          height: 0,
-          borderLeft: "40px solid transparent",
-          borderRight: "40px solid transparent",
-          borderBottom: "70px solid rgba(255,255,255,0.02)",
-          pointerEvents: "none",
-        }} />
-        <div ref={ref} style={{ maxWidth: 720, margin: "0 auto", position: "relative" }}>
-          <p
-            style={{
-              ...headingStyle,
-              fontSize: 12,
-              color: "rgba(255,255,255,0.5)",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              marginBottom: 8,
-            }}
-          >
-            -- Contact --
-          </p>
-          <h2
-            style={{
-              ...jpHeading,
-              fontSize: isMobile ? 26 : 36,
-              color: LIGHT,
-              marginBottom: 20,
-            }}
-          >
-            {contact.heading}
-          </h2>
+        {/* Skewed accent bg */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "60%",
+            background: SUB_DARK,
+            clipPath: "polygon(0 40%, 100% 0, 100% 100%, 0 100%)",
+          }}
+        />
+        <div ref={contRef} style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
+          <SectionHeading num="09" enTitle="Contact" jpTitle="お問い合わせ" light />
           <p
             style={{
               ...bodyFont,
               fontSize: 14,
-              color: "rgba(255,255,255,0.6)",
+              color: "rgba(255,255,255,0.65)",
               whiteSpace: "pre-line",
-              marginBottom: 48,
+              marginBottom: 32,
+              opacity: contVis ? 1 : 0,
+              transition: "opacity 0.6s ease 0.2s",
             }}
           >
             {contact.intro}
           </p>
-          {submitted ? (
+          {formSent ? (
             <div
               style={{
-                padding: 48,
                 textAlign: "center",
-                background: "rgba(255,255,255,0.04)",
-                border: `1px solid rgba(255,255,255,0.2)`,
+                padding: 60,
+                border: `1px solid rgba(0,229,255,0.3)`,
+                background: "rgba(0,229,255,0.05)",
               }}
             >
-              <p style={{ ...jpHeading, fontSize: 20, color: LIGHT }}>
-                送信ありがとうございます
+              <p style={{ ...zenKaku, fontWeight: 700, fontSize: 20, color: ACCENT, margin: "0 0 8px" }}>
+                送信完了
               </p>
-              <p
-                style={{
-                  ...bodyFont,
-                  fontSize: 14,
-                  color: "rgba(255,255,255,0.6)",
-                  marginTop: 12,
-                }}
-              >
-                担当者より折り返しご連絡いたします。
+              <p style={{ ...bodyFont, fontSize: 14, color: "rgba(255,255,255,0.7)", margin: 0 }}>
+                お問い合わせありがとうございます。担当より折り返しご連絡いたします。
               </p>
             </div>
           ) : (
@@ -1674,95 +1815,78 @@ export default function CP04Page() {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 24,
-                opacity: vis ? 1 : 0,
-                transform: vis ? "translateY(0)" : "translateY(12px)",
-                transition: "opacity .7s ease, transform .7s ease",
+                gap: 20,
+                opacity: contVis ? 1 : 0,
+                transform: contVis ? "translateY(0)" : "translateY(30px)",
+                transition: "all 0.8s cubic-bezier(.22,1,.36,1) 0.3s",
               }}
             >
               {contact.fields.map((f) => (
                 <div key={f.name}>
                   <label
                     style={{
-                      ...jpHeading,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      ...oswald,
+                      fontWeight: 300,
                       fontSize: 13,
-                      color: "rgba(255,255,255,0.8)",
-                      display: "block",
-                      marginBottom: 8,
+                      color: "rgba(255,255,255,0.6)",
+                      letterSpacing: "0.05em",
+                      textTransform: "uppercase" as const,
+                      marginBottom: 6,
                     }}
                   >
                     {f.label}
                     {f.required && (
                       <span
                         style={{
-                          color: "rgba(255,255,255,0.5)",
-                          fontSize: 11,
-                          marginLeft: 8,
+                          fontSize: 10,
+                          color: DARK,
+                          background: ACCENT,
+                          padding: "1px 6px",
+                          fontWeight: 700,
                         }}
                       >
-                        *必須
+                        REQUIRED
                       </span>
                     )}
                   </label>
                   {f.type === "textarea" ? (
                     <textarea
-                      name={f.name}
-                      required={f.required}
+                      className="form-input"
                       rows={5}
-                      style={{ ...inputStyle, resize: "vertical" }}
-                      onFocus={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)";
-                        e.currentTarget.style.boxShadow = "0 0 0 2px rgba(255,255,255,0.08)";
-                      }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-                        e.currentTarget.style.boxShadow = "none";
-                      }}
+                      required={f.required}
+                      value={formData[f.name] || ""}
+                      onChange={(e) => setFormData({ ...formData, [f.name]: e.target.value })}
+                      style={{ resize: "vertical" }}
                     />
                   ) : (
                     <input
+                      className="form-input"
                       type={f.type}
-                      name={f.name}
                       required={f.required}
-                      style={inputStyle}
-                      onFocus={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)";
-                        e.currentTarget.style.boxShadow = "0 0 0 2px rgba(255,255,255,0.08)";
-                      }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
-                        e.currentTarget.style.boxShadow = "none";
-                      }}
+                      value={formData[f.name] || ""}
+                      onChange={(e) => setFormData({ ...formData, [f.name]: e.target.value })}
                     />
                   )}
                 </div>
               ))}
               <button
                 type="submit"
-                className="cp04-submit-btn"
+                className="edge-btn"
                 style={{
-                  background: CTA_BG,
-                  color: LIGHT,
-                  border: "none",
-                  padding: "18px 0",
+                  background: ACCENT,
+                  color: DARK,
+                  padding: "18px 48px",
                   fontSize: 16,
                   fontWeight: 700,
-                  cursor: "pointer",
-                  fontFamily: "'Noto Sans JP', sans-serif",
-                  clipPath:
-                    "polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
-                  marginTop: 8,
-                  transition: "transform .25s, box-shadow .25s",
-                  position: "relative",
-                  overflow: "hidden",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "scale(1.03)";
-                  e.currentTarget.style.boxShadow = "0 6px 24px rgba(50,55,60,0.6)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "scale(1)";
-                  e.currentTarget.style.boxShadow = "none";
+                  ...oswald,
+                  textTransform: "uppercase" as const,
+                  letterSpacing: "0.1em",
+                  alignSelf: "center",
+                  marginTop: 12,
+                  clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 100%, 16px 100%)",
                 }}
               >
                 送信する
@@ -1770,289 +1894,148 @@ export default function CP04Page() {
             </form>
           )}
         </div>
-      </Section>
-    );
-  })();
+      </section>
+    </>
+  );
 
-  /* ───────── FOOTER ───────── */
+  /* ═══════════════ FOOTER ═══════════════ */
   const footerEl = (
-    <footer
-      style={{
-        background: "#000",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      {/* Footer background image */}
-      <div style={{
-        position: "absolute",
-        inset: 0,
-        backgroundImage: "url(/keikamotsu-new-templates/images/footer-bg.webp)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        opacity: 0.06,
-      }} />
-      <div style={{ position: "relative", padding: isMobile ? "48px 20px 24px" : "64px 48px 28px" }}>
+    <>
+      <footer
+        style={{
+          position: "relative",
+          overflow: "hidden",
+          padding: isMobile ? "60px 20px 32px" : "80px 0 32px",
+        }}
+      >
+        {/* BG image */}
         <div
           style={{
-            maxWidth: 1100,
-            margin: "0 auto",
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            justifyContent: "space-between",
-            alignItems: isMobile ? "flex-start" : "center",
-            gap: 32,
-            marginBottom: 48,
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${IMG}/footer-bg.webp)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
-        >
-          <div>
-            <div
-              style={{
-                ...headingStyle,
-                fontSize: 20,
-                color: LIGHT,
-                marginBottom: 8,
-              }}
-            >
-              {company.name.slice(0, 8)}
-              <span style={{ color: "#888" }}>.</span>
-            </div>
+        />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(13,17,23,0.92)" }} />
+        {/* Diagonal top edge */}
+        <div
+          style={{
+            position: "absolute",
+            top: -1,
+            left: 0,
+            right: 0,
+            height: 60,
+            background: DARK,
+            clipPath: "polygon(0 0, 100% 0, 100% 0, 0 100%)",
+          }}
+        />
+
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
+          {/* Footer catchphrase */}
+          <div style={{ textAlign: "center", marginBottom: 48 }}>
             <p
               style={{
-                ...bodyFont,
-                fontSize: 13,
-                color: "rgba(255,255,255,0.4)",
-                margin: 0,
+                ...zenKaku,
+                fontWeight: 900,
+                fontSize: isMobile ? 20 : 28,
+                color: LIGHT,
+                margin: "0 0 8px",
+                letterSpacing: "0.06em",
               }}
             >
               {footer.catchphrase}
             </p>
+            <div
+              style={{
+                width: 60,
+                height: 3,
+                background: ACCENT,
+                margin: "0 auto",
+                transform: "skewX(-20deg)",
+              }}
+            />
           </div>
-          <nav
+
+          {/* Footer nav */}
+          <div
             style={{
               display: "flex",
               flexWrap: "wrap",
-              gap: isMobile ? 14 : 24,
+              justifyContent: "center",
+              gap: isMobile ? 12 : 24,
+              marginBottom: 40,
             }}
           >
             {navLinks.map((l) => (
               <a
                 key={l.href}
-                onClick={() => scrollTo(l.href)}
-                className="cp04-footer-link"
+                href={l.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollTo(l.href);
+                }}
                 style={{
+                  ...oswald,
+                  fontWeight: 300,
+                  fontSize: 12,
                   color: "rgba(255,255,255,0.5)",
                   textDecoration: "none",
-                  fontSize: 12,
-                  fontFamily: "'Noto Sans JP', sans-serif",
-                  cursor: "pointer",
-                  transition: "color .2s",
-                  position: "relative",
-                  paddingBottom: 2,
+                  textTransform: "uppercase" as const,
+                  letterSpacing: "0.05em",
+                  transition: "color 0.3s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "rgba(255,255,255,0.5)")
-                }
+                onMouseEnter={(e) => ((e.target as HTMLElement).style.color = ACCENT)}
+                onMouseLeave={(e) => ((e.target as HTMLElement).style.color = "rgba(255,255,255,0.5)")}
               >
                 {l.label}
               </a>
             ))}
-          </nav>
-        </div>
-        <div
-          style={{
-            borderTop: "1px solid rgba(255,255,255,0.08)",
-            paddingTop: 20,
-            textAlign: "center",
-          }}
-        >
+          </div>
+
+          {/* Company info */}
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <p style={{ ...bodyFont, fontSize: 13, color: "rgba(255,255,255,0.4)", margin: "0 0 4px" }}>
+              {company.name}
+            </p>
+            <p style={{ ...bodyFont, fontSize: 12, color: "rgba(255,255,255,0.3)", margin: "0 0 4px" }}>
+              〒{company.postalCode} {company.address}
+            </p>
+            <p style={{ ...bodyFont, fontSize: 12, color: "rgba(255,255,255,0.3)", margin: 0 }}>
+              TEL: {company.phone} / {company.hours}
+            </p>
+          </div>
+
+          {/* Divider */}
+          <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "0 0 20px" }} />
+
+          {/* Copyright */}
           <p
             style={{
+              ...oswald,
+              fontWeight: 300,
               fontSize: 11,
               color: "rgba(255,255,255,0.3)",
-              fontFamily: "'Inter', sans-serif",
+              textAlign: "center",
+              textTransform: "uppercase" as const,
+              letterSpacing: "0.1em",
               margin: 0,
             }}
           >
-            &copy; {new Date().getFullYear()} {company.nameEn} All rights
-            reserved.
+            &copy; {new Date().getFullYear()} {company.nameEn}. All Rights Reserved.
           </p>
         </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   );
 
-  /* ───────── RENDER ───────── */
+  /* ═══════════════ RENDER ═══════════════ */
   return (
     <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap');
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior:smooth; }
-        body { overflow-x:hidden; -webkit-font-smoothing:antialiased; }
-        ::selection { background:${CTA_BG}; color:#fff; }
-
-        /* ── Nav link animated underline ── */
-        .cp04-nav-link::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 0;
-          height: 1px;
-          background: #fff;
-          transition: width .3s ease;
-        }
-        .cp04-nav-link:hover::after {
-          width: 100%;
-        }
-
-        /* ── Footer link animated underline ── */
-        .cp04-footer-link::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 0;
-          height: 1px;
-          background: rgba(255,255,255,0.5);
-          transition: width .3s ease;
-        }
-        .cp04-footer-link:hover::after {
-          width: 100%;
-        }
-
-        /* ── Hero heading clip-path reveal ── */
-        .cp04-hero-heading {
-          animation: cp04ClipReveal 1s ease forwards;
-          animation-delay: 0.3s;
-          clip-path: inset(0 100% 0 0);
-        }
-
-        @keyframes cp04ClipReveal {
-          to { clip-path: inset(0 0% 0 0); }
-        }
-
-        /* ── Scroll indicator animation ── */
-        .cp04-scroll-line {
-          animation: cp04ScrollLine 1.8s ease-in-out infinite;
-        }
-
-        @keyframes cp04ScrollLine {
-          0% { top: -20px; }
-          100% { top: 40px; }
-        }
-
-        /* ── Floating geometric elements ── */
-        .cp04-float-geo {
-          animation: cp04Float 6s ease-in-out infinite;
-        }
-        .cp04-float-geo-2 {
-          animation: cp04Float 8s ease-in-out infinite reverse;
-        }
-        .cp04-float-geo-3 {
-          animation: cp04Float 7s ease-in-out infinite;
-        }
-
-        @keyframes cp04Float {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-15px) rotate(3deg); }
-        }
-        .cp04-float-geo-2 {
-          animation: cp04Float2 8s ease-in-out infinite;
-        }
-        @keyframes cp04Float2 {
-          0%, 100% { transform: skewX(-15deg) translateY(0); }
-          50% { transform: skewX(-15deg) translateY(-12px); }
-        }
-
-        /* ── Button shine sweep ── */
-        .cp04-hero-cta::before,
-        .cp04-cta-btn::before,
-        .cp04-submit-btn::before,
-        .cp04-recruit-cta::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
-          transition: left .5s ease;
-        }
-        .cp04-hero-cta:hover::before,
-        .cp04-cta-btn:hover::before,
-        .cp04-submit-btn:hover::before,
-        .cp04-recruit-cta:hover::before {
-          left: 100%;
-        }
-
-        /* ── CTA pulse ── */
-        .cp04-hero-cta {
-          animation: cp04Pulse 3s ease-in-out infinite;
-        }
-
-        @keyframes cp04Pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(50,55,60,0.4); }
-          50% { box-shadow: 0 0 0 12px rgba(50,55,60,0); }
-        }
-
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-        /* ── Card perspective tilt ── */
-        .cp04-service-card {
-          transition: transform .4s ease, box-shadow .4s ease;
-        }
-        .cp04-service-card:hover {
-          transform: perspective(800px) rotateY(2deg) rotateX(-1deg);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-
-        /* ── Diagonal decoration animation ── */
-        .cp04-diag-deco {
-          animation: cp04DiagSlide 4s ease-in-out infinite alternate;
-        }
-        @keyframes cp04DiagSlide {
-          0% { transform: rotate(-5deg) translateX(0); opacity: 0.1; }
-          100% { transform: rotate(-5deg) translateX(60px); opacity: 0.3; }
-        }
-
-        /* ── Clip-path section headings reveal ── */
-        .cp04-clip-reveal {
-          animation: cp04ClipRevealGeneric 0.8s ease forwards;
-        }
-        @keyframes cp04ClipRevealGeneric {
-          from { clip-path: inset(0 100% 0 0); }
-          to { clip-path: inset(0 0% 0 0); }
-        }
-
-        /* ── Strength image hover ── */
-        .cp04-strength-img {
-          transition: transform .5s ease, filter .5s ease;
-        }
-        .cp04-strength-img:hover {
-          transform: scale(1.05);
-          filter: brightness(1.1);
-        }
-
-        /* ── prefers-reduced-motion ── */
-        @media (prefers-reduced-motion: reduce) {
-          *, *::before, *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-          }
-          .cp04-hero-heading {
-            clip-path: none !important;
-          }
-          .cp04-clip-reveal {
-            clip-path: none !important;
-          }
-        }
-      `}</style>
-      {headerEl}
-      <main>
+      <style dangerouslySetInnerHTML={{ __html: cssKeyframes }} />
+      <div style={{ minHeight: "100vh", background: DARK, color: LIGHT }}>
+        {headerEl}
         {heroEl}
         {servicesEl}
         {strengthsEl}
@@ -2065,325 +2048,8 @@ export default function CP04Page() {
         {recruitEl}
         {accessEl}
         {contactEl}
-      </main>
-      {footerEl}
+        {footerEl}
+      </div>
     </>
-  );
-}
-
-/* ═══════════════════════════════════════════════════════════
-   SUB-COMPONENTS
-   ═══════════════════════════════════════════════════════════ */
-
-function ServiceRow({
-  s,
-  idx,
-  isOdd,
-  bg,
-  fg,
-  isMobile,
-  headingStyle,
-  jpHeading,
-  bodyFont,
-}: {
-  s: (typeof services)[number];
-  idx: number;
-  isOdd: boolean;
-  bg: string;
-  fg: string;
-  isMobile: boolean;
-  headingStyle: React.CSSProperties;
-  jpHeading: React.CSSProperties;
-  bodyFont: React.CSSProperties;
-}) {
-  const [ref, vis] = useReveal();
-  const imgSrc = SERVICE_IMAGES[idx] || SERVICE_IMAGES[0];
-  return (
-    <div
-      ref={ref}
-      className="cp04-service-card"
-      style={{
-        display: "flex",
-        flexDirection: isMobile
-          ? "column"
-          : isOdd
-            ? "row"
-            : "row-reverse",
-        minHeight: isMobile ? "auto" : 380,
-        marginBottom: isMobile ? 0 : 4,
-      }}
-    >
-      {/* Text side */}
-      <div
-        style={{
-          flex: 1,
-          background: bg,
-          padding: isMobile ? "56px 24px" : "72px 64px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          clipPath:
-            !isMobile && isOdd
-              ? "polygon(0 0, 100% 0, 90% 100%, 0 100%)"
-              : !isMobile && !isOdd
-                ? "polygon(10% 0, 100% 0, 100% 100%, 0 100%)"
-                : "none",
-          opacity: vis ? 1 : 0,
-          transform: vis
-            ? "translateX(0)"
-            : `translateX(${isOdd ? "-40px" : "40px"})`,
-          transition: "opacity .7s ease, transform .7s ease",
-        }}
-      >
-        <span
-          style={{
-            ...headingStyle,
-            fontSize: isMobile ? 48 : 64,
-            color:
-              isOdd ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.05)",
-            lineHeight: 1,
-            marginBottom: -10,
-          }}
-        >
-          {s.num}
-        </span>
-        <h3
-          style={{
-            ...jpHeading,
-            fontSize: isMobile ? 22 : 28,
-            color: fg,
-            marginBottom: 18,
-            marginTop: 16,
-          }}
-        >
-          <span style={{ marginRight: 8 }}>&#9656;</span>{s.title}
-        </h3>
-        <div
-          style={{
-            width: 32,
-            height: 3,
-            background: "#555",
-            marginBottom: 20,
-            transform: vis ? "scaleX(1)" : "scaleX(0)",
-            transformOrigin: "left",
-            transition: "transform .6s ease .3s",
-          }}
-        />
-        <p
-          style={{
-            ...bodyFont,
-            fontSize: 14,
-            color:
-              isOdd ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.65)",
-            whiteSpace: "pre-line",
-          }}
-        >
-          {s.text}
-        </p>
-      </div>
-
-      {/* Image side */}
-      <div
-        style={{
-          flex: 1,
-          position: "relative",
-          minHeight: isMobile ? 240 : 380,
-          overflow: "hidden",
-          clipPath:
-            !isMobile && isOdd
-              ? "polygon(0 0, 100% 0, 100% 100%, 10% 100%)"
-              : !isMobile && !isOdd
-                ? "polygon(0 0, 90% 0, 100% 100%, 0 100%)"
-                : isMobile
-                  ? "polygon(0 8%, 100% 0, 100% 100%, 0 100%)"
-                  : "none",
-          opacity: vis ? 1 : 0,
-          transition: "opacity .7s ease .15s",
-        }}
-      >
-        <img
-          src={imgSrc}
-          alt={s.title}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            transition: "transform .6s ease",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-          onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-        />
-        {/* Decorative parallelogram */}
-        <div style={{
-          position: "absolute",
-          bottom: 20,
-          right: 20,
-          width: 50,
-          height: 30,
-          border: `1px solid ${isOdd ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)"}`,
-          transform: "skewX(-12deg)",
-          pointerEvents: "none",
-        }} />
-      </div>
-    </div>
-  );
-}
-
-function StrengthItem({
-  st,
-  idx,
-  isMobile,
-  headingStyle,
-  jpHeading,
-  bodyFont,
-}: {
-  st: (typeof strengths)[number];
-  idx: number;
-  isMobile: boolean;
-  headingStyle: React.CSSProperties;
-  jpHeading: React.CSSProperties;
-  bodyFont: React.CSSProperties;
-}) {
-  const [ref, vis] = useReveal();
-  const imgSrc = STRENGTH_IMAGES[idx] || STRENGTH_IMAGES[0];
-  return (
-    <div
-      ref={ref}
-      style={{
-        display: "flex",
-        flexDirection: isMobile ? "column" : "row",
-        gap: isMobile ? 12 : 40,
-        marginBottom: isMobile ? 48 : 64,
-        alignItems: isMobile ? "flex-start" : "center",
-        opacity: vis ? 1 : 0,
-        transform: vis ? "translateY(0) skewY(0deg)" : "translateY(20px) skewY(1deg)",
-        transition: `opacity .7s ease ${idx * 0.15}s, transform .7s ease ${idx * 0.15}s`,
-      }}
-    >
-      {/* Strength image */}
-      <div style={{
-        flex: isMobile ? "none" : "0 0 200px",
-        width: isMobile ? "100%" : 200,
-        height: isMobile ? 160 : 160,
-        overflow: "hidden",
-        clipPath: "polygon(5% 0, 100% 0, 95% 100%, 0 100%)",
-        position: "relative",
-      }}>
-        <img
-          src={imgSrc}
-          alt={st.title}
-          className="cp04-strength-img"
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
-      </div>
-
-      {/* Number */}
-      <span
-        style={{
-          ...headingStyle,
-          fontSize: isMobile ? 56 : 80,
-          color: "rgba(255,255,255,0.06)",
-          lineHeight: 1,
-          minWidth: isMobile ? "auto" : 100,
-          WebkitTextStroke: `1px rgba(255,255,255,0.12)`,
-        }}
-      >
-        {st.num}
-      </span>
-
-      <div style={{ flex: 1 }}>
-        <h3
-          style={{
-            ...jpHeading,
-            fontSize: isMobile ? 20 : 24,
-            color: "#ffffff",
-            marginBottom: 14,
-            marginTop: 0,
-          }}
-        >
-          {st.title}
-        </h3>
-        <div
-          style={{
-            width: 28,
-            height: 3,
-            background: "#555",
-            marginBottom: 16,
-            transform: vis ? "scaleX(1)" : "scaleX(0)",
-            transformOrigin: "left",
-            transition: `transform .5s ease ${idx * 0.15 + 0.3}s`,
-          }}
-        />
-        <p
-          style={{
-            ...bodyFont,
-            fontSize: 14,
-            color: "rgba(255,255,255,0.6)",
-            whiteSpace: "pre-line",
-          }}
-        >
-          {st.text}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function NumberCard({
-  n,
-  i,
-  vis,
-  isMobile,
-  headingStyle,
-  jpHeading,
-}: {
-  n: (typeof numbers)[number];
-  i: number;
-  vis: boolean;
-  isMobile: boolean;
-  headingStyle: React.CSSProperties;
-  jpHeading: React.CSSProperties;
-}) {
-  const numericValue = parseInt(String(n.value).replace(/[^0-9]/g, ""), 10) || 0;
-  const count = useCounter(numericValue, vis);
-  return (
-    <div
-      style={{
-        opacity: vis ? 1 : 0,
-        transform: vis ? "translateY(0)" : "translateY(20px)",
-        transition: `opacity .6s ease ${i * 0.15}s, transform .6s ease ${i * 0.15}s`,
-      }}
-    >
-      <div
-        style={{
-          ...headingStyle,
-          fontSize: isMobile ? 40 : 56,
-          color: "#ffffff",
-          lineHeight: 1.1,
-        }}
-      >
-        {vis ? count : 0}
-        <span style={{ fontSize: isMobile ? 18 : 22, marginLeft: 4 }}>
-          {n.suffix}
-        </span>
-      </div>
-      <p
-        style={{
-          ...jpHeading,
-          fontSize: 14,
-          color: "rgba(255,255,255,0.85)",
-          marginTop: 8,
-        }}
-      >
-        {n.label}
-      </p>
-    </div>
   );
 }
