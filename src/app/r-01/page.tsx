@@ -125,9 +125,18 @@ export default function R01Page() {
         @keyframes marqueeRight { 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
         @keyframes heroFade { 0%{opacity:0;transform:translateY(12px)} 100%{opacity:1;transform:translateY(0)} }
         @keyframes counterPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+        @keyframes float1 { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-20px) rotate(2deg)} }
+        @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px) rotate(-1.5deg)} }
+        @keyframes scrollChevron { 0%,100%{opacity:0.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(10px)} }
+        @keyframes shimmer { 0%{left:-100%} 100%{left:200%} }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(50,55,60,0.4)} 50%{box-shadow:0 0 0 12px rgba(50,55,60,0)} }
+        @keyframes grainShift { 0%,100%{transform:translate(0,0)} 25%{transform:translate(-2%,-2%)} 50%{transform:translate(2%,1%)} 75%{transform:translate(-1%,2%)} }
+        @keyframes neonGlow { 0%,100%{box-shadow:0 0 8px rgba(85,85,85,0.3), inset 0 0 8px rgba(85,85,85,0.05)} 50%{box-shadow:0 0 20px rgba(85,85,85,0.5), inset 0 0 12px rgba(85,85,85,0.1)} }
+        @keyframes clipRevealLTR { from{clip-path:inset(0 100% 0 0)} to{clip-path:inset(0 0 0 0)} }
         details summary { cursor:pointer; list-style:none; }
         details summary::-webkit-details-marker { display:none; }
         details[open] summary .faq-arrow { transform:rotate(180deg); }
+        @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
       `}</style>
 
       {/* ===== HEADER ===== */}
@@ -207,6 +216,29 @@ export default function R01Page() {
         />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.85) 100%)" }} />
 
+        {/* ノイズテクスチャ */}
+        <div style={{
+          position: "absolute", inset: 0, opacity: 0.04, zIndex: 1,
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+          backgroundSize: "128px 128px", animation: "grainShift 8s steps(10) infinite", pointerEvents: "none",
+        }} />
+
+        {/* 浮遊装飾要素 */}
+        <div style={{ position: "absolute", top: "12%", left: "5%", width: 100, height: 100, border: "1px solid rgba(255,255,255,0.06)", borderRadius: "50%", animation: "float1 9s ease-in-out infinite", zIndex: 1 }} />
+        <div style={{ position: "absolute", bottom: "18%", right: "8%", width: 160, height: 1, background: "linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)", animation: "float2 7s ease-in-out infinite", zIndex: 1 }} />
+        <div style={{ position: "absolute", top: "35%", right: "12%", width: 8, height: 8, background: "rgba(255,255,255,0.12)", borderRadius: "50%", animation: "float1 11s ease-in-out infinite 3s", zIndex: 1 }} />
+        <div style={{ position: "absolute", bottom: "30%", left: "15%", width: 4, height: 4, background: "rgba(255,255,255,0.08)", borderRadius: "50%", animation: "float2 8s ease-in-out infinite 1s", zIndex: 1 }} />
+
+        {/* 大きな背景テキスト */}
+        <div style={{
+          position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+          fontSize: isMobile ? "80px" : "220px", fontWeight: 900, color: "rgba(255,255,255,0.02)",
+          fontFamily: "'Oswald',sans-serif", letterSpacing: "0.15em", whiteSpace: "nowrap",
+          zIndex: 1, pointerEvents: "none", textTransform: "uppercase",
+        }}>
+          RECRUIT
+        </div>
+
         <div style={{
           position: "relative", zIndex: 2, height: "100%",
           display: "flex", flexDirection: "column", justifyContent: "center",
@@ -268,10 +300,25 @@ export default function R01Page() {
             </a>
           </div>
         </div>
+
+        {/* スクロールインジケーター */}
+        <div style={{
+          position: "absolute", bottom: 36, left: "50%", transform: "translateX(-50%)",
+          zIndex: 3, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+          animation: "heroFade 0.9s 2.2s both",
+        }}>
+          <span style={{ fontFamily: "'Oswald',sans-serif", fontSize: 10, letterSpacing: "0.2em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}>Scroll</span>
+          <svg width="16" height="24" viewBox="0 0 16 24" fill="none" style={{ animation: "scrollChevron 2s ease-in-out infinite" }}>
+            <path d="M8 0v18M2 14l6 6 6-6" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" fill="none" />
+          </svg>
+        </div>
       </section>
 
       {/* ===== MARQUEE ===== */}
-      <section style={{ background: ACCENT, padding: "20px 0", overflow: "hidden", borderTop: `3px solid ${ACCENT_LIGHT}`, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+      <section style={{ background: ACCENT, padding: "20px 0", overflow: "hidden", borderTop: `3px solid ${ACCENT_LIGHT}`, borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative" }}>
+        {/* グラデーションフェードエッジ */}
+        <div style={{ position: "absolute", top: 0, left: 0, width: 80, height: "100%", background: `linear-gradient(to right, ${ACCENT}, transparent)`, zIndex: 2, pointerEvents: "none" }} />
+        <div style={{ position: "absolute", top: 0, right: 0, width: 80, height: "100%", background: `linear-gradient(to left, ${ACCENT}, transparent)`, zIndex: 2, pointerEvents: "none" }} />
         {[marquee.top, marquee.bottom].map((row, ri) => (
           <div key={ri} style={{ overflow: "hidden", whiteSpace: "nowrap", marginBottom: ri === 0 ? "10px" : 0 }}>
             <div style={{
@@ -292,10 +339,17 @@ export default function R01Page() {
         ))}
       </section>
 
+      {/* ── SVG三角区切り ── */}
+      <div style={{ lineHeight: 0, background: ACCENT }}>
+        <svg viewBox="0 0 1440 40" preserveAspectRatio="none" style={{ width: "100%", height: 40, display: "block" }}>
+          <polygon points="0,0 720,40 1440,0 1440,40 0,40" fill={BG_DARK} />
+        </svg>
+      </div>
+
       {/* ===== REASONS ===== */}
       <section id="reasons" style={{ padding: isMobile ? "48px 0 40px" : "60px 0 60px", background: BG_DARK }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 20px" : "0 48px" }}>
-          <SectionTitle label="WHY US" title="選ばれる理由" />
+          <SectionTitle label="WHY US" title="選ばれる理由" num="01" />
         </div>
 
         <div style={{
@@ -353,10 +407,17 @@ export default function R01Page() {
         </div>
       </section>
 
+      {/* ── 区切り ── */}
+      <div style={{ lineHeight: 0, background: BG_DARK }}>
+        <svg viewBox="0 0 1440 32" preserveAspectRatio="none" style={{ width: "100%", height: 32, display: "block" }}>
+          <polygon points="0,0 1440,32 1440,32 0,32" fill={BG_CARD} />
+        </svg>
+      </div>
+
       {/* ===== JOBS ===== */}
       <section id="jobs" style={{ padding: isMobile ? "72px 20px 56px" : "110px 48px 90px", background: BG_CARD }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <SectionTitle label="RECRUIT" title="求人情報" />
+          <SectionTitle label="RECRUIT" title="求人情報" num="02" />
           <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "20px", letterSpacing: "0.05em", maxWidth: "700px" }}>
             {nl2br(jobs.intro)}
           </p>
@@ -428,6 +489,13 @@ export default function R01Page() {
         </div>
       </section>
 
+      {/* ── 区切り ── */}
+      <div style={{ lineHeight: 0, background: BG_CARD }}>
+        <svg viewBox="0 0 1440 32" preserveAspectRatio="none" style={{ width: "100%", height: 32, display: "block" }}>
+          <polygon points="0,32 1440,0 1440,32 0,32" fill={BG_DARK} />
+        </svg>
+      </div>
+
       {/* ===== BENEFITS ===== */}
       <section id="benefits" style={{
         padding: isMobile ? "72px 20px 60px" : "110px 48px 90px",
@@ -443,7 +511,7 @@ export default function R01Page() {
           opacity: 0.08,
         }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
-          <SectionTitle label="BENEFITS" title="✓ 待遇・福利厚生" />
+          <SectionTitle label="BENEFITS" title="✓ 待遇・福利厚生" num="03" />
           <div style={{
             marginTop: "44px",
             display: "grid",
@@ -458,7 +526,18 @@ export default function R01Page() {
                 borderRadius: i % 3 === 0 ? "8px" : i % 3 === 1 ? "4px" : "12px",
                 borderLeft: `3px solid ${ACCENT_LIGHT}`,
                 textAlign: "left",
-              }}>
+                transition: "transform 0.3s, box-shadow 0.3s",
+                cursor: "default",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 0 24px rgba(85,85,85,0.25), inset 0 0 12px rgba(85,85,85,0.05)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+              >
                 <div style={{ fontSize: "32px", marginBottom: "14px" }}>{benefitIcons[i]}</div>
                 <h4 style={{
                   fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
@@ -475,10 +554,17 @@ export default function R01Page() {
         </div>
       </section>
 
+      {/* ── 区切り ── */}
+      <div style={{ lineHeight: 0, background: BG_DARK }}>
+        <svg viewBox="0 0 1440 32" preserveAspectRatio="none" style={{ width: "100%", height: 32, display: "block" }}>
+          <polygon points="0,0 1440,32 1440,32 0,32" fill={BG_CARD} />
+        </svg>
+      </div>
+
       {/* ===== DAILY ===== */}
       <section id="daily" style={{ padding: isMobile ? "64px 20px 52px" : "100px 48px 80px", background: BG_CARD }}>
         <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-          <SectionTitle label="DAILY" title="1日の流れ" />
+          <SectionTitle label="DAILY" title="1日の流れ" num="04" />
           <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "16px", letterSpacing: "0.05em" }}>
             {nl2br(daily.intro)}
           </p>
@@ -533,7 +619,7 @@ export default function R01Page() {
       {/* ===== GALLERY ===== */}
       <section id="gallery" style={{ padding: isMobile ? "56px 0 48px" : "80px 0 70px", background: BG_DARK }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 20px" : "0 48px" }}>
-          <SectionTitle label="GALLERY" title={gallery.heading} />
+          <SectionTitle label="GALLERY" title={gallery.heading} num="05" />
           <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "16px", letterSpacing: "0.05em" }}>
             {nl2br(gallery.intro)}
           </p>
@@ -598,7 +684,7 @@ export default function R01Page() {
       {/* ===== VOICES ===== */}
       <section id="voices" style={{ padding: isMobile ? "60px 20px 48px" : "95px 48px 75px", background: BG_CARD }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <SectionTitle label="VOICES" title="先輩の声" />
+          <SectionTitle label="VOICES" title="先輩の声" num="06" />
 
           <div style={{
             marginTop: "44px",
@@ -645,7 +731,7 @@ export default function R01Page() {
       {/* ===== FAQ ===== */}
       <section id="faq" style={{ padding: isMobile ? "60px 20px 56px" : "90px 48px 85px", background: BG_DARK }}>
         <div style={{ maxWidth: "860px", margin: "0 auto" }}>
-          <SectionTitle label="FAQ" title="よくある質問" />
+          <SectionTitle label="FAQ" title="よくある質問" num="07" />
 
           <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "12px" }}>
             {faq.map((f, i) => (
@@ -869,12 +955,27 @@ export default function R01Page() {
             display: "inline-block", background: CTA_BG, color: TEXT_W,
             padding: isMobile ? "14px 36px" : "16px 52px",
             borderRadius: "4px", fontWeight: 800, fontSize: "16px", letterSpacing: "0.06em",
-            transition: "opacity 0.2s",
+            transition: "transform 0.3s, box-shadow 0.3s, background 0.3s",
+            position: "relative", overflow: "hidden",
+            animation: "pulse 2.5s ease-in-out 2s infinite",
           }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-3px)";
+              e.currentTarget.style.boxShadow = "0 8px 28px rgba(0,0,0,0.5)";
+              e.currentTarget.style.background = "#3e444a";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
+              e.currentTarget.style.background = CTA_BG;
+            }}
           >
-            {cta.webLabel}
+            <span style={{
+              position: "absolute", top: 0, left: "-100%", width: "50%", height: "100%",
+              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)",
+              animation: "shimmer 3s ease-in-out infinite 1s",
+            }} />
+            <span style={{ position: "relative", zIndex: 1 }}>{cta.webLabel}</span>
           </a>
         </div>
       </section>
@@ -882,8 +983,11 @@ export default function R01Page() {
       {/* ===== FOOTER ===== */}
       <footer style={{
         background: BG_DARK, padding: isMobile ? "48px 20px 28px" : "60px 48px 32px",
-        borderTop: "1px solid rgba(255,255,255,0.06)",
+        borderTop: "none",
+        position: "relative", overflow: "hidden",
       }}>
+        {/* グラデーショントップライン */}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(to right, transparent, ${ACCENT_LIGHT}, transparent)` }} />
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <p style={{
             fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
@@ -919,23 +1023,39 @@ export default function R01Page() {
 
 /* ─── Sub-components ─── */
 
-function SectionTitle({ label, title }: { label: string; title: string }) {
+function SectionTitle({ label, title, num }: { label: string; title: string; num?: string }) {
   return (
-    <div data-anim style={{ opacity: 0, transform: "translateY(12px)", transition: "opacity 0.7s ease-out, transform 0.7s ease-out" }}>
+    <div data-anim style={{ opacity: 0, transform: "translateY(12px)", transition: "opacity 0.7s ease-out, transform 0.7s ease-out", position: "relative" }}>
+      {/* 大きな背景番号 */}
+      {num && (
+        <span style={{
+          position: "absolute", top: -28, left: 0,
+          fontSize: 100, fontWeight: 900, color: "rgba(255,255,255,0.03)",
+          fontFamily: "'Oswald',sans-serif", lineHeight: 1, pointerEvents: "none",
+        }}>
+          {num}
+        </span>
+      )}
       <span style={{
         fontFamily: "'Oswald',sans-serif", fontWeight: 700, fontSize: "12px",
         letterSpacing: "0.2em", color: TEXT_G, textTransform: "uppercase",
-        display: "block", marginBottom: "6px",
+        display: "block", marginBottom: "6px", position: "relative", zIndex: 1,
       }}>
         ─ {label} ─
       </span>
       <h2 style={{
         fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
         fontSize: "28px", lineHeight: 1.2, letterSpacing: "0.05em", color: TEXT_W,
+        position: "relative", zIndex: 1,
+        textShadow: "0 2px 12px rgba(0,0,0,0.3)",
       }}>
         {title}
       </h2>
-      <div style={{ width: "40px", height: "3px", background: ACCENT_LIGHT, marginTop: "12px", borderRadius: "2px" }} />
+      <div style={{
+        width: "48px", height: "3px",
+        background: `linear-gradient(to right, ${ACCENT_LIGHT}, transparent)`,
+        marginTop: "12px", borderRadius: "2px",
+      }} />
     </div>
   );
 }
