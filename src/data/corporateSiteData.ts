@@ -37,6 +37,20 @@ export const meta = {
   ],
 };
 
+export const sectionIcons: Record<string, string> = {
+  services: "◈",
+  strengths: "◆",
+  message: "✦",
+  company: "■",
+  history: "◷",
+  numbers: "▲",
+  partners: "⬡",
+  news: "◉",
+  recruit: "★",
+  access: "◎",
+  contact: "✉",
+};
+
 export const navLinks = [
   { href: "#services", label: "事業内容" },
   { href: "#strengths", label: "私たちの強み" },

@@ -17,6 +17,7 @@ import {
   access,
   contact,
   footer,
+  sectionIcons,
 } from "@/data/corporateSiteData";
 
 /* ───────────────────────────────────────────
@@ -264,11 +265,13 @@ function SectionHeading({
   ja,
   align = "left",
   visible = true,
+  icon,
 }: {
   en: string;
   ja: string;
   align?: "left" | "center";
   visible?: boolean;
+  icon?: string;
 }) {
   return (
     <div style={{ marginBottom: 48, textAlign: align }}>
@@ -299,7 +302,7 @@ function SectionHeading({
           clipPath: visible ? undefined : "inset(0 100% 0 0)",
         }}
       >
-        {ja}
+        {icon && <span style={{ marginRight: 8, fontSize: "0.9em", opacity: 0.7 }}>{icon}</span>}{ja}
       </h2>
       <div
         style={{
@@ -861,7 +864,7 @@ export default function CP01Page() {
       <GrainOverlay />
       <div style={{ ...wrap(isMobile), maxWidth: 1100, position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(svcRef.visible)}>
-          <SectionHeading en="Services" ja="事業内容" visible={svcRef.visible} />
+          <SectionHeading en="Services" ja="事業内容" visible={svcRef.visible} icon={sectionIcons.services} />
         </div>
         <div
           style={{
@@ -1060,7 +1063,7 @@ export default function CP01Page() {
       <DotGrid opacity={0.04} />
       <div style={{ ...wrap(isMobile), maxWidth: 1100, position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(strRef.visible)}>
-          <SectionHeading en="Strengths" ja="私たちの強み" visible={strRef.visible} />
+          <SectionHeading en="Strengths" ja="私たちの強み" visible={strRef.visible} icon={sectionIcons.strengths} />
         </div>
         <div
           style={{
@@ -1209,7 +1212,7 @@ export default function CP01Page() {
       />
       <div style={{ ...wrap(isMobile), maxWidth: 840, position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(ceoRef.visible)}>
-          <SectionHeading en="CEO Message" ja="代表メッセージ" visible={ceoRef.visible} />
+          <SectionHeading en="CEO Message" ja="代表メッセージ" visible={ceoRef.visible} icon={sectionIcons.message} />
         </div>
         <div
           style={{
@@ -1314,7 +1317,7 @@ export default function CP01Page() {
       <DotGrid opacity={0.03} />
       <div style={{ ...wrap(isMobile), maxWidth: 1100, position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(coRef.visible)}>
-          <SectionHeading en="Company" ja="会社概要" visible={coRef.visible} />
+          <SectionHeading en="Company" ja="会社概要" visible={coRef.visible} icon={sectionIcons.company} />
         </div>
         <div style={{ ...fadeStyle(coRef.visible, 0.1), maxWidth: 800 }}>
           {companyOverview.map((item, i) => (
@@ -1383,7 +1386,7 @@ export default function CP01Page() {
         <GrainOverlay />
         <div style={{ ...wrap(isMobile), maxWidth: 1100, position: "relative", zIndex: 2 }}>
           <div style={fadeStyle(hisRef.visible)}>
-            <SectionHeading en="History" ja="沿革" visible={hisRef.visible} />
+            <SectionHeading en="History" ja="沿革" visible={hisRef.visible} icon={sectionIcons.history} />
           </div>
           <div style={{ position: "relative", marginTop: 8, paddingLeft: isMobile ? 32 : 48 }}>
             {/* Vertical line */}
@@ -1530,7 +1533,7 @@ export default function CP01Page() {
       />
       <div style={{ ...wrap(isMobile), maxWidth: 960, position: "relative", zIndex: 1 }}>
         <div style={fadeStyle(numRef.visible)}>
-          <SectionHeading en="Numbers" ja="実績" align="center" visible={numRef.visible} />
+          <SectionHeading en="Numbers" ja="実績" align="center" visible={numRef.visible} icon={sectionIcons.numbers} />
         </div>
         <div
           style={{
@@ -1569,7 +1572,7 @@ export default function CP01Page() {
     >
       <div style={{ ...wrap(isMobile), maxWidth: 960, position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(prtRef.visible)}>
-          <SectionHeading en="Partners" ja="主要取引先" align="center" visible={prtRef.visible} />
+          <SectionHeading en="Partners" ja="主要取引先" align="center" visible={prtRef.visible} icon={sectionIcons.partners} />
         </div>
         <div
           style={{
@@ -1654,7 +1657,7 @@ export default function CP01Page() {
       <WaveDivider color={C.bg1} flip />
       <div style={{ ...wrap(isMobile), maxWidth: 1100, position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(newsRef.visible)}>
-          <SectionHeading en="News" ja="お知らせ" visible={newsRef.visible} />
+          <SectionHeading en="News" ja="お知らせ" visible={newsRef.visible} icon={sectionIcons.news} />
         </div>
         <div style={{ maxWidth: 820, ...fadeStyle(newsRef.visible, 0.1) }}>
           {news.map((n, i) => {
@@ -1891,7 +1894,7 @@ export default function CP01Page() {
       <DotGrid opacity={0.03} />
       <div style={{ ...wrap(isMobile), maxWidth: 1100, position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(accRef.visible)}>
-          <SectionHeading en="Access" ja={access.heading} visible={accRef.visible} />
+          <SectionHeading en="Access" ja={access.heading} visible={accRef.visible} icon={sectionIcons.access} />
         </div>
         <div
           style={{
@@ -2014,7 +2017,7 @@ export default function CP01Page() {
       />
       <div style={{ ...wrap(isMobile), maxWidth: 720, position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(ctRef.visible)}>
-          <SectionHeading en="Contact" ja={contact.heading} align="center" visible={ctRef.visible} />
+          <SectionHeading en="Contact" ja={contact.heading} align="center" visible={ctRef.visible} icon={sectionIcons.contact} />
         </div>
         <div
           style={{

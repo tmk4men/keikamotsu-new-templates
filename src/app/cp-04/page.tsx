@@ -18,6 +18,7 @@ import {
   access,
   contact,
   footer,
+  sectionIcons,
 } from "@/data/corporateSiteData";
 
 /* ───────────────────── CONSTANTS ───────────────────── */
@@ -163,11 +164,13 @@ function SectionHeading({
   enTitle,
   jpTitle,
   light = false,
+  icon,
 }: {
   num: string;
   enTitle: string;
   jpTitle: string;
   light?: boolean;
+  icon?: string;
 }) {
   const [ref, vis] = useReveal();
   return (
@@ -227,7 +230,7 @@ function SectionHeading({
           letterSpacing: "0.04em",
         }}
       >
-        {jpTitle}
+        {icon && <span style={{ marginRight: 8, fontSize: "0.9em", opacity: 0.7 }}>{icon}</span>}{jpTitle}
       </h2>
     </div>
   );
@@ -795,7 +798,7 @@ export default function CP04Page() {
         />
 
         <div ref={servRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="01" enTitle="Services" jpTitle="事業内容" />
+          <SectionHeading num="01" enTitle="Services" jpTitle="事業内容" icon={sectionIcons.services} />
           <div
             style={{
               display: "grid",
@@ -917,7 +920,7 @@ export default function CP04Page() {
           }}
         />
         <div ref={strRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="02" enTitle="Strengths" jpTitle="私たちの強み" light />
+          <SectionHeading num="02" enTitle="Strengths" jpTitle="私たちの強み" light icon={sectionIcons.strengths} />
           {strengths.map((s, i) => {
             const isEven = i % 2 === 0;
             const delay = i * 200;
@@ -1036,7 +1039,7 @@ export default function CP04Page() {
         }}
       >
         <div ref={ceoRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="03" enTitle="CEO Message" jpTitle="代表メッセージ" />
+          <SectionHeading num="03" enTitle="CEO Message" jpTitle="代表メッセージ" icon={sectionIcons.message} />
           <div
             style={{
               display: "flex",
@@ -1149,7 +1152,7 @@ export default function CP04Page() {
           }}
         />
         <div ref={compRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
-          <SectionHeading num="04" enTitle="Company" jpTitle="会社概要" light />
+          <SectionHeading num="04" enTitle="Company" jpTitle="会社概要" light icon={sectionIcons.company} />
           <div
             style={{
               display: "flex",
@@ -1249,7 +1252,7 @@ export default function CP04Page() {
           }}
         />
         <div ref={histRef} style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="05" enTitle="History" jpTitle="沿革" />
+          <SectionHeading num="05" enTitle="History" jpTitle="沿革" icon={sectionIcons.history} />
           <div style={{ position: "relative", paddingLeft: isMobile ? 40 : 60 }}>
             {/* Vertical timeline line */}
             <div
@@ -1471,7 +1474,7 @@ export default function CP04Page() {
         }}
       >
         <div ref={partRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="06" enTitle="Partners" jpTitle="主要取引先" />
+          <SectionHeading num="06" enTitle="Partners" jpTitle="主要取引先" icon={sectionIcons.partners} />
           <div
             style={{
               display: "grid",
@@ -1556,7 +1559,7 @@ export default function CP04Page() {
           }}
         />
         <div ref={newsRef} style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
-          <SectionHeading num="07" enTitle="News" jpTitle="お知らせ" light />
+          <SectionHeading num="07" enTitle="News" jpTitle="お知らせ" light icon={sectionIcons.news} />
           {news.map((n, i) => {
             const tagColors: Record<string, string> = {
               press: "#ff6b35",
@@ -1702,7 +1705,7 @@ export default function CP04Page() {
         }}
       >
         <div ref={accRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="08" enTitle="Access" jpTitle="アクセス" />
+          <SectionHeading num="08" enTitle="Access" jpTitle="アクセス" icon={sectionIcons.access} />
           <div
             style={{
               display: "flex",
@@ -1779,7 +1782,7 @@ export default function CP04Page() {
           }}
         />
         <div ref={contRef} style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
-          <SectionHeading num="09" enTitle="Contact" jpTitle="お問い合わせ" light />
+          <SectionHeading num="09" enTitle="Contact" jpTitle="お問い合わせ" light icon={sectionIcons.contact} />
           <p
             style={{
               ...bodyFont,

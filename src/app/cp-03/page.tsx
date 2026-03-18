@@ -18,6 +18,7 @@ import {
   access,
   contact,
   footer,
+  sectionIcons,
 } from "@/data/corporateSiteData";
 
 /* ─────────────────── helpers ─────────────────── */
@@ -925,7 +926,7 @@ function ServicesSection({
         paddingRight: isMobile ? 24 : 48,
       }}
     >
-      <SectionLabel label="Services" num="01" visible={iv.visible} />
+      <SectionLabel label="Services" num="01" visible={iv.visible} icon={sectionIcons.services} />
       <h2
         style={{
           fontFamily: fontGothic,
@@ -1079,7 +1080,7 @@ function StrengthsSection({
           paddingRight: isMobile ? 24 : 48,
         }}
       >
-        <SectionLabel label="Strengths" num="02" visible={iv.visible} />
+        <SectionLabel label="Strengths" num="02" visible={iv.visible} icon={sectionIcons.strengths} />
         <h2
           style={{
             fontFamily: fontGothic,
@@ -1296,7 +1297,7 @@ function CeoSection({
 
         {/* Message Content */}
         <div style={{ flex: 1 }}>
-          <SectionLabel label="Message" num="03" visible={iv.visible} />
+          <SectionLabel label="Message" num="03" visible={iv.visible} icon={sectionIcons.message} />
           <h2
             style={{
               fontFamily: fontGothic,
@@ -1431,7 +1432,7 @@ function CompanySection({
         </div>
 
         <div style={{ flex: 1 }}>
-          <SectionLabel label="Company" num="04" visible={iv.visible} />
+          <SectionLabel label="Company" num="04" visible={iv.visible} icon={sectionIcons.company} />
           <h2
             style={{
               fontFamily: fontGothic,
@@ -1524,7 +1525,7 @@ function HistorySection({
         paddingLeft: isMobile ? 24 : 48,
         paddingRight: isMobile ? 24 : 48,
       }}>
-        <SectionLabel label="History" num="05" visible={iv.visible} />
+        <SectionLabel label="History" num="05" visible={iv.visible} icon={sectionIcons.history} />
         <h2
           style={{
             fontFamily: fontGothic,
@@ -1721,7 +1722,7 @@ function NumbersSection({
           zIndex: 1,
         }}
       >
-        <SectionLabel label="Numbers" num="06" visible={iv.visible} />
+        <SectionLabel label="Numbers" num="06" visible={iv.visible} icon={sectionIcons.numbers} />
         <h2
           style={{
             fontFamily: fontGothic,
@@ -1848,7 +1849,7 @@ function PartnersSection({
         paddingLeft: isMobile ? 24 : 48,
         paddingRight: isMobile ? 24 : 48,
       }}>
-        <SectionLabel label="Partners" num="07" visible={iv.visible} />
+        <SectionLabel label="Partners" num="07" visible={iv.visible} icon={sectionIcons.partners} />
         <h2
           style={{
             fontFamily: fontGothic,
@@ -1961,7 +1962,7 @@ function NewsSection({
         paddingLeft: isMobile ? 24 : 48,
         paddingRight: isMobile ? 24 : 48,
       }}>
-        <SectionLabel label="News" num="08" visible={iv.visible} />
+        <SectionLabel label="News" num="08" visible={iv.visible} icon={sectionIcons.news} />
         <h2
           style={{
             fontFamily: fontGothic,
@@ -2082,7 +2083,7 @@ function RecruitSection({
       }} />
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: 840, margin: "0 auto" }}>
-        <SectionLabel label="Recruit" num="09" visible={iv.visible} />
+        <SectionLabel label="Recruit" num="09" visible={iv.visible} icon={sectionIcons.recruit} />
 
         <div style={revealStyle(iv.visible, 0.2)}>
           <h2
@@ -2274,7 +2275,7 @@ function ContactSection({
         paddingLeft: isMobile ? 24 : 48,
         paddingRight: isMobile ? 24 : 48,
       }}>
-        <SectionLabel label="Contact" num="10" visible={iv.visible} />
+        <SectionLabel label="Contact" num="10" visible={iv.visible} icon={sectionIcons.contact} />
         <h2
           style={{
             fontFamily: fontGothic,
@@ -2517,10 +2518,12 @@ function SectionLabel({
   label,
   num,
   visible,
+  icon,
 }: {
   label: string;
   num?: string;
   visible: boolean;
+  icon?: string;
 }) {
   return (
     <div style={{
@@ -2552,7 +2555,7 @@ function SectionLabel({
           color: C.muted,
         }}
       >
-        ── {label} ──
+        {icon && <span style={{ marginRight: 8, fontSize: "0.9em", opacity: 0.7 }}>{icon}</span>}── {label} ──
       </span>
     </div>
   );

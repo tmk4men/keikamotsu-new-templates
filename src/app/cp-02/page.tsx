@@ -17,6 +17,7 @@ import {
   access,
   contact,
   footer,
+  sectionIcons,
 } from "@/data/corporateSiteData";
 
 /* ─────────────── カラー定数 (SLATE - white x steel blue) ─────────────── */
@@ -232,11 +233,13 @@ function SectionHeading({
   ja,
   visible = true,
   align = "left",
+  icon,
 }: {
   en: string;
   ja: string;
   visible?: boolean;
   align?: "left" | "center";
+  icon?: string;
 }) {
   return (
     <div style={{ marginBottom: isMobileGlobal ? 28 : 40, textAlign: align }}>
@@ -267,7 +270,7 @@ function SectionHeading({
           clipPath: visible ? undefined : "inset(0 100% 0 0)",
         }}
       >
-        {ja}
+        {icon && <span style={{ marginRight: 8, fontSize: "0.9em", opacity: 0.7 }}>{icon}</span>}{ja}
       </h2>
       <div
         style={{
@@ -885,7 +888,7 @@ export default function CP02Page() {
       }}
     >
       <div style={fadeStyle(svcRef.visible)}>
-        <SectionHeading en="Services" ja="事業内容" visible={svcRef.visible} />
+        <SectionHeading en="Services" ja="事業内容" visible={svcRef.visible} icon={sectionIcons.services} />
       </div>
       <div
         style={{
@@ -1031,7 +1034,7 @@ export default function CP02Page() {
       <DotGrid opacity={0.025} />
       <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(strRef.visible)}>
-          <SectionHeading en="Strengths" ja="私たちの強み" visible={strRef.visible} />
+          <SectionHeading en="Strengths" ja="私たちの強み" visible={strRef.visible} icon={sectionIcons.strengths} />
         </div>
 
         <div
@@ -1184,7 +1187,7 @@ export default function CP02Page() {
             borderRadius: 2,
           }}
         />
-        <SectionHeading en="Message" ja="代表メッセージ" visible={ceoRef.visible} align="center" />
+        <SectionHeading en="Message" ja="代表メッセージ" visible={ceoRef.visible} align="center" icon={sectionIcons.message} />
 
         {/* 引用符 */}
         <span
@@ -1284,7 +1287,7 @@ export default function CP02Page() {
       <DiagonalStripes opacity={0.012} />
       <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(coRef.visible)}>
-          <SectionHeading en="Company" ja="会社概要" visible={coRef.visible} />
+          <SectionHeading en="Company" ja="会社概要" visible={coRef.visible} icon={sectionIcons.company} />
         </div>
         <div style={fadeStyle(coRef.visible, 0.1)}>
           {companyOverview.map((item, i) => (
@@ -1360,7 +1363,7 @@ export default function CP02Page() {
       }}
     >
       <div style={fadeStyle(hisRef.visible)}>
-        <SectionHeading en="History" ja="沿革" visible={hisRef.visible} />
+        <SectionHeading en="History" ja="沿革" visible={hisRef.visible} icon={sectionIcons.history} />
       </div>
 
       {/* 水平タイムライン */}
@@ -1517,7 +1520,7 @@ export default function CP02Page() {
       <DiagonalStripes opacity={0.04} />
       <div style={{ maxWidth: 960, margin: "0 auto", position: "relative", zIndex: 1 }}>
         <div style={fadeStyle(numRef.visible)}>
-          <SectionHeading en="Numbers" ja="数字で見る実績" visible={numRef.visible} align="center" />
+          <SectionHeading en="Numbers" ja="数字で見る実績" visible={numRef.visible} align="center" icon={sectionIcons.numbers} />
         </div>
 
         <div
@@ -1559,7 +1562,7 @@ export default function CP02Page() {
       }}
     >
       <div style={fadeStyle(prtRef.visible)}>
-        <SectionHeading en="Partners" ja="主要取引先" visible={prtRef.visible} />
+        <SectionHeading en="Partners" ja="主要取引先" visible={prtRef.visible} icon={sectionIcons.partners} />
       </div>
 
       <div
@@ -1639,7 +1642,7 @@ export default function CP02Page() {
       <WaveDivider color={C.white} flip />
       <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(newsRef.visible)}>
-          <SectionHeading en="News" ja="お知らせ" visible={newsRef.visible} />
+          <SectionHeading en="News" ja="お知らせ" visible={newsRef.visible} icon={sectionIcons.news} />
         </div>
 
         <div
@@ -1877,7 +1880,7 @@ export default function CP02Page() {
       }}
     >
       <div style={fadeStyle(accRef.visible)}>
-        <SectionHeading en="Access" ja={access.heading} visible={accRef.visible} />
+        <SectionHeading en="Access" ja={access.heading} visible={accRef.visible} icon={sectionIcons.access} />
       </div>
 
       <div
@@ -1999,7 +2002,7 @@ export default function CP02Page() {
       <DotGrid opacity={0.02} />
       <div style={{ maxWidth: 720, margin: "0 auto", position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(ctRef.visible)}>
-          <SectionHeading en="Contact" ja={contact.heading} visible={ctRef.visible} align="center" />
+          <SectionHeading en="Contact" ja={contact.heading} visible={ctRef.visible} align="center" icon={sectionIcons.contact} />
         </div>
         <div style={fadeStyle(ctRef.visible, 0.1)}>
           <p
