@@ -211,6 +211,7 @@ export default function R01Page() {
       <section style={{ position: "relative", height: "100vh", minHeight: "600px", overflow: "hidden" }}>
         <video
           autoPlay muted loop playsInline
+          poster="/keikamotsu-new-templates/images/hero-bg.webp"
           style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" }}
           src="/keikamotsu-new-templates/videos/hero-nightcity.mp4"
         />
@@ -415,7 +416,9 @@ export default function R01Page() {
       </div>
 
       {/* ===== JOBS ===== */}
-      <section id="jobs" style={{ padding: isMobile ? "72px 20px 56px" : "110px 48px 90px", background: BG_CARD }}>
+      <section id="jobs" style={{ padding: isMobile ? "72px 20px 56px" : "110px 48px 90px", background: BG_CARD, position: "relative", overflow: "hidden" }}>
+        {/* 背景画像 */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(/keikamotsu-new-templates/images/jobs.webp)", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.05, pointerEvents: "none" }} />
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <SectionTitle label="RECRUIT" title="求人情報" num="02" />
           <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "20px", letterSpacing: "0.05em", maxWidth: "700px" }}>
@@ -562,8 +565,9 @@ export default function R01Page() {
       </div>
 
       {/* ===== DAILY ===== */}
-      <section id="daily" style={{ padding: isMobile ? "64px 20px 52px" : "100px 48px 80px", background: BG_CARD }}>
-        <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+      <section id="daily" style={{ padding: isMobile ? "64px 20px 52px" : "100px 48px 80px", background: BG_CARD, position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: 0, right: 0, width: "40%", height: "100%", backgroundImage: "url(/keikamotsu-new-templates/images/daily-flow.webp)", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.06, pointerEvents: "none" }} />
+        <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 1 }}>
           <SectionTitle label="DAILY" title="1日の流れ" num="04" />
           <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "16px", letterSpacing: "0.05em" }}>
             {nl2br(daily.intro)}
@@ -579,7 +583,7 @@ export default function R01Page() {
             {daily.steps.map((s, i) => (
               <div key={i} data-anim style={{
                 ...animStyle(i * 0.1),
-                marginBottom: i < daily.steps.length - 1 ? "36px" : 0,
+                marginBottom: i < daily.steps.length - 1 ? "36px" : "48px",
                 position: "relative",
               }}>
                 {/* dot */}
@@ -612,6 +616,14 @@ export default function R01Page() {
                 </p>
               </div>
             ))}
+          </div>
+
+          {/* インライン動画 */}
+          <div data-anim style={{ ...animStyle(0.3), marginTop: "16px", borderRadius: "8px", overflow: "hidden" }}>
+            <video autoPlay muted loop playsInline style={{ width: "100%", display: "block", filter: "brightness(0.9)" }}>
+              <source src="/keikamotsu-new-templates/videos/delivery-scene.mp4" type="video/mp4" />
+            </video>
+            <p style={{ fontSize: "12px", color: TEXT_G, letterSpacing: "0.05em", marginTop: "8px", textAlign: "center" }}>実際の配達風景</p>
           </div>
         </div>
       </section>
@@ -829,6 +841,10 @@ export default function R01Page() {
       <section id="company" style={{ padding: isMobile ? "56px 20px 44px" : "88px 48px 72px", background: BG_CARD }}>
         <div style={{ maxWidth: "860px", margin: "0 auto" }}>
           <SectionTitle label="COMPANY" title="会社概要" />
+          {/* 会社画像 */}
+          <div data-anim style={{ ...animStyle(0.1), marginTop: "28px", marginBottom: "28px", borderRadius: "6px", overflow: "hidden", aspectRatio: "21/9" }}>
+            <img src="/keikamotsu-new-templates/images/company.webp" alt="会社" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", filter: "brightness(0.85)" }} />
+          </div>
           <dl data-anim style={{ ...animStyle(0.15), marginTop: "36px" }}>
             {companyInfo.map((row, i) => (
               <div key={i} style={{
@@ -986,6 +1002,8 @@ export default function R01Page() {
         borderTop: "none",
         position: "relative", overflow: "hidden",
       }}>
+        {/* 背景画像 */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(/keikamotsu-new-templates/images/footer-bg.webp)", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.05, pointerEvents: "none" }} />
         {/* グラデーショントップライン */}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(to right, transparent, ${ACCENT_LIGHT}, transparent)` }} />
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
