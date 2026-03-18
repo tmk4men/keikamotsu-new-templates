@@ -588,7 +588,7 @@ function Header({
                   color: scrolled ? C.sub : "rgba(255,255,255,0.7)",
                 }}
               >
-                {l.label}
+                <><span style={{marginRight:4,fontSize:"0.85em"}}>{l.icon}</span>{l.label}</>
               </a>
             ))}
           </nav>
@@ -681,7 +681,7 @@ function Header({
                 transition: `opacity 0.4s ease ${0.1 + i * 0.05}s, transform 0.4s ease ${0.1 + i * 0.05}s`,
               }}
             >
-              {l.label}
+              <><span style={{marginRight:6,fontSize:"0.9em"}}>{l.icon}</span>{l.label}</>
             </a>
           ))}
         </div>
@@ -2470,7 +2470,7 @@ function FooterSection({ isMobile }: { isMobile: boolean }) {
                 className="cp03-nav-link"
                 style={{ fontSize: 11, color: C.muted }}
               >
-                {l.label}
+                <><span style={{marginRight:4,fontSize:"0.85em"}}>{l.icon}</span>{l.label}</>
               </a>
             ))}
           </nav>

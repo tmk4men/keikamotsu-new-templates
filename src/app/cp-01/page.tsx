@@ -469,7 +469,7 @@ export default function CP01Page() {
                   if (underline) underline.style.width = "0%";
                 }}
               >
-                {l.label}
+                <><span style={{marginRight:4,fontSize:"0.85em"}}>{l.icon}</span>{l.label}</>
                 <span
                   className="nav-underline"
                   style={{
@@ -579,7 +579,7 @@ export default function CP01Page() {
                 transition: "color 0.3s",
               }}
             >
-              {l.label}
+              <><span style={{marginRight:6,fontSize:"0.9em"}}>{l.icon}</span>{l.label}</>
             </a>
           ))}
           <a
@@ -2253,7 +2253,7 @@ export default function CP01Page() {
                 e.currentTarget.style.color = C.muted;
               }}
             >
-              {l.label}
+              <><span style={{marginRight:4,fontSize:"0.85em"}}>{l.icon}</span>{l.label}</>
             </a>
           ))}
         </div>

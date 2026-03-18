@@ -484,7 +484,7 @@ export default function CP04Page() {
                 }}
                 style={{ ...oswald, fontWeight: 300, textTransform: "uppercase" as const }}
               >
-                {l.label}
+                <><span style={{marginRight:4,fontSize:"0.85em"}}>{l.icon}</span>{l.label}</>
               </a>
             ))}
           </nav>
@@ -566,7 +566,7 @@ export default function CP04Page() {
                 paddingLeft: 12,
               }}
             >
-              {l.label}
+              <><span style={{marginRight:6,fontSize:"0.9em"}}>{l.icon}</span>{l.label}</>
             </a>
           ))}
         </nav>
@@ -1992,7 +1992,7 @@ export default function CP04Page() {
                 onMouseEnter={(e) => ((e.target as HTMLElement).style.color = ACCENT)}
                 onMouseLeave={(e) => ((e.target as HTMLElement).style.color = "rgba(255,255,255,0.5)")}
               >
-                {l.label}
+                <><span style={{marginRight:4,fontSize:"0.85em"}}>{l.icon}</span>{l.label}</>
               </a>
             ))}
           </div>

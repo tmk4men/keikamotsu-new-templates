@@ -448,7 +448,7 @@ export default function CP02Page() {
                   if (underline) underline.style.width = "0%";
                 }}
               >
-                {link.label}
+                <><span style={{marginRight:4,fontSize:"0.85em"}}>{link.icon}</span>{link.label}</>
                 <span
                   className="cp02-nav-underline"
                   style={{
@@ -587,7 +587,7 @@ export default function CP02Page() {
                 letterSpacing: "0.05em",
               }}
             >
-              {link.label}
+              <><span style={{marginRight:6,fontSize:"0.9em"}}>{link.icon}</span>{link.label}</>
             </a>
           ))}
           <div style={{ marginTop: 16, textAlign: "center" }}>
@@ -2259,7 +2259,7 @@ export default function CP02Page() {
                 onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.9)")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
               >
-                {link.label}
+                <><span style={{marginRight:4,fontSize:"0.85em"}}>{link.icon}</span>{link.label}</>
               </a>
             ))}
           </div>
