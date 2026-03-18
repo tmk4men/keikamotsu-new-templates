@@ -641,11 +641,11 @@ export default function R01Page() {
           {/* Typewriter headline */}
           <h1
             style={{
-              fontFamily: "'Oswald','Noto Sans JP',sans-serif",
-              fontWeight: 800,
-              fontSize: isMobile ? "28px" : "52px",
-              lineHeight: 1.1,
-              letterSpacing: "0.05em",
+              fontFamily: "'Zen Kurenaido', 'Oswald', 'Noto Sans JP', sans-serif",
+              fontWeight: 400,
+              fontSize: isMobile ? "30px" : "54px",
+              lineHeight: 1.3,
+              letterSpacing: "0.08em",
               color: TEXT_W,
               marginBottom: "8px",
             }}

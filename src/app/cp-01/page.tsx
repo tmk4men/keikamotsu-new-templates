@@ -718,12 +718,12 @@ export default function CP01Page() {
         <div style={{ maxWidth: 640 }}>
           <h1
             style={{
-              fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
-              fontSize: isMobile ? "2rem" : "3rem",
-              fontWeight: 700,
+              fontFamily: "'Zen Kurenaido', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+              fontSize: isMobile ? "2rem" : "3.2rem",
+              fontWeight: 400,
               color: C.white,
-              lineHeight: 1.1,
-              letterSpacing: "0.05em",
+              lineHeight: 1.3,
+              letterSpacing: "0.08em",
               marginBottom: 28,
             }}
           >

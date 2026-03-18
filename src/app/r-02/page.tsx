@@ -734,10 +734,10 @@ export default function R02Page() {
             {/* キャッチコピー with typewriter */}
             <h1
               style={{
-                fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
-                fontWeight: 700,
+                fontFamily: "'Yomogi', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+                fontWeight: 400,
                 fontSize: "clamp(28px, 5vw, 52px)",
-                lineHeight: 1.3,
+                lineHeight: 1.5,
                 color: C.text,
                 marginBottom: 4,
               }}

@@ -645,13 +645,13 @@ export default function R03TrustPage() {
         >
           <h1
             style={{
-              fontSize: "clamp(26px, 5vw, 42px)",
-              fontWeight: 600,
+              fontSize: "clamp(26px, 5vw, 44px)",
+              fontWeight: 400,
               color: "#fff",
-              fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+              fontFamily: "'Klee One', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
               lineHeight: 1.7,
               marginBottom: 24,
-              letterSpacing: 2,
+              letterSpacing: 3,
               textShadow: "0 2px 20px rgba(0,0,0,0.3)",
             }}
           >

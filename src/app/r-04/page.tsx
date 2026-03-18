@@ -715,9 +715,10 @@ export default function R04Flow() {
             </FadeIn>
             <div>
               <h1 style={{
-                fontFamily: F.heading, fontSize: isMobile ? "28px" : "52px",
-                fontWeight: 700, color: "#fff", lineHeight: 1.3,
-                letterSpacing: "0.08em",
+                fontFamily: "'Zen Kurenaido', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+                fontSize: isMobile ? "28px" : "54px",
+                fontWeight: 400, color: "#fff", lineHeight: 1.4,
+                letterSpacing: "0.1em",
               }}>
                 {heroTyped.displayed}
                 {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}

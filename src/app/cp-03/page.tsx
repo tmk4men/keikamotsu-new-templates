@@ -809,11 +809,11 @@ function HeroSection({ isMobile }: { isMobile: boolean }) {
       }}>
         <h1
           style={{
-            fontFamily: "'Shippori Mincho B1', 'Shippori Mincho', 'Zen Kaku Gothic New', 'Noto Sans JP', serif",
+            fontFamily: "'Zen Kurenaido', 'Shippori Mincho B1', 'Noto Sans JP', serif",
             fontSize: isMobile ? 36 : 72,
-            fontWeight: 700,
-            lineHeight: 1.2,
-            letterSpacing: "0.08em",
+            fontWeight: 400,
+            lineHeight: 1.3,
+            letterSpacing: "0.1em",
             color: "#fff",
             margin: 0,
           }}

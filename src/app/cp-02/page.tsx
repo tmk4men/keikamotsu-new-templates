@@ -741,11 +741,11 @@ export default function CP02Page() {
       >
         <h1
           style={{
-            fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
-            fontSize: isMobile ? 28 : 44,
-            fontWeight: 700,
+            fontFamily: "'Klee One', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+            fontSize: isMobile ? 28 : 46,
+            fontWeight: 600,
             color: C.text,
-            lineHeight: 1.35,
+            lineHeight: 1.5,
             letterSpacing: "0.06em",
             marginBottom: 20,
           }}

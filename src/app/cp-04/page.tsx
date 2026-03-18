@@ -639,13 +639,13 @@ export default function CP04Page() {
         </p>
         <h1
           style={{
-            ...zenKaku,
-            fontWeight: 900,
-            fontSize: isMobile ? 32 : 48,
+            fontFamily: "'Klee One', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+            fontWeight: 600,
+            fontSize: isMobile ? 32 : 50,
             color: LIGHT,
-            lineHeight: 1.3,
+            lineHeight: 1.4,
             margin: "0 0 24px",
-            letterSpacing: "0.04em",
+            letterSpacing: "0.06em",
           }}
         >
           {heroTyped.displayed}
