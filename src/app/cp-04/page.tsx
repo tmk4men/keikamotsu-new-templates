@@ -1471,7 +1471,7 @@ export default function CP04Page() {
         }}
       >
         <div ref={partRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="06" enTitle="Partners" jpTitle="取引先" />
+          <SectionHeading num="06" enTitle="Partners" jpTitle="主要取引先" />
           <div
             style={{
               display: "grid",

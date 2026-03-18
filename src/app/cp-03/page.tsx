@@ -1859,7 +1859,7 @@ function PartnersSection({
             ...revealStyle(iv.visible, 0.2),
           }}
         >
-          取引先
+          主要取引先
         </h2>
 
         <div

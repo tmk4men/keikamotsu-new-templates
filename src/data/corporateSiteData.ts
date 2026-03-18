@@ -44,7 +44,7 @@ export const navLinks = [
   { href: "#company", label: "会社概要" },
   { href: "#history", label: "沿革" },
   { href: "#numbers", label: "実績" },
-  { href: "#partners", label: "取引先" },
+  { href: "#partners", label: "主要取引先" },
   { href: "#news", label: "お知らせ" },
   { href: "#recruit", label: "採用情報" },
   { href: "#access", label: "アクセス" },
