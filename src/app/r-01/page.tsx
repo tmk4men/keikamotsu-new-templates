@@ -348,7 +348,7 @@ export default function R01Page() {
       </div>
 
       {/* ===== REASONS ===== */}
-      <section id="reasons" style={{ padding: isMobile ? "48px 0 40px" : "60px 0 60px", background: BG_DARK }}>
+      <section id="reasons" data-anim style={{ ...animStyle(0), padding: isMobile ? "48px 0 40px" : "60px 0 60px", background: BG_DARK }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 20px" : "0 48px" }}>
           <SectionTitle label="WHY US" title="選ばれる理由" num="01" />
         </div>
@@ -416,7 +416,7 @@ export default function R01Page() {
       </div>
 
       {/* ===== JOBS ===== */}
-      <section id="jobs" style={{ padding: isMobile ? "72px 20px 56px" : "110px 48px 90px", background: BG_CARD, position: "relative", overflow: "hidden" }}>
+      <section id="jobs" data-anim style={{ ...animStyle(0), padding: isMobile ? "72px 20px 56px" : "110px 48px 90px", background: BG_CARD, position: "relative", overflow: "hidden" }}>
         {/* 背景画像 */}
         <div style={{ position: "absolute", inset: 0, backgroundImage: "url(/keikamotsu-new-templates/images/jobs.webp)", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.05, pointerEvents: "none" }} />
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
@@ -565,7 +565,7 @@ export default function R01Page() {
       </div>
 
       {/* ===== DAILY ===== */}
-      <section id="daily" style={{ padding: isMobile ? "64px 20px 52px" : "100px 48px 80px", background: BG_CARD, position: "relative", overflow: "hidden" }}>
+      <section id="daily" data-anim style={{ ...animStyle(0), padding: isMobile ? "64px 20px 52px" : "100px 48px 80px", background: BG_CARD, position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: 0, right: 0, width: "40%", height: "100%", backgroundImage: "url(/keikamotsu-new-templates/images/daily-flow.webp)", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.06, pointerEvents: "none" }} />
         <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 1 }}>
           <SectionTitle label="DAILY" title="1日の流れ" num="04" />
@@ -629,7 +629,7 @@ export default function R01Page() {
       </section>
 
       {/* ===== GALLERY ===== */}
-      <section id="gallery" style={{ padding: isMobile ? "56px 0 48px" : "80px 0 70px", background: BG_DARK }}>
+      <section id="gallery" data-anim style={{ ...animStyle(0), padding: isMobile ? "56px 0 48px" : "80px 0 70px", background: BG_DARK }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 20px" : "0 48px" }}>
           <SectionTitle label="GALLERY" title={gallery.heading} num="05" />
           <p data-anim style={{ ...animStyle(0.1), fontSize: "14px", lineHeight: 1.8, color: TEXT_G, marginTop: "16px", letterSpacing: "0.05em" }}>
@@ -694,7 +694,7 @@ export default function R01Page() {
       </section>
 
       {/* ===== VOICES ===== */}
-      <section id="voices" style={{ padding: isMobile ? "60px 20px 48px" : "95px 48px 75px", background: BG_CARD }}>
+      <section id="voices" data-anim style={{ ...animStyle(0), padding: isMobile ? "60px 20px 48px" : "95px 48px 75px", background: BG_CARD }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <SectionTitle label="VOICES" title="先輩の声" num="06" />
 
@@ -741,7 +741,7 @@ export default function R01Page() {
       </section>
 
       {/* ===== FAQ ===== */}
-      <section id="faq" style={{ padding: isMobile ? "60px 20px 56px" : "90px 48px 85px", background: BG_DARK }}>
+      <section id="faq" data-anim style={{ ...animStyle(0), padding: isMobile ? "60px 20px 56px" : "90px 48px 85px", background: BG_DARK }}>
         <div style={{ maxWidth: "860px", margin: "0 auto" }}>
           <SectionTitle label="FAQ" title="よくある質問" num="07" />
 
@@ -777,7 +777,7 @@ export default function R01Page() {
       </section>
 
       {/* ===== NEWS ===== */}
-      <section id="news" style={{ padding: isMobile ? "52px 20px 44px" : "75px 48px 65px", background: BG_CARD }}>
+      <section id="news" data-anim style={{ ...animStyle(0), padding: isMobile ? "52px 20px 44px" : "75px 48px 65px", background: BG_CARD }}>
         <div style={{ maxWidth: "860px", margin: "0 auto" }}>
           <SectionTitle label="NEWS" title="お知らせ" />
 
@@ -813,7 +813,7 @@ export default function R01Page() {
       </section>
 
       {/* ===== ACCESS ===== */}
-      <section id="access" style={{ padding: isMobile ? "64px 20px 48px" : "85px 48px 70px", background: BG_DARK }}>
+      <section id="access" data-anim style={{ ...animStyle(0), padding: isMobile ? "64px 20px 48px" : "85px 48px 70px", background: BG_DARK }}>
         <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
           <SectionTitle label="ACCESS" title={access.heading} />
           <div data-anim style={{ ...animStyle(0.1), marginTop: "28px" }}>
@@ -838,7 +838,7 @@ export default function R01Page() {
       </section>
 
       {/* ===== COMPANY ===== */}
-      <section id="company" style={{ padding: isMobile ? "56px 20px 44px" : "88px 48px 72px", background: BG_CARD }}>
+      <section id="company" data-anim style={{ ...animStyle(0), padding: isMobile ? "56px 20px 44px" : "88px 48px 72px", background: BG_CARD }}>
         <div style={{ maxWidth: "860px", margin: "0 auto" }}>
           <SectionTitle label="COMPANY" title="会社概要" />
           {/* 会社画像 */}
@@ -866,7 +866,7 @@ export default function R01Page() {
       </section>
 
       {/* ===== APPLY ===== */}
-      <section id="apply" style={{ padding: isMobile ? "68px 20px 52px" : "105px 48px 82px", background: BG_DARK }}>
+      <section id="apply" data-anim style={{ ...animStyle(0), padding: isMobile ? "68px 20px 52px" : "105px 48px 82px", background: BG_DARK }}>
         <div style={{ maxWidth: "680px", margin: "0 auto" }}>
           <SectionTitle label="APPLY" title="Web応募フォーム" />
           <form onSubmit={handleSubmit} data-anim style={{ ...animStyle(0.15), marginTop: "36px", display: "flex", flexDirection: "column", gap: "20px" }}>
