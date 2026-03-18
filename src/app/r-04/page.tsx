@@ -37,6 +37,7 @@ const C = {
   ctaHover: "#3e444a",
   border: "#e0ddd8",
   borderDark: "#333333",
+  altBg: "#f4f3f0",
 };
 
 /* ═══════════════════════════════════════════
@@ -46,6 +47,7 @@ const F = {
   heading: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
   sans: "'Noto Sans JP', sans-serif",
   accent: "'Oswald', 'Zen Kaku Gothic New', sans-serif",
+  editorial: "'Playfair Display', 'Zen Kaku Gothic New', serif",
 };
 
 /* ═══════════════════════════════════════════
@@ -107,12 +109,13 @@ function useParallax(speed = 0.3) {
 }
 
 /* ═══════════════════════════════════════════
-   FadeIn ラッパー
+   FadeIn ラッパー (enhanced with scale variant)
    ═══════════════════════════════════════════ */
-function FadeIn({ children, delay = 0, direction = "up", style = {} }: {
+function FadeIn({ children, delay = 0, direction = "up", scale = false, style = {} }: {
   children: React.ReactNode;
   delay?: number;
   direction?: "up" | "left" | "right" | "none";
+  scale?: boolean;
   style?: React.CSSProperties;
 }) {
   const { ref, visible } = useInView(0.1);
@@ -122,12 +125,13 @@ function FadeIn({ children, delay = 0, direction = "up", style = {} }: {
     right: "translateX(12px)",
     none: "none",
   };
+  const baseTransform = scale ? `${transforms[direction]} scale(0.96)` : transforms[direction];
   return (
     <div
       ref={ref}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? "none" : transforms[direction],
+        transform: visible ? "none" : baseTransform,
         transition: `opacity 1s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}s, transform 1s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}s`,
         ...style,
       }}
@@ -138,6 +142,198 @@ function FadeIn({ children, delay = 0, direction = "up", style = {} }: {
 }
 
 /* ═══════════════════════════════════════════
+   ClipReveal - clip-path image reveal on scroll
+   ═══════════════════════════════════════════ */
+function ClipReveal({ children, delay = 0, direction = "left", style = {} }: {
+  children: React.ReactNode;
+  delay?: number;
+  direction?: "left" | "right" | "bottom";
+  style?: React.CSSProperties;
+}) {
+  const { ref, visible } = useInView(0.1);
+  const clipMap: Record<string, { hidden: string; visible: string }> = {
+    left: { hidden: "inset(0 100% 0 0)", visible: "inset(0 0% 0 0)" },
+    right: { hidden: "inset(0 0 0 100%)", visible: "inset(0 0 0 0%)" },
+    bottom: { hidden: "inset(0 0 100% 0)", visible: "inset(0 0 0% 0)" },
+  };
+  return (
+    <div
+      ref={ref}
+      style={{
+        clipPath: visible ? clipMap[direction].visible : clipMap[direction].hidden,
+        transition: `clip-path 1.2s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}s`,
+        ...style,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Section Divider - editorial line with number
+   ═══════════════════════════════════════════ */
+function SectionDivider({ number }: { number: string }) {
+  return (
+    <div style={{
+      position: "relative",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "0",
+      height: "1px",
+    }}>
+      <div style={{
+        position: "absolute",
+        left: "10%",
+        right: "10%",
+        height: "1px",
+        background: `linear-gradient(90deg, transparent, ${C.border}, transparent)`,
+      }} />
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Section Number - decorative page number
+   ═══════════════════════════════════════════ */
+function SectionNumber({ number, align = "left" }: { number: string; align?: "left" | "right" | "center" }) {
+  return (
+    <div style={{
+      fontFamily: F.accent,
+      fontSize: "120px",
+      fontWeight: 300,
+      color: "rgba(0,0,0,0.03)",
+      lineHeight: 1,
+      textAlign: align,
+      marginBottom: "-40px",
+      userSelect: "none",
+      pointerEvents: "none",
+    }}>
+      {number}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Accordion Item (controlled, smooth)
+   ═══════════════════════════════════════════ */
+function AccordionItem({ question, answer, isOpen, onToggle, index, isMobile }: {
+  question: string;
+  answer: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  index: number;
+  isMobile: boolean;
+}) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      setHeight(contentRef.current.scrollHeight);
+    }
+  }, [isOpen, answer]);
+
+  return (
+    <div style={{ borderBottom: `1px solid ${C.border}` }}>
+      <button
+        onClick={onToggle}
+        style={{
+          width: "100%",
+          padding: isMobile ? "20px 0" : "28px 0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "16px",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          textAlign: "left",
+        }}
+        aria-expanded={isOpen}
+      >
+        <span style={{
+          fontFamily: F.heading,
+          fontSize: isMobile ? "14px" : "16px",
+          color: C.text,
+          letterSpacing: "0.03em",
+          lineHeight: 1.6,
+        }}>
+          <span style={{
+            fontFamily: F.accent,
+            fontSize: "14px",
+            color: C.accentLight,
+            marginRight: "12px",
+            fontWeight: 400,
+          }}>Q{String(index + 1).padStart(2, "0")}</span>
+          {question}
+        </span>
+        <span style={{
+          fontFamily: F.accent,
+          fontSize: "20px",
+          color: C.muted,
+          flex: "0 0 20px",
+          textAlign: "center",
+          transition: "transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94)",
+          transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
+          display: "inline-block",
+        }}>
+          +
+        </span>
+      </button>
+      <div style={{
+        overflow: "hidden",
+        maxHeight: isOpen ? `${height}px` : "0px",
+        transition: "max-height 0.5s cubic-bezier(0.25,0.46,0.45,0.94)",
+      }}>
+        <div ref={contentRef} style={{ padding: "0 0 24px 0" }}>
+          <p style={{
+            fontSize: "13px",
+            color: C.muted,
+            lineHeight: 1.9,
+            paddingLeft: isMobile ? "0" : "36px",
+          }}>
+            {typeof answer === 'string' && answer.includes('\n')
+              ? answer.split('\n').map((line: string, li: number) => <span key={li}>{line}{li < answer.split('\n').length - 1 && <br />}</span>)
+              : answer}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Full-bleed image band between sections
+   ═══════════════════════════════════════════ */
+function ImageBand({ src, alt, height = "340px" }: { src: string; alt: string; height?: string }) {
+  const pRef = useParallax(0.15);
+  return (
+    <div ref={pRef.ref} style={{
+      width: "100%",
+      height,
+      overflow: "hidden",
+      position: "relative",
+    }}>
+      <img
+        src={src}
+        alt={alt}
+        style={{
+          width: "100%",
+          height: "130%",
+          objectFit: "cover",
+          display: "block",
+          transform: `translateY(${pRef.offset}px)`,
+          filter: "grayscale(20%) brightness(0.85)",
+        }}
+      />
+    </div>
+  );
+}
+
+
+/* ═══════════════════════════════════════════
    メインコンポーネント
    ═══════════════════════════════════════════ */
 export default function R04Flow() {
@@ -145,6 +341,7 @@ export default function R04Flow() {
   const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -170,13 +367,112 @@ export default function R04Flow() {
     <>
       {/* ── Google Fonts ── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;600;700&family=Oswald:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;600;700&family=Oswald:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { overflow-x: hidden; }
-        details summary { cursor: pointer; list-style: none; }
-        details summary::-webkit-details-marker { display: none; }
         a { text-decoration: none; color: inherit; }
+
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+        }
+
+        @keyframes scrollPulse {
+          0%, 100% { opacity: 0.3; transform: scaleY(1); }
+          50% { opacity: 1; transform: scaleY(1.2); }
+        }
+
+        @keyframes floatGeo1 {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          50% { transform: translate(12px, -18px) rotate(90deg); }
+        }
+        @keyframes floatGeo2 {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          50% { transform: translate(-15px, 12px) rotate(-60deg); }
+        }
+        @keyframes floatGeo3 {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          50% { transform: translate(8px, 15px) rotate(45deg); }
+        }
+
+        @keyframes ctaPulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(50,55,60,0.3); }
+          50% { box-shadow: 0 0 0 12px rgba(50,55,60,0); }
+        }
+
+        @keyframes shineSweep {
+          0% { left: -100%; }
+          100% { left: 200%; }
+        }
+
+        /* Nav animated underline */
+        .flow-nav-link {
+          position: relative;
+        }
+        .flow-nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 0%;
+          height: 1px;
+          background: currentColor;
+          transition: width 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+        }
+        .flow-nav-link:hover::after {
+          width: 100%;
+        }
+
+        /* Form focus animated border */
+        .flow-input-wrap {
+          position: relative;
+        }
+        .flow-input-wrap::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 50%;
+          width: 0%;
+          height: 2px;
+          background: #32373c;
+          transition: width 0.4s cubic-bezier(0.25,0.46,0.45,0.94), left 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+        }
+        .flow-input-wrap:focus-within::after {
+          width: 100%;
+          left: 0%;
+        }
+
+        /* Image hover interaction */
+        .flow-img-hover {
+          transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.6s ease;
+        }
+        .flow-img-hover:hover {
+          transform: scale(1.04);
+          filter: grayscale(0%) !important;
+        }
+
+        /* Button shine sweep */
+        .flow-btn-shine {
+          position: relative;
+          overflow: hidden;
+        }
+        .flow-btn-shine::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 60%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+          transition: none;
+        }
+        .flow-btn-shine:hover::after {
+          animation: shineSweep 0.6s ease forwards;
+        }
       `}</style>
 
       <div style={{ fontFamily: F.sans, fontWeight: 300, color: C.text, background: C.bg, lineHeight: 1.9 }}>
@@ -192,9 +488,10 @@ export default function R04Flow() {
             width: "100%",
             zIndex: 1000,
             transform: show ? "translateY(0)" : "translateY(-100%)",
-            transition: "transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94)",
-            background: atTop ? "transparent" : C.bg,
-            borderBottom: atTop ? "none" : `1px solid ${C.border}`,
+            transition: "transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94), background 0.3s, border-color 0.3s",
+            background: atTop ? "transparent" : `rgba(250,250,249,0.95)`,
+            backdropFilter: atTop ? "none" : "blur(12px)",
+            borderBottom: atTop ? "1px solid transparent" : `1px solid ${C.border}`,
           }}
         >
           <div style={{
@@ -211,24 +508,28 @@ export default function R04Flow() {
 
             {/* Desktop Nav */}
             {!isMobile && (
-              <nav style={{ display: "flex", gap: "28px" }}>
+              <nav style={{ display: "flex", gap: "28px", alignItems: "center" }}>
                 {navLinks.map((l) => (
-                  <a key={l.href} href={l.href} style={{
-                    fontSize: "12px", color: atTop ? "rgba(255,255,255,0.7)" : C.muted,
-                    letterSpacing: "0.06em", transition: "color 0.3s",
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.color = C.accent)}
-                  onMouseLeave={e => (e.currentTarget.style.color = atTop ? "rgba(255,255,255,0.7)" : C.muted)}
+                  <a key={l.href} href={l.href}
+                    className="flow-nav-link"
+                    style={{
+                      fontSize: "12px", color: atTop ? "rgba(255,255,255,0.7)" : C.muted,
+                      letterSpacing: "0.06em", transition: "color 0.3s",
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = atTop ? "#fff" : C.accent)}
+                    onMouseLeave={e => (e.currentTarget.style.color = atTop ? "rgba(255,255,255,0.7)" : C.muted)}
                   >
                     {l.label}
                   </a>
                 ))}
-                <a href="#apply" style={{
-                  fontSize: "12px", color: atTop ? "#fff" : C.cta,
-                  fontWeight: 500, letterSpacing: "0.06em", transition: "color 0.3s",
-                  borderBottom: `1px solid ${atTop ? "rgba(255,255,255,0.4)" : C.accent}`,
-                  paddingBottom: "2px",
-                }}>
+                <a href="#apply"
+                  className="flow-nav-link"
+                  style={{
+                    fontSize: "12px", color: atTop ? "#fff" : C.cta,
+                    fontWeight: 500, letterSpacing: "0.06em", transition: "color 0.3s",
+                    borderBottom: `1px solid ${atTop ? "rgba(255,255,255,0.4)" : C.accent}`,
+                    paddingBottom: "2px",
+                  }}>
                   応募する
                 </a>
               </nav>
@@ -259,11 +560,19 @@ export default function R04Flow() {
           </div>
 
           {/* Mobile Drawer */}
-          {isMobile && mobileNav && (
+          {isMobile && (
             <nav style={{
               background: C.bg,
-              padding: "24px 20px 32px", display: "flex", flexDirection: "column", gap: "18px",
+              padding: "24px 20px 32px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "18px",
               borderBottom: `1px solid ${C.border}`,
+              maxHeight: mobileNav ? "400px" : "0px",
+              overflow: "hidden",
+              opacity: mobileNav ? 1 : 0,
+              transition: "max-height 0.4s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.3s ease, padding 0.3s ease",
+              ...(mobileNav ? {} : { padding: "0 20px" }),
             }}>
               {navLinks.map(l => (
                 <a key={l.href} href={l.href} onClick={() => setMobileNav(false)}
@@ -283,7 +592,7 @@ export default function R04Flow() {
         </header>
 
         {/* ════════════════════════════════════════
-           HERO
+           HERO (enhanced with noise, geometric, FLOW text)
            ════════════════════════════════════════ */}
         <section style={{
           position: "relative", height: "100vh", minHeight: "600px",
@@ -299,12 +608,73 @@ export default function R04Flow() {
           >
             <source src="/keikamotsu-new-templates/videos/hero-daytime.mp4" type="video/mp4" />
           </video>
+
+          {/* Gradient overlay */}
           <div style={{
             position: "absolute", inset: 0, zIndex: 1,
             background: "linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.5) 100%)",
           }} />
 
-          <div style={{ position: "relative", zIndex: 2, textAlign: "center", padding: "0 24px" }}>
+          {/* Noise texture overlay */}
+          <div style={{
+            position: "absolute", inset: 0, zIndex: 2,
+            opacity: 0.06,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+            backgroundSize: "128px 128px",
+            pointerEvents: "none",
+          }} />
+
+          {/* Large background FLOW text decoration */}
+          <div style={{
+            position: "absolute",
+            zIndex: 2,
+            fontFamily: F.accent,
+            fontSize: isMobile ? "28vw" : "18vw",
+            fontWeight: 600,
+            color: "rgba(255,255,255,0.03)",
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            whiteSpace: "nowrap",
+            userSelect: "none",
+            pointerEvents: "none",
+          }}>
+            FLOW
+          </div>
+
+          {/* Floating geometric elements */}
+          {!isMobile && (
+            <>
+              <div style={{
+                position: "absolute", top: "18%", left: "8%", zIndex: 2,
+                width: "60px", height: "60px",
+                border: "1px solid rgba(255,255,255,0.08)",
+                animation: "floatGeo1 8s ease-in-out infinite",
+                pointerEvents: "none",
+              }} />
+              <div style={{
+                position: "absolute", top: "65%", right: "12%", zIndex: 2,
+                width: "40px", height: "40px",
+                border: "1px solid rgba(255,255,255,0.06)",
+                borderRadius: "50%",
+                animation: "floatGeo2 10s ease-in-out infinite",
+                pointerEvents: "none",
+              }} />
+              <div style={{
+                position: "absolute", bottom: "25%", left: "15%", zIndex: 2,
+                width: "0", height: "0",
+                borderLeft: "20px solid transparent",
+                borderRight: "20px solid transparent",
+                borderBottom: "34px solid rgba(255,255,255,0.04)",
+                animation: "floatGeo3 12s ease-in-out infinite",
+                pointerEvents: "none",
+              }} />
+            </>
+          )}
+
+          <div style={{ position: "relative", zIndex: 3, textAlign: "center", padding: "0 24px" }}>
             <FadeIn delay={0.3}>
               <p style={{
                 fontFamily: F.accent, fontSize: isMobile ? "11px" : "13px",
@@ -314,7 +684,7 @@ export default function R04Flow() {
                 Green Logistics Recruiting
               </p>
             </FadeIn>
-            <FadeIn delay={0.6}>
+            <FadeIn delay={0.6} scale>
               <h1 style={{
                 fontFamily: F.heading, fontSize: isMobile ? "28px" : "52px",
                 fontWeight: 700, color: "#fff", lineHeight: 1.3,
@@ -337,7 +707,7 @@ export default function R04Flow() {
           {/* Scroll Arrow */}
           <div style={{
             position: "absolute", bottom: "40px", left: "50%", transform: "translateX(-50%)",
-            zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
+            zIndex: 3, display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
           }}>
             <span style={{
               fontFamily: F.accent, fontSize: "10px", color: "rgba(255,255,255,0.4)",
@@ -349,20 +719,15 @@ export default function R04Flow() {
               width: "1px", height: "40px", background: "rgba(255,255,255,0.3)",
               animation: "scrollPulse 2s infinite",
             }} />
-            <style>{`
-              @keyframes scrollPulse {
-                0%, 100% { opacity: 0.3; transform: scaleY(1); }
-                50% { opacity: 1; transform: scaleY(1.2); }
-              }
-            `}</style>
           </div>
         </section>
 
         {/* ════════════════════════════════════════
            LEAD
            ════════════════════════════════════════ */}
-        <section style={{ padding: isMobile ? "100px 0 80px" : "185px 0 140px", background: C.bg }}>
-          <div style={{ width: containerW, margin: "0 auto" }}>
+        <section style={{ padding: isMobile ? "100px 0 80px" : "185px 0 140px", background: C.bg, position: "relative" }}>
+          <SectionNumber number="01" align="left" />
+          <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
             <FadeIn>
               <p style={{
                 fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
@@ -371,7 +736,7 @@ export default function R04Flow() {
                 ── About This Work ──
               </p>
             </FadeIn>
-            <FadeIn delay={0.15}>
+            <FadeIn delay={0.15} scale>
               <h2 style={{
                 fontFamily: F.heading, fontSize: isMobile ? "24px" : "40px",
                 fontWeight: 700, lineHeight: 1.3, color: C.text,
@@ -397,11 +762,15 @@ export default function R04Flow() {
           </div>
         </section>
 
+        {/* ── Editorial divider ── */}
+        <SectionDivider number="02" />
+
         {/* ════════════════════════════════════════
            REASONS
            ════════════════════════════════════════ */}
-        <section id="reasons" style={{ padding: isMobile ? "80px 0 90px" : "160px 0 140px", background: C.white }}>
-          <div style={{ width: containerW, margin: "0 auto" }}>
+        <section id="reasons" style={{ padding: isMobile ? "80px 0 90px" : "160px 0 140px", background: C.white, position: "relative" }}>
+          <SectionNumber number="02" align="right" />
+          <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
             <FadeIn>
               <p style={{
                 fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
@@ -426,16 +795,19 @@ export default function R04Flow() {
                     padding: isMobile ? "40px 0" : "60px 0",
                     borderBottom: i < reasons.length - 1 ? `1px solid ${C.border}` : "none",
                     gap: "48px",
+                    flexDirection: i % 2 === 0 ? "row" : "row-reverse",
                   }}>
-                    {/* Image */}
-                    <div style={{
+                    {/* Image with clip reveal */}
+                    <ClipReveal direction={i % 2 === 0 ? "left" : "right"} delay={i * 0.1} style={{
                       flex: isMobile ? undefined : "0 0 38%",
                       marginBottom: isMobile ? "20px" : 0,
                       overflow: "hidden",
+                      position: "relative",
                     }}>
                       <img
                         src={`/keikamotsu-new-templates/images/strength-${r.num}.webp`}
                         alt={r.title}
+                        className="flow-img-hover"
                         style={{
                           width: "100%",
                           height: isMobile ? "200px" : "100%",
@@ -444,7 +816,20 @@ export default function R04Flow() {
                           filter: "grayscale(15%)",
                         }}
                       />
-                    </div>
+                      {/* Editorial caption */}
+                      <p style={{
+                        position: "absolute",
+                        bottom: "8px",
+                        left: "12px",
+                        fontFamily: F.accent,
+                        fontSize: "10px",
+                        color: "rgba(255,255,255,0.5)",
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                      }}>
+                        Fig. {r.num}
+                      </p>
+                    </ClipReveal>
 
                     {/* Text */}
                     <div style={{
@@ -452,6 +837,7 @@ export default function R04Flow() {
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "center",
+                      position: "relative",
                     }}>
                       <span style={{
                         fontFamily: F.accent, fontSize: isMobile ? "48px" : "72px",
@@ -484,11 +870,49 @@ export default function R04Flow() {
           </div>
         </section>
 
+        {/* ── Full-bleed image band ── */}
+        <ImageBand src="/keikamotsu-new-templates/images/reasons.webp" alt="選ばれる理由" height={isMobile ? "200px" : "340px"} />
+
         {/* ════════════════════════════════════════
            JOBS
            ════════════════════════════════════════ */}
-        <section id="jobs" style={{ padding: isMobile ? "80px 0 90px" : "180px 0 150px", background: C.bg }}>
-          <div style={{ width: containerW, margin: "0 auto" }}>
+        <section id="jobs" style={{ padding: isMobile ? "80px 0 90px" : "180px 0 150px", background: C.altBg, position: "relative" }}>
+          <SectionNumber number="03" align="left" />
+          <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
+            {/* Jobs section image */}
+            {!isMobile && (
+              <ClipReveal direction="right" style={{
+                position: "absolute",
+                top: "-40px",
+                right: "-5%",
+                width: "320px",
+                height: "220px",
+                zIndex: 1,
+              }}>
+                <img
+                  src="/keikamotsu-new-templates/images/jobs.webp"
+                  alt="求人情報"
+                  className="flow-img-hover"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    display: "block",
+                    filter: "grayscale(15%)",
+                  }}
+                />
+                <p style={{
+                  fontFamily: F.accent,
+                  fontSize: "10px",
+                  color: C.mutedLight,
+                  letterSpacing: "0.08em",
+                  marginTop: "8px",
+                }}>
+                  Recruitment details
+                </p>
+              </ClipReveal>
+            )}
+
             <FadeIn>
               <p style={{
                 fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
@@ -513,6 +937,18 @@ export default function R04Flow() {
               </p>
             </FadeIn>
 
+            {isMobile && (
+              <FadeIn delay={0.1}>
+                <div style={{ margin: "24px 0", overflow: "hidden" }}>
+                  <img
+                    src="/keikamotsu-new-templates/images/jobs.webp"
+                    alt="求人情報"
+                    style={{ width: "100%", height: "180px", objectFit: "cover", display: "block", filter: "grayscale(15%)" }}
+                  />
+                </div>
+              </FadeIn>
+            )}
+
             <div style={{ marginTop: isMobile ? "40px" : "64px" }}>
               {jobs.rows.map((row, i) => (
                 <FadeIn key={row.dt} delay={i * 0.08}>
@@ -528,7 +964,7 @@ export default function R04Flow() {
                       letterSpacing: "0.06em",
                       marginBottom: isMobile ? "8px" : 0,
                     }}>
-                      <span style={{ color: C.accent, marginRight: "8px" }}>▪</span>{row.dt}
+                      <span style={{ color: C.accent, marginRight: "8px" }}>&#x25AA;</span>{row.dt}
                     </dt>
                     <dd style={{
                       fontSize: row.accent ? (isMobile ? "18px" : "22px") : (isMobile ? "14px" : "15px"),
@@ -562,7 +998,11 @@ export default function R04Flow() {
                       fontSize: "12px", color: C.muted,
                       border: `1px solid ${C.border}`,
                       padding: "6px 16px", letterSpacing: "0.03em",
-                    }}>
+                      transition: "border-color 0.3s, color 0.3s",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.color = C.accent; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.muted; }}
+                    >
                       {req}
                     </span>
                   ))}
@@ -572,11 +1012,15 @@ export default function R04Flow() {
           </div>
         </section>
 
+        {/* ── Editorial divider ── */}
+        <SectionDivider number="04" />
+
         {/* ════════════════════════════════════════
            BENEFITS
            ════════════════════════════════════════ */}
-        <section id="benefits" style={{ padding: isMobile ? "80px 0 90px" : "145px 0 170px", background: C.white }}>
-          <div style={{ width: containerW, margin: "0 auto" }}>
+        <section id="benefits" style={{ padding: isMobile ? "80px 0 90px" : "145px 0 170px", background: C.white, position: "relative" }}>
+          <SectionNumber number="04" align="center" />
+          <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
             <FadeIn>
               <p style={{
                 fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
@@ -592,6 +1036,24 @@ export default function R04Flow() {
               </h2>
             </FadeIn>
 
+            {/* Benefits hero image */}
+            <FadeIn delay={0.1}>
+              <ClipReveal direction="bottom" delay={0.15} style={{ marginTop: isMobile ? "32px" : "56px" }}>
+                <img
+                  src="/keikamotsu-new-templates/images/benefits.webp"
+                  alt="待遇・福利厚生"
+                  className="flow-img-hover"
+                  style={{
+                    width: "100%",
+                    height: isMobile ? "200px" : "320px",
+                    objectFit: "cover",
+                    display: "block",
+                    filter: "grayscale(15%)",
+                  }}
+                />
+              </ClipReveal>
+            </FadeIn>
+
             <div style={{
               display: "grid",
               gridTemplateColumns: isMobile ? "1fr" : "1.05fr 0.95fr",
@@ -599,17 +1061,24 @@ export default function R04Flow() {
               marginTop: isMobile ? "48px" : "80px",
             }}>
               {benefits.map((b, i) => (
-                <FadeIn key={b.title} delay={i * 0.08}>
+                <FadeIn key={b.title} delay={i * 0.08} scale>
                   <div style={{
                     padding: isMobile ? "0" : "0 0 0 24px",
                     borderLeft: isMobile ? "none" : `2px solid ${C.border}`,
-                  }}>
+                    transition: "border-color 0.3s",
+                  }}
+                  onMouseEnter={e => { if (!isMobile) (e.currentTarget as HTMLElement).style.borderLeftColor = C.accent; }}
+                  onMouseLeave={e => { if (!isMobile) (e.currentTarget as HTMLElement).style.borderLeftColor = C.border; }}
+                  >
                     <div style={{ display: "flex", alignItems: "baseline", gap: "12px", marginBottom: "12px" }}>
                       <span style={{
-                        fontSize: "16px", fontWeight: 700,
-                        color: C.accent, lineHeight: 1,
+                        fontFamily: F.accent,
+                        fontSize: "28px",
+                        fontWeight: 300,
+                        color: "rgba(0,0,0,0.06)",
+                        lineHeight: 1,
                       }}>
-                        ✓
+                        {String(i + 1).padStart(2, "0")}
                       </span>
                       <h3 style={{
                         fontFamily: F.heading, fontSize: isMobile ? "16px" : "17px",
@@ -620,7 +1089,7 @@ export default function R04Flow() {
                     </div>
                     <p style={{
                       fontSize: "13px", color: C.muted, lineHeight: 1.9,
-                      marginLeft: isMobile ? "0" : "30px",
+                      marginLeft: isMobile ? "0" : "42px",
                     }}>
                       {typeof b.text === 'string' && b.text.includes('\n')
                         ? b.text.split('\n').map((line, li) => <span key={li}>{line}{li < b.text.split('\n').length - 1 && <br />}</span>)
@@ -633,11 +1102,15 @@ export default function R04Flow() {
           </div>
         </section>
 
+        {/* ── Full-bleed image band ── */}
+        <ImageBand src="/keikamotsu-new-templates/images/daily-flow.webp" alt="一日の流れ" height={isMobile ? "200px" : "340px"} />
+
         {/* ════════════════════════════════════════
-           DAILY
+           DAILY (with inline video)
            ════════════════════════════════════════ */}
-        <section id="daily" style={{ padding: isMobile ? "80px 0 90px" : "200px 0 160px", background: C.bg }}>
-          <div style={{ width: containerW, margin: "0 auto" }}>
+        <section id="daily" style={{ padding: isMobile ? "80px 0 90px" : "200px 0 160px", background: C.altBg, position: "relative" }}>
+          <SectionNumber number="05" align="right" />
+          <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
             <FadeIn>
               <div style={{ textAlign: isMobile ? "left" : "right" }}>
                 <p style={{
@@ -667,12 +1140,51 @@ export default function R04Flow() {
               </p>
             </FadeIn>
 
+            {/* Inline delivery video */}
+            <FadeIn delay={0.2}>
+              <ClipReveal direction="left" delay={0.1} style={{ marginTop: isMobile ? "32px" : "56px" }}>
+                <div style={{ position: "relative", overflow: "hidden" }}>
+                  <video
+                    autoPlay muted loop playsInline
+                    style={{
+                      width: "100%",
+                      height: isMobile ? "220px" : "360px",
+                      objectFit: "cover",
+                      display: "block",
+                      filter: "grayscale(10%)",
+                    }}
+                  >
+                    <source src="/keikamotsu-new-templates/videos/delivery-scene.mp4" type="video/mp4" />
+                  </video>
+                  {/* Editorial caption overlay */}
+                  <div style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    padding: "24px 16px 12px",
+                    background: "linear-gradient(transparent, rgba(0,0,0,0.5))",
+                  }}>
+                    <p style={{
+                      fontFamily: F.accent,
+                      fontSize: "10px",
+                      color: "rgba(255,255,255,0.6)",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                    }}>
+                      Delivery Scene — A Day in the Life
+                    </p>
+                  </div>
+                </div>
+              </ClipReveal>
+            </FadeIn>
+
             <div style={{ marginTop: isMobile ? "48px" : "80px", position: "relative" }}>
               {/* Timeline Line */}
               {!isMobile && (
                 <div style={{
                   position: "absolute", left: "120px", top: 0, bottom: 0,
-                  width: "1px", background: C.border,
+                  width: "1px", background: `linear-gradient(${C.border}, transparent)`,
                 }} />
               )}
 
@@ -695,7 +1207,7 @@ export default function R04Flow() {
                         fontFamily: F.accent, fontSize: isMobile ? "24px" : "32px",
                         fontWeight: 300, color: C.accentLight, letterSpacing: "0.04em",
                       }}>
-                        <span style={{ fontSize: "10px", verticalAlign: "middle", marginRight: "6px" }}>●</span>{step.time}
+                        <span style={{ fontSize: "10px", verticalAlign: "middle", marginRight: "6px" }}>&#x25CF;</span>{step.time}
                       </span>
                     </div>
 
@@ -736,11 +1248,15 @@ export default function R04Flow() {
           </div>
         </section>
 
+        {/* ── Editorial divider ── */}
+        <SectionDivider number="06" />
+
         {/* ════════════════════════════════════════
            GALLERY
            ════════════════════════════════════════ */}
-        <section id="gallery" style={{ padding: isMobile ? "80px 0 90px" : "155px 0 180px", background: C.white, overflow: "hidden" }}>
-          <div style={{ width: containerW, margin: "0 auto" }}>
+        <section id="gallery" style={{ padding: isMobile ? "80px 0 90px" : "155px 0 180px", background: C.white, overflow: "hidden", position: "relative" }}>
+          <SectionNumber number="06" align="center" />
+          <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
             <FadeIn>
               <p style={{
                 fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
@@ -761,21 +1277,40 @@ export default function R04Flow() {
               <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "16px" }}>
                 {gallery.images.map((img, i) => (
                   <FadeIn key={img.src} delay={i * 0.1}>
-                    <div style={{ position: "relative" }}>
-                      <img
-                        src={img.src} alt={img.alt}
-                        style={{
-                          width: "100%", height: "220px", objectFit: "cover",
-                          display: "block", filter: "grayscale(15%)",
-                        }}
-                      />
-                      <p style={{
-                        fontFamily: F.heading, fontSize: "11px", color: C.muted,
-                        marginTop: "8px", letterSpacing: "0.03em",
-                      }}>
-                        {img.caption}
-                      </p>
-                    </div>
+                    <ClipReveal direction={i % 2 === 0 ? "left" : "right"}>
+                      <div style={{ position: "relative" }}>
+                        <img
+                          src={img.src} alt={img.alt}
+                          className="flow-img-hover"
+                          style={{
+                            width: "100%", height: "220px", objectFit: "cover",
+                            display: "block", filter: "grayscale(15%)",
+                          }}
+                        />
+                        {/* Editorial caption */}
+                        <div style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "baseline",
+                          marginTop: "8px",
+                        }}>
+                          <p style={{
+                            fontFamily: F.heading, fontSize: "11px", color: C.muted,
+                            letterSpacing: "0.03em",
+                          }}>
+                            {img.caption}
+                          </p>
+                          <span style={{
+                            fontFamily: F.accent,
+                            fontSize: "10px",
+                            color: C.mutedLight,
+                            letterSpacing: "0.08em",
+                          }}>
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                        </div>
+                      </div>
+                    </ClipReveal>
                   </FadeIn>
                 ))}
               </div>
@@ -796,30 +1331,38 @@ export default function R04Flow() {
                     4: { gridColumn: "3 / 4", gridRow: "2 / 3" },
                   };
                   return (
-                    <FadeIn key={img.src} delay={i * 0.1} style={{ ...spans[i], position: "relative", overflow: "hidden" }}>
+                    <ClipReveal key={img.src} direction={i % 2 === 0 ? "left" : "right"} delay={i * 0.08} style={{ ...spans[i], position: "relative", overflow: "hidden" }}>
                       <img
                         src={img.src} alt={img.alt}
+                        className="flow-img-hover"
                         style={{
                           width: "100%", height: "100%", objectFit: "cover",
                           display: "block", filter: "grayscale(15%)",
-                          transition: "transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94)",
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.04)")}
-                        onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
                       />
                       <div style={{
                         position: "absolute", bottom: 0, left: 0, right: 0,
                         padding: "32px 16px 14px",
                         background: "linear-gradient(transparent, rgba(0,0,0,0.45))",
                       }}>
-                        <p style={{
-                          fontFamily: F.heading, fontSize: "12px", color: "rgba(255,255,255,0.85)",
-                          letterSpacing: "0.03em",
-                        }}>
-                          {img.caption}
-                        </p>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                          <p style={{
+                            fontFamily: F.heading, fontSize: "12px", color: "rgba(255,255,255,0.85)",
+                            letterSpacing: "0.03em",
+                          }}>
+                            {img.caption}
+                          </p>
+                          <span style={{
+                            fontFamily: F.accent,
+                            fontSize: "10px",
+                            color: "rgba(255,255,255,0.4)",
+                            letterSpacing: "0.08em",
+                          }}>
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                        </div>
                       </div>
-                    </FadeIn>
+                    </ClipReveal>
                   );
                 })}
               </div>
@@ -827,11 +1370,15 @@ export default function R04Flow() {
           </div>
         </section>
 
+        {/* ── Full-bleed image band ── */}
+        <ImageBand src="/keikamotsu-new-templates/images/voices.webp" alt="先輩の声" height={isMobile ? "200px" : "340px"} />
+
         {/* ════════════════════════════════════════
-           VOICES
+           VOICES (with pull quotes & Playfair Display)
            ════════════════════════════════════════ */}
-        <section id="voices" style={{ padding: isMobile ? "80px 0 90px" : "170px 0 145px", background: C.bg }}>
-          <div style={{ width: containerW, margin: "0 auto" }}>
+        <section id="voices" style={{ padding: isMobile ? "80px 0 90px" : "170px 0 145px", background: C.bg, position: "relative" }}>
+          <SectionNumber number="07" align="left" />
+          <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
             <FadeIn>
               <p style={{
                 fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
@@ -857,23 +1404,43 @@ export default function R04Flow() {
                     gap: "60px",
                     flexDirection: i % 2 === 0 ? "row" : "row-reverse",
                   }}>
-                    {/* Quote */}
-                    <div style={{ flex: 1 }}>
+                    {/* Quote (magazine pull-quote style) */}
+                    <div style={{ flex: 1, position: "relative" }}>
+                      {/* Large decorative quotation marks using Playfair Display */}
                       <span style={{
-                        fontFamily: F.accent, fontSize: "72px", lineHeight: 1,
-                        color: C.border, display: "block", marginBottom: "-16px",
+                        fontFamily: F.editorial,
+                        fontSize: isMobile ? "100px" : "160px",
+                        lineHeight: 1,
+                        color: "rgba(0,0,0,0.04)",
+                        display: "block",
+                        position: "absolute",
+                        top: isMobile ? "-30px" : "-50px",
+                        left: isMobile ? "-8px" : "-20px",
+                        userSelect: "none",
+                        pointerEvents: "none",
+                        fontStyle: "italic",
                       }}>
-                        &ldquo;
+                        &#x201C;
                       </span>
-                      <p style={{
-                        fontFamily: F.heading, fontSize: isMobile ? "18px" : "22px",
-                        fontWeight: 600, color: C.text, lineHeight: 1.6,
-                        letterSpacing: "0.02em", marginBottom: "24px",
-                      }}>
-                        {v.highlight}
-                      </p>
+                      <div style={{ position: "relative", zIndex: 1 }}>
+                        <p style={{
+                          fontFamily: F.editorial,
+                          fontSize: isMobile ? "20px" : "26px",
+                          fontWeight: 600,
+                          fontStyle: "italic",
+                          color: C.text,
+                          lineHeight: 1.5,
+                          letterSpacing: "0.01em",
+                          marginBottom: "24px",
+                          paddingLeft: isMobile ? "8px" : "20px",
+                          borderLeft: `3px solid ${C.border}`,
+                        }}>
+                          {v.highlight}
+                        </p>
+                      </div>
                       <p style={{
                         fontSize: "13px", color: C.muted, lineHeight: 1.9,
+                        paddingLeft: isMobile ? "8px" : "20px",
                       }}>
                         {typeof v.text === 'string' && v.text.includes('\n')
                           ? v.text.split('\n').map((line, li) => <span key={li}>{line}{li < v.text.split('\n').length - 1 && <br />}</span>)
@@ -887,6 +1454,18 @@ export default function R04Flow() {
                       marginTop: isMobile ? "24px" : "40px",
                       textAlign: i % 2 === 0 ? "right" : "left",
                     }}>
+                      {/* Decorative voice number */}
+                      <span style={{
+                        fontFamily: F.accent,
+                        fontSize: "48px",
+                        fontWeight: 300,
+                        color: "rgba(0,0,0,0.04)",
+                        display: "block",
+                        lineHeight: 1,
+                        marginBottom: "-10px",
+                      }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
                       <p style={{
                         fontFamily: F.heading, fontSize: "16px", fontWeight: 600,
                         color: C.text, letterSpacing: "0.04em",
@@ -906,11 +1485,38 @@ export default function R04Flow() {
           </div>
         </section>
 
+        {/* ── Editorial divider ── */}
+        <SectionDivider number="08" />
+
         {/* ════════════════════════════════════════
-           FAQ
+           FAQ (controlled accordion)
            ════════════════════════════════════════ */}
-        <section id="faq" style={{ padding: isMobile ? "80px 0 90px" : "140px 0 155px", background: C.white }}>
-          <div style={{ width: containerW, margin: "0 auto", maxWidth: "780px" }}>
+        <section id="faq" style={{
+          padding: isMobile ? "80px 0 90px" : "140px 0 155px",
+          background: C.white,
+          position: "relative",
+        }}>
+          <SectionNumber number="08" align="center" />
+          {/* Decorative FAQ image */}
+          {!isMobile && (
+            <div style={{
+              position: "absolute",
+              top: "80px",
+              right: "5%",
+              width: "200px",
+              height: "280px",
+              overflow: "hidden",
+              opacity: 0.12,
+              pointerEvents: "none",
+            }}>
+              <img
+                src="/keikamotsu-new-templates/images/faq.webp"
+                alt=""
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            </div>
+          )}
+          <div style={{ width: containerW, margin: "0 auto", maxWidth: "780px", position: "relative" }}>
             <FadeIn>
               <div style={{ textAlign: "center" }}>
                 <p style={{
@@ -931,40 +1537,14 @@ export default function R04Flow() {
             <div style={{ marginTop: isMobile ? "48px" : "72px" }}>
               {faq.map((item, i) => (
                 <FadeIn key={i} delay={i * 0.06}>
-                  <details style={{
-                    borderBottom: `1px solid ${C.border}`,
-                  }}>
-                    <summary style={{
-                      padding: isMobile ? "20px 0" : "28px 0",
-                      display: "flex", alignItems: "center", justifyContent: "space-between",
-                      gap: "16px",
-                    }}>
-                      <span style={{
-                        fontFamily: F.heading, fontSize: isMobile ? "14px" : "16px",
-                        color: C.text, letterSpacing: "0.03em", lineHeight: 1.6,
-                      }}>
-                        <span style={{ color: C.accentLight, marginRight: "8px" }}>&#x25B8;</span>{item.q}
-                      </span>
-                      <span style={{
-                        fontFamily: F.accent, fontSize: "20px", color: C.muted,
-                        flex: "0 0 20px", textAlign: "center", transition: "transform 0.3s",
-                      }}>
-                        +
-                      </span>
-                    </summary>
-                    <div style={{
-                      padding: "0 0 24px 0",
-                    }}>
-                      <p style={{
-                        fontSize: "13px", color: C.muted, lineHeight: 1.9,
-                        paddingLeft: isMobile ? "0" : "16px",
-                      }}>
-                        {typeof item.a === 'string' && item.a.includes('\n')
-                          ? item.a.split('\n').map((line, li) => <span key={li}>{line}{li < item.a.split('\n').length - 1 && <br />}</span>)
-                          : item.a}
-                      </p>
-                    </div>
-                  </details>
+                  <AccordionItem
+                    question={item.q}
+                    answer={item.a}
+                    isOpen={openFaq === i}
+                    onToggle={() => setOpenFaq(openFaq === i ? null : i)}
+                    index={i}
+                    isMobile={isMobile}
+                  />
                 </FadeIn>
               ))}
             </div>
@@ -974,8 +1554,9 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            NEWS
            ════════════════════════════════════════ */}
-        <section id="news" style={{ padding: isMobile ? "80px 0 90px" : "190px 0 165px", background: C.bg }}>
-          <div style={{ width: containerW, margin: "0 auto" }}>
+        <section id="news" style={{ padding: isMobile ? "80px 0 90px" : "190px 0 165px", background: C.altBg, position: "relative" }}>
+          <SectionNumber number="09" align="right" />
+          <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
             <FadeIn>
               <p style={{
                 fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
@@ -1000,13 +1581,17 @@ export default function R04Flow() {
                     padding: isMobile ? "16px 0" : "20px 0",
                     borderBottom: `1px solid ${C.border}`,
                     flexDirection: isMobile ? "column" : "row",
-                  }}>
+                    transition: "background 0.3s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = "rgba(0,0,0,0.01)")}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                  >
                     <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
                       <time style={{
                         fontFamily: F.accent, fontSize: "13px", color: C.muted,
                         letterSpacing: "0.04em", flex: "0 0 auto",
                       }}>
-                        <span style={{ marginRight: "6px" }}>─</span>{n.date}
+                        <span style={{ marginRight: "6px" }}>&#x2500;</span>{n.date}
                       </time>
                       <span style={{
                         fontSize: "10px", padding: "2px 10px",
@@ -1030,11 +1615,15 @@ export default function R04Flow() {
           </div>
         </section>
 
+        {/* ── Editorial divider ── */}
+        <SectionDivider number="10" />
+
         {/* ════════════════════════════════════════
            ACCESS
            ════════════════════════════════════════ */}
-        <section id="access" style={{ padding: isMobile ? "80px 0 90px" : "150px 0 175px", background: C.white }}>
-          <div style={{ width: containerW, margin: "0 auto" }}>
+        <section id="access" style={{ padding: isMobile ? "80px 0 90px" : "150px 0 175px", background: C.white, position: "relative" }}>
+          <SectionNumber number="10" align="left" />
+          <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
             <FadeIn>
               <p style={{
                 fontFamily: F.accent, fontSize: "11px", color: C.mutedLight,
@@ -1097,10 +1686,11 @@ export default function R04Flow() {
         </section>
 
         {/* ════════════════════════════════════════
-           COMPANY
+           COMPANY (with image)
            ════════════════════════════════════════ */}
-        <section id="company" style={{ padding: isMobile ? "80px 0 90px" : "175px 0 185px", background: C.bg }}>
-          <div style={{ width: containerW, margin: "0 auto", maxWidth: "680px" }}>
+        <section id="company" style={{ padding: isMobile ? "80px 0 90px" : "175px 0 185px", background: C.altBg, position: "relative" }}>
+          <SectionNumber number="11" align="center" />
+          <div style={{ width: containerW, margin: "0 auto", maxWidth: "780px", position: "relative" }}>
             <FadeIn>
               <div style={{ textAlign: "center" }}>
                 <p style={{
@@ -1116,6 +1706,24 @@ export default function R04Flow() {
                   会社概要
                 </h2>
               </div>
+            </FadeIn>
+
+            {/* Company image */}
+            <FadeIn delay={0.1}>
+              <ClipReveal direction="bottom" delay={0.1} style={{ marginTop: isMobile ? "32px" : "48px" }}>
+                <img
+                  src="/keikamotsu-new-templates/images/company.webp"
+                  alt="会社概要"
+                  className="flow-img-hover"
+                  style={{
+                    width: "100%",
+                    height: isMobile ? "200px" : "300px",
+                    objectFit: "cover",
+                    display: "block",
+                    filter: "grayscale(15%)",
+                  }}
+                />
+              </ClipReveal>
             </FadeIn>
 
             <div style={{ marginTop: isMobile ? "40px" : "56px" }}>
@@ -1147,11 +1755,15 @@ export default function R04Flow() {
           </div>
         </section>
 
+        {/* ── Editorial divider ── */}
+        <SectionDivider number="12" />
+
         {/* ════════════════════════════════════════
-           APPLY (FORM)
+           APPLY (FORM) with animated focus
            ════════════════════════════════════════ */}
-        <section id="apply" style={{ padding: isMobile ? "80px 0 90px" : "165px 0 195px", background: C.white }}>
-          <div style={{ width: containerW, margin: "0 auto", maxWidth: "640px" }}>
+        <section id="apply" style={{ padding: isMobile ? "80px 0 90px" : "165px 0 195px", background: C.white, position: "relative" }}>
+          <SectionNumber number="12" align="right" />
+          <div style={{ width: containerW, margin: "0 auto", maxWidth: "640px", position: "relative" }}>
             <FadeIn>
               <div style={{ textAlign: "center" }}>
                 <p style={{
@@ -1203,7 +1815,7 @@ export default function R04Flow() {
                     { label: "電話番号", name: "phone", type: "tel", required: true },
                     { label: "メールアドレス", name: "email", type: "email", required: false },
                   ].map((field) => (
-                    <div key={field.name} style={{ marginBottom: isMobile ? "32px" : "40px" }}>
+                    <div key={field.name} style={{ marginBottom: isMobile ? "32px" : "40px" }} className="flow-input-wrap">
                       <label style={{
                         fontFamily: F.heading, fontSize: "13px", color: C.text,
                         letterSpacing: "0.06em", display: "block", marginBottom: "12px",
@@ -1225,13 +1837,11 @@ export default function R04Flow() {
                           fontFamily: F.sans, fontWeight: 300, color: C.text,
                           outline: "none", transition: "border-color 0.3s",
                         }}
-                        onFocus={e => (e.currentTarget.style.borderBottomColor = C.accent)}
-                        onBlur={e => (e.currentTarget.style.borderBottomColor = C.border)}
                       />
                     </div>
                   ))}
 
-                  <div style={{ marginBottom: isMobile ? "32px" : "40px" }}>
+                  <div style={{ marginBottom: isMobile ? "32px" : "40px" }} className="flow-input-wrap">
                     <label style={{
                       fontFamily: F.heading, fontSize: "13px", color: C.text,
                       letterSpacing: "0.06em", display: "block", marginBottom: "12px",
@@ -1249,26 +1859,29 @@ export default function R04Flow() {
                         fontFamily: F.sans, fontWeight: 300, color: C.text,
                         outline: "none", resize: "vertical", transition: "border-color 0.3s",
                       }}
-                      onFocus={e => (e.currentTarget.style.borderBottomColor = C.accent)}
-                      onBlur={e => (e.currentTarget.style.borderBottomColor = C.border)}
                     />
                   </div>
 
                   <div style={{ textAlign: "center", marginTop: isMobile ? "40px" : "56px" }}>
-                    <button type="submit" style={{
-                      fontFamily: F.heading, fontSize: "15px", letterSpacing: "0.08em",
-                      color: "#fff", background: C.cta,
-                      border: "none", padding: isMobile ? "16px 48px" : "18px 72px",
-                      cursor: "pointer", transition: "background 0.3s, transform 0.3s",
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.background = C.ctaHover;
-                      e.currentTarget.style.transform = "translateY(-2px)";
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.background = C.cta;
-                      e.currentTarget.style.transform = "none";
-                    }}
+                    <button type="submit"
+                      className="flow-btn-shine"
+                      style={{
+                        fontFamily: F.heading, fontSize: "15px", letterSpacing: "0.08em",
+                        color: "#fff", background: C.cta,
+                        border: "none", padding: isMobile ? "16px 48px" : "18px 72px",
+                        cursor: "pointer",
+                        transition: "background 0.3s, transform 0.3s, box-shadow 0.3s",
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = C.ctaHover;
+                        e.currentTarget.style.transform = "translateY(-2px) scale(1.02)";
+                        e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)";
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = C.cta;
+                        e.currentTarget.style.transform = "none";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
                     >
                       送信する
                     </button>
@@ -1280,15 +1893,24 @@ export default function R04Flow() {
         </section>
 
         {/* ════════════════════════════════════════
-           CTA SECTION
+           CTA SECTION (with pulse animation)
            ════════════════════════════════════════ */}
         <section style={{
           padding: isMobile ? "100px 0" : "160px 0",
           background: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)), url(/keikamotsu-new-templates/images/delivery.webp) center/cover no-repeat`,
           color: "#fff",
+          position: "relative",
         }}>
-          <div style={{ width: containerW, margin: "0 auto", textAlign: "center" }}>
-            <FadeIn>
+          {/* Noise overlay on CTA */}
+          <div style={{
+            position: "absolute", inset: 0,
+            opacity: 0.04,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+            backgroundSize: "128px 128px",
+            pointerEvents: "none",
+          }} />
+          <div style={{ width: containerW, margin: "0 auto", textAlign: "center", position: "relative" }}>
+            <FadeIn scale>
               <h2 style={{
                 fontFamily: F.heading, fontSize: isMobile ? "22px" : "36px",
                 fontWeight: 700, lineHeight: 1.3, letterSpacing: "0.06em",
@@ -1319,7 +1941,11 @@ export default function R04Flow() {
                   fontFamily: F.accent, fontSize: isMobile ? "28px" : "40px",
                   fontWeight: 400, color: "#fff", letterSpacing: "0.06em",
                   display: "inline-block",
-                }}>
+                  transition: "transform 0.3s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.05)")}
+                onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+                >
                   {cta.phone}
                 </a>
                 <p style={{
@@ -1331,21 +1957,30 @@ export default function R04Flow() {
               </div>
             </FadeIn>
             <FadeIn delay={0.45}>
-              <a href="#apply" style={{
-                display: "inline-block", marginTop: "48px",
-                fontFamily: F.heading, fontSize: "14px", letterSpacing: "0.1em",
-                color: "#fff", border: "1px solid rgba(255,255,255,0.3)",
-                padding: isMobile ? "14px 40px" : "16px 56px",
-                transition: "background 0.4s, border-color 0.4s",
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)";
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
-              }}
+              <a href="#apply"
+                className="flow-btn-shine"
+                style={{
+                  display: "inline-block", marginTop: "48px",
+                  fontFamily: F.heading, fontSize: "14px", letterSpacing: "0.1em",
+                  color: "#fff", border: "1px solid rgba(255,255,255,0.3)",
+                  padding: isMobile ? "14px 40px" : "16px 56px",
+                  transition: "background 0.4s, border-color 0.4s, transform 0.3s, box-shadow 0.3s",
+                  animation: "ctaPulse 2.5s infinite",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)";
+                  e.currentTarget.style.transform = "translateY(-2px) scale(1.02)";
+                  e.currentTarget.style.animationPlayState = "paused";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)";
+                  e.currentTarget.style.transform = "none";
+                  e.currentTarget.style.animationPlayState = "running";
+                }}
               >
                 {cta.webLabel}
               </a>
@@ -1354,12 +1989,14 @@ export default function R04Flow() {
         </section>
 
         {/* ════════════════════════════════════════
-           FOOTER
+           FOOTER (with footer-bg image)
            ════════════════════════════════════════ */}
         <footer style={{
           padding: isMobile ? "48px 0 32px" : "64px 0 40px",
-          background: C.dark, borderTop: `1px solid ${C.borderDark}`,
+          background: `linear-gradient(rgba(26,26,26,0.92), rgba(26,26,26,0.96)), url(/keikamotsu-new-templates/images/footer-bg.webp) center/cover no-repeat`,
+          borderTop: `1px solid ${C.borderDark}`,
           textAlign: "center",
+          position: "relative",
         }}>
           <p style={{
             fontFamily: F.heading, fontSize: isMobile ? "12px" : "14px",
@@ -1368,9 +2005,16 @@ export default function R04Flow() {
           }}>
             {footer.catchphrase}
           </p>
+          {/* Thin editorial line */}
+          <div style={{
+            width: "40px",
+            height: "1px",
+            background: "rgba(255,255,255,0.1)",
+            margin: "24px auto",
+          }} />
           <p style={{
             fontFamily: F.accent, fontSize: "12px",
-            color: "rgba(255,255,255,0.2)", marginTop: "32px",
+            color: "rgba(255,255,255,0.2)", marginTop: "8px",
             letterSpacing: "0.1em",
           }}>
             {company.nameEn}

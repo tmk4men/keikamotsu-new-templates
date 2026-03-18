@@ -28,6 +28,30 @@ const CTA_BG = "#32373c";
 const SUB_DARK = "#2d2d2d";
 const BP = 768;
 
+/* service images */
+const SERVICE_IMAGES = [
+  "/keikamotsu-new-templates/images/service-b2b.webp",
+  "/keikamotsu-new-templates/images/service-ec.webp",
+  "/keikamotsu-new-templates/images/service-route.webp",
+  "/keikamotsu-new-templates/images/service-spot.webp",
+];
+
+/* strength images */
+const STRENGTH_IMAGES = [
+  "/keikamotsu-new-templates/images/strength-01.webp",
+  "/keikamotsu-new-templates/images/strength-02.webp",
+  "/keikamotsu-new-templates/images/strength-03.webp",
+];
+
+/* history images */
+const HISTORY_IMAGES: Record<string, string> = {
+  "2021": "/keikamotsu-new-templates/images/history-2021.webp",
+  "2022": "/keikamotsu-new-templates/images/history-2022.webp",
+  "2023": "/keikamotsu-new-templates/images/history-2023.webp",
+  "2024": "/keikamotsu-new-templates/images/history-2024.webp",
+  "2025": "/keikamotsu-new-templates/images/history-2025.webp",
+};
+
 /* ───────────────────── HOOK: isMobile ───────────────────── */
 function useIsMobile() {
   const [mobile, setMobile] = useState(false);
@@ -60,6 +84,24 @@ function useReveal(): [React.RefObject<HTMLDivElement | null>, boolean] {
     return () => io.disconnect();
   }, []);
   return [ref, visible];
+}
+
+/* ───────────────────── HOOK: Counter Animation ───────────────────── */
+function useCounter(end: number, visible: boolean, duration = 2000) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!visible) return;
+    let start = 0;
+    const startTime = performance.now();
+    const step = (now: number) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * end));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [visible, end, duration]);
+  return count;
 }
 
 /* ───────────────────── SECTION WRAPPER ───────────────────── */
@@ -112,7 +154,7 @@ export default function CP04Page() {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  /* ─── shared text styles ─── */
+  /* shared text styles */
   const headingStyle: React.CSSProperties = {
     fontFamily: "'Inter', 'Noto Sans JP', sans-serif",
     fontWeight: 800,
@@ -137,9 +179,10 @@ export default function CP04Page() {
         left: 0,
         width: "100%",
         zIndex: 1000,
-        background: scrolled ? DARK : "transparent",
+        background: scrolled ? "rgba(13,17,23,0.95)" : "transparent",
+        backdropFilter: scrolled ? "blur(12px)" : "none",
         borderBottom: scrolled ? `1px solid rgba(255,255,255,0.12)` : "none",
-        transition: "background .4s, border-color .4s",
+        transition: "background .4s, border-color .4s, backdrop-filter .4s",
       }}
     >
       <div
@@ -174,6 +217,7 @@ export default function CP04Page() {
               <a
                 key={l.href}
                 onClick={() => scrollTo(l.href)}
+                className="cp04-nav-link"
                 style={{
                   color: "rgba(255,255,255,0.8)",
                   textDecoration: "none",
@@ -182,6 +226,8 @@ export default function CP04Page() {
                   cursor: "pointer",
                   transition: "color .2s",
                   fontFamily: "'Noto Sans JP', sans-serif",
+                  position: "relative",
+                  paddingBottom: 4,
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = LIGHT)}
                 onMouseLeave={(e) =>
@@ -193,6 +239,7 @@ export default function CP04Page() {
             ))}
             <button
               onClick={() => scrollTo("#contact")}
+              className="cp04-cta-btn"
               style={{
                 background: CTA_BG,
                 color: LIGHT,
@@ -203,10 +250,18 @@ export default function CP04Page() {
                 cursor: "pointer",
                 fontFamily: "'Noto Sans JP', sans-serif",
                 clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
-                transition: "opacity .2s",
+                transition: "transform .2s, box-shadow .2s",
+                position: "relative",
+                overflow: "hidden",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.05)";
+                e.currentTarget.style.boxShadow = "0 4px 20px rgba(50,55,60,0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
             >
               お問い合わせ
             </button>
@@ -317,6 +372,50 @@ export default function CP04Page() {
               transition: "opacity .8s ease, transform .8s ease",
             }}
           >
+            {/* Noise overlay */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                opacity: 0.03,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                backgroundRepeat: "repeat",
+                backgroundSize: "128px 128px",
+                pointerEvents: "none",
+              }}
+            />
+
+            {/* Floating geometric triangle */}
+            <div
+              className="cp04-float-geo"
+              style={{
+                position: "absolute",
+                top: "15%",
+                right: "10%",
+                width: 0,
+                height: 0,
+                borderLeft: "30px solid transparent",
+                borderRight: "30px solid transparent",
+                borderBottom: "52px solid rgba(255,255,255,0.03)",
+                pointerEvents: "none",
+              }}
+            />
+
+            {/* Floating parallelogram */}
+            <div
+              className="cp04-float-geo-2"
+              style={{
+                position: "absolute",
+                bottom: "20%",
+                right: "15%",
+                width: 60,
+                height: 40,
+                background: "rgba(255,255,255,0.02)",
+                transform: "skewX(-15deg)",
+                pointerEvents: "none",
+              }}
+            />
+
             <div
               style={{
                 width: 48,
@@ -326,6 +425,7 @@ export default function CP04Page() {
               }}
             />
             <h1
+              className="cp04-hero-heading"
               style={{
                 ...headingStyle,
                 fontSize: isMobile ? 32 : 56,
@@ -350,6 +450,7 @@ export default function CP04Page() {
             </p>
             <button
               onClick={() => scrollTo("#contact")}
+              className="cp04-hero-cta"
               style={{
                 background: CTA_BG,
                 color: LIGHT,
@@ -361,16 +462,24 @@ export default function CP04Page() {
                 fontFamily: "'Noto Sans JP', sans-serif",
                 clipPath: "polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
                 alignSelf: "flex-start",
-                transition: "opacity .2s",
+                transition: "transform .25s, box-shadow .25s",
+                position: "relative",
+                overflow: "hidden",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.06)";
+                e.currentTarget.style.boxShadow = "0 6px 28px rgba(50,55,60,0.6)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
             >
               {hero.cta}
             </button>
           </div>
 
-          {/* Right — video */}
+          {/* Right - video */}
           <div
             style={{
               flex: isMobile ? "none" : 1,
@@ -384,6 +493,7 @@ export default function CP04Page() {
               muted
               loop
               playsInline
+              poster="/keikamotsu-new-templates/images/hero-bg.webp"
               style={{
                 position: "absolute",
                 top: 0,
@@ -393,8 +503,20 @@ export default function CP04Page() {
                 objectFit: "cover",
               }}
             >
-              <source src="/keikamotsu-new-templates/videos/hero-daytime.mp4" type="video/mp4" />
+              <source src="/keikamotsu-new-templates/videos/hero-nightcity.mp4" type="video/mp4" />
             </video>
+            {/* Noise texture overlay on video */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                opacity: 0.04,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                backgroundRepeat: "repeat",
+                backgroundSize: "128px 128px",
+                pointerEvents: "none",
+              }}
+            />
             <div
               style={{
                 position: "absolute",
@@ -403,6 +525,41 @@ export default function CP04Page() {
                   "linear-gradient(90deg, rgba(13,17,23,0.4) 0%, transparent 40%)",
               }}
             />
+            {/* Floating geometric on video side */}
+            <div
+              className="cp04-float-geo-3"
+              style={{
+                position: "absolute",
+                bottom: "25%",
+                left: "20%",
+                width: 80,
+                height: 80,
+                border: "2px solid rgba(255,255,255,0.08)",
+                transform: "rotate(45deg)",
+                pointerEvents: "none",
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div
+          className="cp04-scroll-indicator"
+          style={{
+            position: "absolute",
+            bottom: 40,
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 8,
+            zIndex: 10,
+          }}
+        >
+          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", letterSpacing: "0.15em", fontFamily: "'Inter', sans-serif" }}>SCROLL</span>
+          <div style={{ width: 1, height: 40, background: "rgba(255,255,255,0.2)", position: "relative", overflow: "hidden" }}>
+            <div className="cp04-scroll-line" style={{ width: 1, height: 20, background: "rgba(255,255,255,0.7)", position: "absolute", top: -20 }} />
           </div>
         </div>
       </Section>
@@ -413,12 +570,33 @@ export default function CP04Page() {
   const servicesEl = (() => {
     return (
       <Section id="services" bg={LIGHT} style={{ paddingTop: isMobile ? 80 : 150, paddingBottom: isMobile ? 60 : 100 }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        {/* Diagonal divider top */}
+        <div style={{
+          position: "absolute",
+          top: -1,
+          left: 0,
+          width: "100%",
+          height: 100,
+          background: DARK,
+          clipPath: "polygon(0 0, 100% 0, 100% 0%, 0 100%)",
+        }} />
+        {/* Decorative diagonal line */}
+        <div className="cp04-diag-line" style={{
+          position: "absolute",
+          top: 80,
+          right: 0,
+          width: 200,
+          height: 2,
+          background: `linear-gradient(90deg, transparent, ${ACCENT})`,
+          transform: "rotate(-3deg)",
+          opacity: 0.15,
+        }} />
+        <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
           {services.map((s, i) => {
             const isOdd = i % 2 === 0;
             const bg = isOdd ? DARK : LIGHT;
             const fg = isOdd ? LIGHT : DARK;
-            return <ServiceRow key={s.num} s={s} isOdd={isOdd} bg={bg} fg={fg} isMobile={isMobile} headingStyle={headingStyle} jpHeading={jpHeading} bodyFont={bodyFont} />;
+            return <ServiceRow key={s.num} s={s} idx={i} isOdd={isOdd} bg={bg} fg={fg} isMobile={isMobile} headingStyle={headingStyle} jpHeading={jpHeading} bodyFont={bodyFont} />;
           })}
         </div>
       </Section>
@@ -433,14 +611,31 @@ export default function CP04Page() {
         bg={DARK}
         style={{
           padding: isMobile ? "72px 20px" : "120px 48px 110px",
+        }}
+        clip="polygon(0 0, 100% 4%, 100% 96%, 0 100%)"
+      >
+        {/* Background image with overlay */}
+        <div style={{
+          position: "absolute",
+          inset: 0,
           backgroundImage: "url(/keikamotsu-new-templates/images/strength-01.webp)",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          backgroundBlendMode: "overlay",
-        }}
-      >
-        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          opacity: 0.15,
+        }} />
+        {/* Animated diagonal decoration */}
+        <div className="cp04-diag-deco" style={{
+          position: "absolute",
+          top: "10%",
+          left: -50,
+          width: 300,
+          height: 2,
+          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)",
+          transform: "rotate(-5deg)",
+        }} />
+        <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
           <p
+            className="cp04-clip-reveal"
             style={{
               ...headingStyle,
               fontSize: 13,
@@ -450,9 +645,10 @@ export default function CP04Page() {
               marginBottom: 8,
             }}
           >
-            ── Our Strengths ──
+            -- Our Strengths --
           </p>
           <h2
+            className="cp04-clip-reveal"
             style={{
               ...jpHeading,
               fontSize: isMobile ? 26 : 36,
@@ -462,8 +658,8 @@ export default function CP04Page() {
           >
             私たちの強み
           </h2>
-          {strengths.map((st) => (
-            <StrengthItem key={st.num} st={st} isMobile={isMobile} headingStyle={headingStyle} jpHeading={jpHeading} bodyFont={bodyFont} />
+          {strengths.map((st, idx) => (
+            <StrengthItem key={st.num} st={st} idx={idx} isMobile={isMobile} headingStyle={headingStyle} jpHeading={jpHeading} bodyFont={bodyFont} />
           ))}
         </div>
       </Section>
@@ -475,6 +671,18 @@ export default function CP04Page() {
     const [ref, vis] = useReveal();
     return (
       <Section id="message" bg={LIGHT}>
+        {/* Geometric triangle decoration */}
+        <div style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          width: 0,
+          height: 0,
+          borderTop: "200px solid rgba(13,17,23,0.03)",
+          borderLeft: "200px solid transparent",
+          pointerEvents: "none",
+          zIndex: 1,
+        }} />
         <div
           ref={ref}
           style={{
@@ -488,12 +696,12 @@ export default function CP04Page() {
             style={{
               flex: isMobile ? "none" : "0 0 45%",
               minHeight: isMobile ? 320 : 600,
-              background: `url(/images/ceo-portrait.webp) center/cover no-repeat`,
+              background: `url(/keikamotsu-new-templates/images/ceo-portrait.webp) center/cover no-repeat`,
               clipPath: isMobile
                 ? "polygon(0 0, 100% 0, 100% 90%, 0 100%)"
                 : "polygon(0 0, 100% 0, 88% 100%, 0 100%)",
               opacity: vis ? 1 : 0,
-              transform: vis ? "translateX(0)" : "translateX(-40px)",
+              transform: vis ? "translateX(0) skewX(0deg)" : "translateX(-40px) skewX(-2deg)",
               transition: "opacity .8s ease, transform .8s ease",
             }}
           />
@@ -512,11 +720,15 @@ export default function CP04Page() {
             }}
           >
             <div
+              className="cp04-scaleX-reveal"
               style={{
                 width: 40,
                 height: 4,
                 background: "#555",
                 marginBottom: 24,
+                transformOrigin: "left",
+                transform: vis ? "scaleX(1)" : "scaleX(0)",
+                transition: "transform .6s ease .3s",
               }}
             />
             <p
@@ -529,7 +741,7 @@ export default function CP04Page() {
                 marginBottom: 8,
               }}
             >
-              ── CEO Message ──
+              -- CEO Message --
             </p>
             <h2
               style={{
@@ -549,6 +761,9 @@ export default function CP04Page() {
                   color: "#444",
                   fontSize: 15,
                   marginBottom: 18,
+                  opacity: vis ? 1 : 0,
+                  transform: vis ? "translateY(0)" : "translateY(10px)",
+                  transition: `opacity .5s ease ${0.4 + i * 0.1}s, transform .5s ease ${0.4 + i * 0.1}s`,
                 }}
               >
                 {p}
@@ -580,72 +795,96 @@ export default function CP04Page() {
         bg={LIGHT}
         style={{ padding: isMobile ? "64px 20px 56px" : "85px 48px 75px" }}
       >
-        <div ref={ref} style={{ maxWidth: 1100, margin: "0 auto" }}>
-          <p
-            style={{
-              ...headingStyle,
-              fontSize: 12,
-              color: ACCENT,
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              marginBottom: 8,
-            }}
-          >
-            ── Company ──
-          </p>
-          <h2
-            style={{
-              ...jpHeading,
-              fontSize: isMobile ? 26 : 36,
-              color: DARK,
-              marginBottom: 48,
-            }}
-          >
-            会社概要
-          </h2>
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              opacity: vis ? 1 : 0,
-              transform: vis ? "translateY(0)" : "translateY(12px)",
-              transition: "opacity .7s ease, transform .7s ease",
-            }}
-          >
-            <tbody>
-              {companyOverview.map((row) => (
-                <tr
-                  key={row.dt}
-                  style={{ borderBottom: `1px solid #e8e8e8` }}
-                >
-                  <td
-                    style={{
-                      ...jpHeading,
-                      fontSize: 14,
-                      color: DARK,
-                      padding: isMobile ? "16px 8px" : "20px 24px",
-                      whiteSpace: "nowrap",
-                      width: isMobile ? 100 : 160,
-                      verticalAlign: "top",
-                    }}
+        {/* Diagonal divider top */}
+        <div style={{
+          position: "absolute",
+          top: -1,
+          left: 0,
+          width: "100%",
+          height: 80,
+          background: LIGHT,
+          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 0%)",
+          zIndex: 1,
+        }} />
+        <div ref={ref} style={{ maxWidth: 1100, margin: "0 auto", display: "flex", flexDirection: isMobile ? "column" : "row", gap: isMobile ? 32 : 48 }}>
+          {/* Left side: company image */}
+          <div style={{
+            flex: isMobile ? "none" : "0 0 40%",
+            minHeight: isMobile ? 220 : 400,
+            background: `url(/keikamotsu-new-templates/images/company.webp) center/cover no-repeat`,
+            clipPath: isMobile ? "none" : "polygon(0 0, 100% 0, 90% 100%, 0 100%)",
+            opacity: vis ? 1 : 0,
+            transform: vis ? "translateX(0)" : "translateX(-30px)",
+            transition: "opacity .7s ease, transform .7s ease",
+          }} />
+          {/* Right side: table */}
+          <div style={{ flex: 1 }}>
+            <p
+              style={{
+                ...headingStyle,
+                fontSize: 12,
+                color: ACCENT,
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                marginBottom: 8,
+              }}
+            >
+              -- Company --
+            </p>
+            <h2
+              style={{
+                ...jpHeading,
+                fontSize: isMobile ? 26 : 36,
+                color: DARK,
+                marginBottom: 48,
+              }}
+            >
+              会社概要
+            </h2>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                opacity: vis ? 1 : 0,
+                transform: vis ? "translateY(0)" : "translateY(12px)",
+                transition: "opacity .7s ease .2s, transform .7s ease .2s",
+              }}
+            >
+              <tbody>
+                {companyOverview.map((row) => (
+                  <tr
+                    key={row.dt}
+                    style={{ borderBottom: `1px solid #e8e8e8` }}
                   >
-                    <span style={{ marginRight: 6 }}>▪</span>{row.dt}
-                  </td>
-                  <td
-                    style={{
-                      ...bodyFont,
-                      fontSize: 14,
-                      color: "#444",
-                      padding: isMobile ? "16px 8px" : "20px 24px",
-                      whiteSpace: "pre-line",
-                    }}
-                  >
-                    {typeof row.dd === "string" ? row.dd.split("\n").map((line: string, li: number) => <span key={li}>{line}{li < row.dd.split("\n").length - 1 && <br />}</span>) : row.dd}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    <td
+                      style={{
+                        ...jpHeading,
+                        fontSize: 14,
+                        color: DARK,
+                        padding: isMobile ? "16px 8px" : "20px 24px",
+                        whiteSpace: "nowrap",
+                        width: isMobile ? 100 : 160,
+                        verticalAlign: "top",
+                      }}
+                    >
+                      <span style={{ marginRight: 6 }}>&#9642;</span>{row.dt}
+                    </td>
+                    <td
+                      style={{
+                        ...bodyFont,
+                        fontSize: 14,
+                        color: "#444",
+                        padding: isMobile ? "16px 8px" : "20px 24px",
+                        whiteSpace: "pre-line",
+                      }}
+                    >
+                      {typeof row.dd === "string" ? row.dd.split("\n").map((line: string, li: number) => <span key={li}>{line}{li < row.dd.split("\n").length - 1 && <br />}</span>) : row.dd}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </Section>
     );
@@ -662,7 +901,18 @@ export default function CP04Page() {
           padding: isMobile ? "48px 20px 40px" : "65px 48px 55px",
         }}
       >
-        <div ref={ref} style={{ maxWidth: 840, margin: "0 auto" }}>
+        {/* Skewed top divider */}
+        <div style={{
+          position: "absolute",
+          top: -1,
+          left: 0,
+          width: "100%",
+          height: 60,
+          background: LIGHT,
+          transform: "skewY(-2deg)",
+          transformOrigin: "top left",
+        }} />
+        <div ref={ref} style={{ maxWidth: 940, margin: "0 auto", position: "relative" }}>
           <p
             style={{
               ...headingStyle,
@@ -673,7 +923,7 @@ export default function CP04Page() {
               marginBottom: 8,
             }}
           >
-            ── History ──
+            -- History --
           </p>
           <h2
             style={{
@@ -685,44 +935,73 @@ export default function CP04Page() {
           >
             沿革
           </h2>
-          {history.map((h, i) => (
-            <div
-              key={h.year}
-              style={{
-                display: "flex",
-                gap: isMobile ? 16 : 32,
-                marginBottom: 36,
-                opacity: vis ? 1 : 0,
-                transform: vis ? "translateY(0)" : "translateY(12px)",
-                transition: `opacity .6s ease ${i * 0.12}s, transform .6s ease ${i * 0.12}s`,
-              }}
-            >
+          {history.map((h, i) => {
+            const imgSrc = HISTORY_IMAGES[String(h.year)];
+            return (
               <div
+                key={h.year}
                 style={{
-                  ...headingStyle,
-                  fontSize: isMobile ? 28 : 40,
-                  color: ACCENT,
-                  minWidth: isMobile ? 70 : 100,
-                  lineHeight: 1,
+                  display: "flex",
+                  gap: isMobile ? 16 : 32,
+                  marginBottom: 36,
+                  opacity: vis ? 1 : 0,
+                  transform: vis ? "translateY(0) skewY(0deg)" : "translateY(20px) skewY(1deg)",
+                  transition: `opacity .6s ease ${i * 0.12}s, transform .6s ease ${i * 0.12}s`,
                 }}
               >
-                {h.year}
+                <div
+                  style={{
+                    ...headingStyle,
+                    fontSize: isMobile ? 28 : 40,
+                    color: ACCENT,
+                    minWidth: isMobile ? 70 : 100,
+                    lineHeight: 1,
+                  }}
+                >
+                  {h.year}
+                </div>
+                <div
+                  style={{
+                    flex: 1,
+                    background: LIGHT,
+                    padding: isMobile ? "18px 20px" : "24px 32px",
+                    borderLeft: `4px solid #555`,
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: 16,
+                    alignItems: isMobile ? "flex-start" : "center",
+                    transition: "box-shadow .3s, transform .3s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = "0 8px 28px rgba(0,0,0,0.12)";
+                    e.currentTarget.style.transform = "translateX(4px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.06)";
+                    e.currentTarget.style.transform = "translateX(0)";
+                  }}
+                >
+                  {imgSrc && (
+                    <img
+                      src={imgSrc}
+                      alt={`${h.year}年`}
+                      style={{
+                        width: isMobile ? "100%" : 120,
+                        height: isMobile ? 120 : 80,
+                        objectFit: "cover",
+                        clipPath: "polygon(5% 0, 100% 0, 95% 100%, 0 100%)",
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
+                  <p style={{ ...bodyFont, fontSize: 15, color: "#333", margin: 0 }}>
+                    {h.event}
+                  </p>
+                </div>
               </div>
-              <div
-                style={{
-                  flex: 1,
-                  background: LIGHT,
-                  padding: isMobile ? "18px 20px" : "24px 32px",
-                  borderLeft: `4px solid #555`,
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-                }}
-              >
-                <p style={{ ...bodyFont, fontSize: 15, color: "#333", margin: 0 }}>
-                  {h.event}
-                </p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </Section>
     );
@@ -738,6 +1017,25 @@ export default function CP04Page() {
         style={{ padding: isMobile ? "72px 20px 56px" : "105px 48px 90px" }}
         clip="polygon(0 8%, 100% 0, 100% 92%, 0 100%)"
       >
+        {/* Background image */}
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "url(/keikamotsu-new-templates/images/team.webp)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.12,
+        }} />
+        {/* Noise texture */}
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.05,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "128px 128px",
+          pointerEvents: "none",
+        }} />
         <div
           ref={ref}
           style={{
@@ -747,41 +1045,11 @@ export default function CP04Page() {
             gridTemplateColumns: isMobile ? "1.1fr 0.9fr" : "0.95fr 1.1fr 0.9fr 1.05fr",
             gap: isMobile ? 32 : 48,
             textAlign: "center",
+            position: "relative",
           }}
         >
           {numbers.map((n, i) => (
-            <div
-              key={n.label}
-              style={{
-                opacity: vis ? 1 : 0,
-                transform: vis ? "translateY(0)" : "translateY(12px)",
-                transition: `opacity .6s ease ${i * 0.12}s, transform .6s ease ${i * 0.12}s`,
-              }}
-            >
-              <div
-                style={{
-                  ...headingStyle,
-                  fontSize: isMobile ? 40 : 56,
-                  color: LIGHT,
-                  lineHeight: 1.1,
-                }}
-              >
-                {n.value}
-                <span style={{ fontSize: isMobile ? 18 : 22, marginLeft: 4 }}>
-                  {n.suffix}
-                </span>
-              </div>
-              <p
-                style={{
-                  ...jpHeading,
-                  fontSize: 14,
-                  color: "rgba(255,255,255,0.85)",
-                  marginTop: 8,
-                }}
-              >
-                {n.label}
-              </p>
-            </div>
+            <NumberCard key={n.label} n={n} i={i} vis={vis} isMobile={isMobile} headingStyle={headingStyle} jpHeading={jpHeading} />
           ))}
         </div>
       </Section>
@@ -808,7 +1076,7 @@ export default function CP04Page() {
               marginBottom: 8,
             }}
           >
-            ── Partners ──
+            -- Partners --
           </p>
           <h2
             style={{
@@ -829,9 +1097,10 @@ export default function CP04Page() {
               transition: "opacity .8s ease",
             }}
           >
-            {partners.map((p) => (
+            {partners.map((p, idx) => (
               <div
                 key={p.name}
+                className="cp04-partner-card"
                 style={{
                   background: "#f8f8f8",
                   padding: "32px 20px",
@@ -841,12 +1110,19 @@ export default function CP04Page() {
                   justifyContent: "center",
                   gap: 12,
                   border: "1px solid #eee",
-                  transition: "box-shadow .3s",
+                  transition: "box-shadow .3s, transform .3s",
+                  opacity: vis ? 1 : 0,
+                  transform: vis ? "translateY(0)" : "translateY(20px)",
+                  transitionDelay: `${idx * 0.08}s`,
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)")
-                }
-                onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.12)";
+                  e.currentTarget.style.transform = "translateY(-4px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
               >
                 <div
                   style={{
@@ -906,7 +1182,17 @@ export default function CP04Page() {
         bg={DARK}
         style={{ padding: isMobile ? "52px 20px 44px" : "70px 48px 60px" }}
       >
-        <div ref={ref} style={{ maxWidth: 1100, margin: "0 auto" }}>
+        {/* Skewed divider */}
+        <div style={{
+          position: "absolute",
+          top: -1,
+          left: 0,
+          width: "100%",
+          height: 80,
+          background: LIGHT,
+          clipPath: "polygon(0 0, 100% 0, 100% 30%, 0 100%)",
+        }} />
+        <div ref={ref} style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
           <p
             style={{
               ...headingStyle,
@@ -917,7 +1203,7 @@ export default function CP04Page() {
               marginBottom: 8,
             }}
           >
-            ── News ──
+            -- News --
           </p>
           <h2
             style={{
@@ -944,13 +1230,14 @@ export default function CP04Page() {
                 transition: `opacity .5s ease ${i * 0.1}s, transform .5s ease ${i * 0.1}s`,
                 cursor: "pointer",
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.3)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.borderBottomColor =
-                  "rgba(255,255,255,0.08)")
-              }
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.3)";
+                e.currentTarget.style.paddingLeft = "8px";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderBottomColor = "rgba(255,255,255,0.08)";
+                e.currentTarget.style.paddingLeft = "0px";
+              }}
             >
               <span
                 style={{
@@ -960,7 +1247,7 @@ export default function CP04Page() {
                   minWidth: 100,
                 }}
               >
-                ─ {n.date}
+                - {n.date}
               </span>
               <span
                 style={{
@@ -996,6 +1283,17 @@ export default function CP04Page() {
     const [ref, vis] = useReveal();
     return (
       <Section id="recruit" bg={DARK}>
+        {/* Diagonal geometric decoration */}
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          clipPath: "polygon(0 0, 30% 0, 25% 100%, 0 100%)",
+          background: "rgba(255,255,255,0.02)",
+          pointerEvents: "none",
+        }} />
         <div
           ref={ref}
           style={{
@@ -1004,11 +1302,11 @@ export default function CP04Page() {
             minHeight: isMobile ? "auto" : 420,
           }}
         >
-          {/* Left — dark with bg image */}
+          {/* Left - with delivery image background */}
           <div
             style={{
               flex: 1,
-              background: `linear-gradient(rgba(13,17,23,0.85), rgba(13,17,23,0.85)), url(/keikamotsu-new-templates/images/team.webp) center/cover no-repeat`,
+              background: `linear-gradient(rgba(13,17,23,0.78), rgba(13,17,23,0.78)), url(/keikamotsu-new-templates/images/delivery.webp) center/cover no-repeat`,
               padding: isMobile ? "64px 24px" : "80px 64px",
               display: "flex",
               flexDirection: "column",
@@ -1018,6 +1316,18 @@ export default function CP04Page() {
               transition: "opacity .7s ease, transform .7s ease",
             }}
           >
+            <p
+              style={{
+                ...headingStyle,
+                fontSize: 12,
+                color: "rgba(255,255,255,0.5)",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                marginBottom: 12,
+              }}
+            >
+              -- Recruit --
+            </p>
             <h2
               style={{
                 ...jpHeading,
@@ -1039,7 +1349,7 @@ export default function CP04Page() {
               {recruit.text}
             </p>
           </div>
-          {/* Right — dark */}
+          {/* Right - CTA */}
           <div
             style={{
               flex: isMobile ? "none" : "0 0 40%",
@@ -1058,6 +1368,7 @@ export default function CP04Page() {
           >
             <button
               onClick={() => window.open(recruit.link, "_blank")}
+              className="cp04-recruit-cta"
               style={{
                 background: LIGHT,
                 color: DARK,
@@ -1068,14 +1379,18 @@ export default function CP04Page() {
                 cursor: "pointer",
                 fontFamily: "'Noto Sans JP', sans-serif",
                 clipPath: "polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
-                transition: "transform .2s",
+                transition: "transform .25s, box-shadow .25s",
+                position: "relative",
+                overflow: "hidden",
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.transform = "scale(1.04)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.06)";
+                e.currentTarget.style.boxShadow = "0 8px 32px rgba(255,255,255,0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
             >
               {recruit.cta}
             </button>
@@ -1094,7 +1409,17 @@ export default function CP04Page() {
         bg="#f5f5f5"
         style={{ padding: isMobile ? "64px 20px 56px" : "95px 48px 80px" }}
       >
-        <div ref={ref} style={{ maxWidth: 1100, margin: "0 auto" }}>
+        {/* Diagonal top divider */}
+        <div style={{
+          position: "absolute",
+          top: -1,
+          left: 0,
+          width: "100%",
+          height: 70,
+          background: DARK,
+          clipPath: "polygon(0 0, 100% 0, 100% 0%, 0 100%)",
+        }} />
+        <div ref={ref} style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
           <p
             style={{
               ...headingStyle,
@@ -1105,7 +1430,7 @@ export default function CP04Page() {
               marginBottom: 8,
             }}
           >
-            ── Access ──
+            -- Access --
           </p>
           <h2
             style={{
@@ -1192,6 +1517,7 @@ export default function CP04Page() {
                 flex: isMobile ? "none" : "0 0 55%",
                 minHeight: 320,
                 overflow: "hidden",
+                clipPath: isMobile ? "none" : "polygon(5% 0, 100% 0, 100% 100%, 0 100%)",
               }}
             >
               <iframe
@@ -1227,7 +1553,7 @@ export default function CP04Page() {
       border: "1px solid rgba(255,255,255,0.15)",
       color: LIGHT,
       outline: "none",
-      transition: "border-color .2s",
+      transition: "border-color .3s, box-shadow .3s",
       boxSizing: "border-box",
     };
     return (
@@ -1236,7 +1562,29 @@ export default function CP04Page() {
         bg={DARK}
         style={{ padding: isMobile ? "80px 20px 80px" : "130px 48px 140px" }}
       >
-        <div ref={ref} style={{ maxWidth: 720, margin: "0 auto" }}>
+        {/* Geometric decorations */}
+        <div style={{
+          position: "absolute",
+          top: "10%",
+          right: "5%",
+          width: 120,
+          height: 120,
+          border: "1px solid rgba(255,255,255,0.04)",
+          transform: "rotate(45deg)",
+          pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute",
+          bottom: "15%",
+          left: "8%",
+          width: 0,
+          height: 0,
+          borderLeft: "40px solid transparent",
+          borderRight: "40px solid transparent",
+          borderBottom: "70px solid rgba(255,255,255,0.02)",
+          pointerEvents: "none",
+        }} />
+        <div ref={ref} style={{ maxWidth: 720, margin: "0 auto", position: "relative" }}>
           <p
             style={{
               ...headingStyle,
@@ -1247,7 +1595,7 @@ export default function CP04Page() {
               marginBottom: 8,
             }}
           >
-            ── Contact ──
+            -- Contact --
           </p>
           <h2
             style={{
@@ -1325,7 +1673,7 @@ export default function CP04Page() {
                           marginLeft: 8,
                         }}
                       >
-                        ＊必須
+                        *必須
                       </span>
                     )}
                   </label>
@@ -1335,13 +1683,14 @@ export default function CP04Page() {
                       required={f.required}
                       rows={5}
                       style={{ ...inputStyle, resize: "vertical" }}
-                      onFocus={(e) =>
-                        (e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)")
-                      }
-                      onBlur={(e) =>
-                        (e.currentTarget.style.borderColor =
-                          "rgba(255,255,255,0.15)")
-                      }
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)";
+                        e.currentTarget.style.boxShadow = "0 0 0 2px rgba(255,255,255,0.08)";
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
                     />
                   ) : (
                     <input
@@ -1349,19 +1698,21 @@ export default function CP04Page() {
                       name={f.name}
                       required={f.required}
                       style={inputStyle}
-                      onFocus={(e) =>
-                        (e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)")
-                      }
-                      onBlur={(e) =>
-                        (e.currentTarget.style.borderColor =
-                          "rgba(255,255,255,0.15)")
-                      }
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.5)";
+                        e.currentTarget.style.boxShadow = "0 0 0 2px rgba(255,255,255,0.08)";
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
                     />
                   )}
                 </div>
               ))}
               <button
                 type="submit"
+                className="cp04-submit-btn"
                 style={{
                   background: CTA_BG,
                   color: LIGHT,
@@ -1374,10 +1725,18 @@ export default function CP04Page() {
                   clipPath:
                     "polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%)",
                   marginTop: 8,
-                  transition: "opacity .2s",
+                  transition: "transform .25s, box-shadow .25s",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.03)";
+                  e.currentTarget.style.boxShadow = "0 6px 24px rgba(50,55,60,0.6)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
               >
                 送信する
               </button>
@@ -1393,91 +1752,106 @@ export default function CP04Page() {
     <footer
       style={{
         background: "#000",
-        padding: isMobile ? "48px 20px 24px" : "64px 48px 28px",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <div
-        style={{
-          maxWidth: 1100,
-          margin: "0 auto",
-          display: "flex",
-          flexDirection: isMobile ? "column" : "row",
-          justifyContent: "space-between",
-          alignItems: isMobile ? "flex-start" : "center",
-          gap: 32,
-          marginBottom: 48,
-        }}
-      >
-        <div>
-          <div
+      {/* Footer background image */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        backgroundImage: "url(/keikamotsu-new-templates/images/footer-bg.webp)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        opacity: 0.06,
+      }} />
+      <div style={{ position: "relative", padding: isMobile ? "48px 20px 24px" : "64px 48px 28px" }}>
+        <div
+          style={{
+            maxWidth: 1100,
+            margin: "0 auto",
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            justifyContent: "space-between",
+            alignItems: isMobile ? "flex-start" : "center",
+            gap: 32,
+            marginBottom: 48,
+          }}
+        >
+          <div>
+            <div
+              style={{
+                ...headingStyle,
+                fontSize: 20,
+                color: LIGHT,
+                marginBottom: 8,
+              }}
+            >
+              {company.name.slice(0, 8)}
+              <span style={{ color: "#888" }}>.</span>
+            </div>
+            <p
+              style={{
+                ...bodyFont,
+                fontSize: 13,
+                color: "rgba(255,255,255,0.4)",
+                margin: 0,
+              }}
+            >
+              {footer.catchphrase}
+            </p>
+          </div>
+          <nav
             style={{
-              ...headingStyle,
-              fontSize: 20,
-              color: LIGHT,
-              marginBottom: 8,
+              display: "flex",
+              flexWrap: "wrap",
+              gap: isMobile ? 14 : 24,
             }}
           >
-            {company.name.slice(0, 8)}
-            <span style={{ color: "#888" }}>.</span>
-          </div>
+            {navLinks.map((l) => (
+              <a
+                key={l.href}
+                onClick={() => scrollTo(l.href)}
+                className="cp04-footer-link"
+                style={{
+                  color: "rgba(255,255,255,0.5)",
+                  textDecoration: "none",
+                  fontSize: 12,
+                  fontFamily: "'Noto Sans JP', sans-serif",
+                  cursor: "pointer",
+                  transition: "color .2s",
+                  position: "relative",
+                  paddingBottom: 2,
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.color = "rgba(255,255,255,0.5)")
+                }
+              >
+                {l.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+        <div
+          style={{
+            borderTop: "1px solid rgba(255,255,255,0.08)",
+            paddingTop: 20,
+            textAlign: "center",
+          }}
+        >
           <p
             style={{
-              ...bodyFont,
-              fontSize: 13,
-              color: "rgba(255,255,255,0.4)",
+              fontSize: 11,
+              color: "rgba(255,255,255,0.3)",
+              fontFamily: "'Inter', sans-serif",
               margin: 0,
             }}
           >
-            {footer.catchphrase}
+            &copy; {new Date().getFullYear()} {company.nameEn} All rights
+            reserved.
           </p>
         </div>
-        <nav
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: isMobile ? 14 : 24,
-          }}
-        >
-          {navLinks.map((l) => (
-            <a
-              key={l.href}
-              onClick={() => scrollTo(l.href)}
-              style={{
-                color: "rgba(255,255,255,0.5)",
-                textDecoration: "none",
-                fontSize: 12,
-                fontFamily: "'Noto Sans JP', sans-serif",
-                cursor: "pointer",
-                transition: "color .2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")}
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "rgba(255,255,255,0.5)")
-              }
-            >
-              {l.label}
-            </a>
-          ))}
-        </nav>
-      </div>
-      <div
-        style={{
-          borderTop: "1px solid rgba(255,255,255,0.08)",
-          paddingTop: 20,
-          textAlign: "center",
-        }}
-      >
-        <p
-          style={{
-            fontSize: 11,
-            color: "rgba(255,255,255,0.3)",
-            fontFamily: "'Inter', sans-serif",
-            margin: 0,
-          }}
-        >
-          &copy; {new Date().getFullYear()} {company.nameEn} All rights
-          reserved.
-        </p>
       </div>
     </footer>
   );
@@ -1491,6 +1865,162 @@ export default function CP04Page() {
         html { scroll-behavior:smooth; }
         body { overflow-x:hidden; -webkit-font-smoothing:antialiased; }
         ::selection { background:${CTA_BG}; color:#fff; }
+
+        /* ── Nav link animated underline ── */
+        .cp04-nav-link::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 1px;
+          background: #fff;
+          transition: width .3s ease;
+        }
+        .cp04-nav-link:hover::after {
+          width: 100%;
+        }
+
+        /* ── Footer link animated underline ── */
+        .cp04-footer-link::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 1px;
+          background: rgba(255,255,255,0.5);
+          transition: width .3s ease;
+        }
+        .cp04-footer-link:hover::after {
+          width: 100%;
+        }
+
+        /* ── Hero heading clip-path reveal ── */
+        .cp04-hero-heading {
+          animation: cp04ClipReveal 1s ease forwards;
+          animation-delay: 0.3s;
+          clip-path: inset(0 100% 0 0);
+        }
+
+        @keyframes cp04ClipReveal {
+          to { clip-path: inset(0 0% 0 0); }
+        }
+
+        /* ── Scroll indicator animation ── */
+        .cp04-scroll-line {
+          animation: cp04ScrollLine 1.8s ease-in-out infinite;
+        }
+
+        @keyframes cp04ScrollLine {
+          0% { top: -20px; }
+          100% { top: 40px; }
+        }
+
+        /* ── Floating geometric elements ── */
+        .cp04-float-geo {
+          animation: cp04Float 6s ease-in-out infinite;
+        }
+        .cp04-float-geo-2 {
+          animation: cp04Float 8s ease-in-out infinite reverse;
+        }
+        .cp04-float-geo-3 {
+          animation: cp04Float 7s ease-in-out infinite;
+        }
+
+        @keyframes cp04Float {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-15px) rotate(3deg); }
+        }
+        .cp04-float-geo-2 {
+          animation: cp04Float2 8s ease-in-out infinite;
+        }
+        @keyframes cp04Float2 {
+          0%, 100% { transform: skewX(-15deg) translateY(0); }
+          50% { transform: skewX(-15deg) translateY(-12px); }
+        }
+
+        /* ── Button shine sweep ── */
+        .cp04-hero-cta::before,
+        .cp04-cta-btn::before,
+        .cp04-submit-btn::before,
+        .cp04-recruit-cta::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+          transition: left .5s ease;
+        }
+        .cp04-hero-cta:hover::before,
+        .cp04-cta-btn:hover::before,
+        .cp04-submit-btn:hover::before,
+        .cp04-recruit-cta:hover::before {
+          left: 100%;
+        }
+
+        /* ── CTA pulse ── */
+        .cp04-hero-cta {
+          animation: cp04Pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes cp04Pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(50,55,60,0.4); }
+          50% { box-shadow: 0 0 0 12px rgba(50,55,60,0); }
+        }
+
+        /* ── Card perspective tilt ── */
+        .cp04-service-card {
+          transition: transform .4s ease, box-shadow .4s ease;
+        }
+        .cp04-service-card:hover {
+          transform: perspective(800px) rotateY(2deg) rotateX(-1deg);
+          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        /* ── Diagonal decoration animation ── */
+        .cp04-diag-deco {
+          animation: cp04DiagSlide 4s ease-in-out infinite alternate;
+        }
+        @keyframes cp04DiagSlide {
+          0% { transform: rotate(-5deg) translateX(0); opacity: 0.1; }
+          100% { transform: rotate(-5deg) translateX(60px); opacity: 0.3; }
+        }
+
+        /* ── Clip-path section headings reveal ── */
+        .cp04-clip-reveal {
+          animation: cp04ClipRevealGeneric 0.8s ease forwards;
+        }
+        @keyframes cp04ClipRevealGeneric {
+          from { clip-path: inset(0 100% 0 0); }
+          to { clip-path: inset(0 0% 0 0); }
+        }
+
+        /* ── Strength image hover ── */
+        .cp04-strength-img {
+          transition: transform .5s ease, filter .5s ease;
+        }
+        .cp04-strength-img:hover {
+          transform: scale(1.05);
+          filter: brightness(1.1);
+        }
+
+        /* ── prefers-reduced-motion ── */
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
+          .cp04-hero-heading {
+            clip-path: none !important;
+          }
+          .cp04-clip-reveal {
+            clip-path: none !important;
+          }
+        }
       `}</style>
       {headerEl}
       <main>
@@ -1513,11 +2043,12 @@ export default function CP04Page() {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   SUB-COMPONENTS (avoid hook issues with inline IIFEs)
+   SUB-COMPONENTS
    ═══════════════════════════════════════════════════════════ */
 
 function ServiceRow({
   s,
+  idx,
   isOdd,
   bg,
   fg,
@@ -1527,6 +2058,7 @@ function ServiceRow({
   bodyFont,
 }: {
   s: (typeof services)[number];
+  idx: number;
   isOdd: boolean;
   bg: string;
   fg: string;
@@ -1536,9 +2068,11 @@ function ServiceRow({
   bodyFont: React.CSSProperties;
 }) {
   const [ref, vis] = useReveal();
+  const imgSrc = SERVICE_IMAGES[idx] || SERVICE_IMAGES[0];
   return (
     <div
       ref={ref}
+      className="cp04-service-card"
       style={{
         display: "flex",
         flexDirection: isMobile
@@ -1547,6 +2081,7 @@ function ServiceRow({
             ? "row"
             : "row-reverse",
         minHeight: isMobile ? "auto" : 380,
+        marginBottom: isMobile ? 0 : 4,
       }}
     >
       {/* Text side */}
@@ -1592,7 +2127,7 @@ function ServiceRow({
             marginTop: 16,
           }}
         >
-          <span style={{ marginRight: 8 }}>▸</span>{s.title}
+          <span style={{ marginRight: 8 }}>&#9656;</span>{s.title}
         </h3>
         <div
           style={{
@@ -1600,6 +2135,9 @@ function ServiceRow({
             height: 3,
             background: "#555",
             marginBottom: 20,
+            transform: vis ? "scaleX(1)" : "scaleX(0)",
+            transformOrigin: "left",
+            transition: "transform .6s ease .3s",
           }}
         />
         <p
@@ -1615,15 +2153,13 @@ function ServiceRow({
         </p>
       </div>
 
-      {/* Image / visual side */}
+      {/* Image side */}
       <div
         style={{
           flex: 1,
-          background: isOdd ? "#1a1f26" : "#f0f0f0",
-          minHeight: isMobile ? 200 : 380,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          position: "relative",
+          minHeight: isMobile ? 240 : 380,
+          overflow: "hidden",
           clipPath:
             !isMobile && isOdd
               ? "polygon(0 0, 100% 0, 100% 100%, 10% 100%)"
@@ -1636,17 +2172,32 @@ function ServiceRow({
           transition: "opacity .7s ease .15s",
         }}
       >
-        <span
+        <img
+          src={imgSrc}
+          alt={s.title}
           style={{
-            ...headingStyle,
-            fontSize: isMobile ? 60 : 100,
-            color: isOdd
-              ? "rgba(255,255,255,0.04)"
-              : "rgba(0,0,0,0.04)",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transition: "transform .6s ease",
           }}
-        >
-          {s.num}
-        </span>
+          onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
+          onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        />
+        {/* Decorative parallelogram */}
+        <div style={{
+          position: "absolute",
+          bottom: 20,
+          right: 20,
+          width: 50,
+          height: 30,
+          border: `1px solid ${isOdd ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.1)"}`,
+          transform: "skewX(-12deg)",
+          pointerEvents: "none",
+        }} />
       </div>
     </div>
   );
@@ -1654,18 +2205,21 @@ function ServiceRow({
 
 function StrengthItem({
   st,
+  idx,
   isMobile,
   headingStyle,
   jpHeading,
   bodyFont,
 }: {
   st: (typeof strengths)[number];
+  idx: number;
   isMobile: boolean;
   headingStyle: React.CSSProperties;
   jpHeading: React.CSSProperties;
   bodyFont: React.CSSProperties;
 }) {
   const [ref, vis] = useReveal();
+  const imgSrc = STRENGTH_IMAGES[idx] || STRENGTH_IMAGES[0];
   return (
     <div
       ref={ref}
@@ -1674,30 +2228,53 @@ function StrengthItem({
         flexDirection: isMobile ? "column" : "row",
         gap: isMobile ? 12 : 40,
         marginBottom: isMobile ? 48 : 64,
-        alignItems: isMobile ? "flex-start" : "flex-start",
+        alignItems: isMobile ? "flex-start" : "center",
         opacity: vis ? 1 : 0,
-        transform: vis ? "translateY(0)" : "translateY(12px)",
-        transition: "opacity .7s ease, transform .7s ease",
+        transform: vis ? "translateY(0) skewY(0deg)" : "translateY(20px) skewY(1deg)",
+        transition: `opacity .7s ease ${idx * 0.15}s, transform .7s ease ${idx * 0.15}s`,
       }}
     >
+      {/* Strength image */}
+      <div style={{
+        flex: isMobile ? "none" : "0 0 200px",
+        width: isMobile ? "100%" : 200,
+        height: isMobile ? 160 : 160,
+        overflow: "hidden",
+        clipPath: "polygon(5% 0, 100% 0, 95% 100%, 0 100%)",
+        position: "relative",
+      }}>
+        <img
+          src={imgSrc}
+          alt={st.title}
+          className="cp04-strength-img"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
+      </div>
+
+      {/* Number */}
       <span
         style={{
           ...headingStyle,
           fontSize: isMobile ? 56 : 80,
           color: "rgba(255,255,255,0.06)",
           lineHeight: 1,
-          minWidth: isMobile ? "auto" : 120,
+          minWidth: isMobile ? "auto" : 100,
           WebkitTextStroke: `1px rgba(255,255,255,0.12)`,
         }}
       >
         {st.num}
       </span>
+
       <div style={{ flex: 1 }}>
         <h3
           style={{
             ...jpHeading,
             fontSize: isMobile ? 20 : 24,
-            color: LIGHT,
+            color: "#ffffff",
             marginBottom: 14,
             marginTop: 0,
           }}
@@ -1710,6 +2287,9 @@ function StrengthItem({
             height: 3,
             background: "#555",
             marginBottom: 16,
+            transform: vis ? "scaleX(1)" : "scaleX(0)",
+            transformOrigin: "left",
+            transition: `transform .5s ease ${idx * 0.15 + 0.3}s`,
           }}
         />
         <p
@@ -1723,6 +2303,58 @@ function StrengthItem({
           {st.text}
         </p>
       </div>
+    </div>
+  );
+}
+
+function NumberCard({
+  n,
+  i,
+  vis,
+  isMobile,
+  headingStyle,
+  jpHeading,
+}: {
+  n: (typeof numbers)[number];
+  i: number;
+  vis: boolean;
+  isMobile: boolean;
+  headingStyle: React.CSSProperties;
+  jpHeading: React.CSSProperties;
+}) {
+  const numericValue = parseInt(String(n.value).replace(/[^0-9]/g, ""), 10) || 0;
+  const count = useCounter(numericValue, vis);
+  return (
+    <div
+      style={{
+        opacity: vis ? 1 : 0,
+        transform: vis ? "translateY(0)" : "translateY(20px)",
+        transition: `opacity .6s ease ${i * 0.15}s, transform .6s ease ${i * 0.15}s`,
+      }}
+    >
+      <div
+        style={{
+          ...headingStyle,
+          fontSize: isMobile ? 40 : 56,
+          color: "#ffffff",
+          lineHeight: 1.1,
+        }}
+      >
+        {vis ? count : 0}
+        <span style={{ fontSize: isMobile ? 18 : 22, marginLeft: 4 }}>
+          {n.suffix}
+        </span>
+      </div>
+      <p
+        style={{
+          ...jpHeading,
+          fontSize: 14,
+          color: "rgba(255,255,255,0.85)",
+          marginTop: 8,
+        }}
+      >
+        {n.label}
+      </p>
     </div>
   );
 }

@@ -48,6 +48,15 @@ const IMG = {
   strength: (n: number) => `/keikamotsu-new-templates/images/strength-0${n}.webp`,
   workplace: "/keikamotsu-new-templates/images/workplace.webp",
   delivery: "/keikamotsu-new-templates/images/delivery.webp",
+  heroBg: "/keikamotsu-new-templates/images/hero-bg.webp",
+  reasons: "/keikamotsu-new-templates/images/reasons.webp",
+  jobs: "/keikamotsu-new-templates/images/jobs.webp",
+  benefits: "/keikamotsu-new-templates/images/benefits.webp",
+  dailyFlow: "/keikamotsu-new-templates/images/daily-flow.webp",
+  voices: "/keikamotsu-new-templates/images/voices.webp",
+  faq: "/keikamotsu-new-templates/images/faq.webp",
+  company: "/keikamotsu-new-templates/images/company.webp",
+  footerBg: "/keikamotsu-new-templates/images/footer-bg.webp",
 };
 
 /* ─── IntersectionObserver フック ─── */
@@ -72,11 +81,29 @@ function useInView(threshold = 0.12) {
   return { ref, visible };
 }
 
+/* ─── カウントアップフック ─── */
+function useCountUp(target: number, visible: boolean, duration = 1200) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!visible) return;
+    let start = 0;
+    const startTime = performance.now();
+    const step = (now: number) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [visible, target, duration]);
+  return count;
+}
+
 /* ─── アニメーション スタイル ─── */
 function slideUp(visible: boolean, delay = 0): React.CSSProperties {
   return {
     opacity: visible ? 1 : 0,
-    transform: visible ? "translateY(0)" : "translateY(12px)",
+    transform: visible ? "translateY(0)" : "translateY(24px)",
     transition: `opacity 0.7s cubic-bezier(.23,1,.32,1) ${delay}s, transform 0.7s cubic-bezier(.23,1,.32,1) ${delay}s`,
   };
 }
@@ -84,7 +111,7 @@ function slideUp(visible: boolean, delay = 0): React.CSSProperties {
 function slideLeft(visible: boolean, delay = 0): React.CSSProperties {
   return {
     opacity: visible ? 1 : 0,
-    transform: visible ? "translateX(0)" : "translateX(-12px)",
+    transform: visible ? "translateX(0)" : "translateX(-20px)",
     transition: `opacity 0.65s ease ${delay}s, transform 0.65s ease ${delay}s`,
   };
 }
@@ -92,7 +119,7 @@ function slideLeft(visible: boolean, delay = 0): React.CSSProperties {
 function slideRight(visible: boolean, delay = 0): React.CSSProperties {
   return {
     opacity: visible ? 1 : 0,
-    transform: visible ? "translateX(0)" : "translateX(12px)",
+    transform: visible ? "translateX(0)" : "translateX(20px)",
     transition: `opacity 0.65s ease ${delay}s, transform 0.65s ease ${delay}s`,
   };
 }
@@ -103,6 +130,32 @@ function bounceIn(visible: boolean, delay = 0): React.CSSProperties {
     transform: visible ? "scale(1)" : "scale(0.85)",
     transition: `opacity 0.5s ease ${delay}s, transform 0.6s cubic-bezier(.34,1.56,.64,1) ${delay}s`,
   };
+}
+
+function scaleIn(visible: boolean, delay = 0): React.CSSProperties {
+  return {
+    opacity: visible ? 1 : 0,
+    transform: visible ? "scale(1) translateY(0)" : "scale(0.92) translateY(16px)",
+    transition: `opacity 0.6s ease ${delay}s, transform 0.7s cubic-bezier(.34,1.3,.64,1) ${delay}s`,
+  };
+}
+
+/* ─── Wave Divider コンポーネント ─── */
+function WaveDivider({ from, to, flip }: { from: string; to: string; flip?: boolean }) {
+  return (
+    <div style={{ position: "relative", height: 60, marginTop: -1, marginBottom: -1, overflow: "hidden", background: to, transform: flip ? "scaleY(-1)" : undefined }}>
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none" style={{ position: "absolute", bottom: 0, width: "100%", height: "100%" }}>
+        <defs>
+          <linearGradient id={`wg-${from.replace('#','')}`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor={from} stopOpacity="1" />
+            <stop offset="50%" stopColor={from} stopOpacity="0.85" />
+            <stop offset="100%" stopColor={from} stopOpacity="1" />
+          </linearGradient>
+        </defs>
+        <path d="M0,0 C360,48 720,12 1080,36 C1260,48 1380,24 1440,0 L1440,60 L0,60 Z" fill={`url(#wg-${from.replace('#','')})`} />
+      </svg>
+    </div>
+  );
 }
 
 /* ─── BenefitアイコンSVG ─── */
@@ -137,11 +190,18 @@ export default function R02Page() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [heroLoaded, setHeroLoaded] = useState(false);
+  const [timelineProgress, setTimelineProgress] = useState(0);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => setHeroLoaded(true), 100);
+    return () => clearTimeout(t);
   }, []);
 
   /* IntersectionObserver refs */
@@ -160,9 +220,26 @@ export default function R02Page() {
   const applyRef = useInView(0.1);
   const ctaRef = useInView(0.1);
 
+  /* counter for salary */
+  const salaryMinCount = useCountUp(Number(hero.salaryMin) || 30, heroRef.visible, 1400);
+  const salaryMaxCount = useCountUp(Number(hero.salaryMax) || 50, heroRef.visible, 1600);
+
+  /* Timeline animation */
+  useEffect(() => {
+    if (!dailyRef.visible) return;
+    let start: number;
+    const animate = (ts: number) => {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / 1200, 1);
+      setTimelineProgress(progress);
+      if (progress < 1) requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+  }, [dailyRef.visible]);
+
   return (
     <>
-      {/* ─── Google Fonts ─── */}
+      {/* ─── Google Fonts + Animations ─── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -175,20 +252,130 @@ export default function R02Page() {
           100% { transform: translateX(-50%); }
         }
         @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(12px); }
+          from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
         @keyframes heroPulse {
           0%, 100% { transform: scale(1); }
           50% { transform: scale(1.04); }
         }
+        @keyframes floatGeo1 {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          25% { transform: translate(12px, -18px) rotate(45deg); }
+          50% { transform: translate(-8px, -30px) rotate(90deg); }
+          75% { transform: translate(16px, -12px) rotate(135deg); }
+        }
+        @keyframes floatGeo2 {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          33% { transform: translate(-20px, 15px) rotate(-30deg); }
+          66% { transform: translate(10px, -20px) rotate(30deg); }
+        }
+        @keyframes floatGeo3 {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(15px, -25px) scale(1.15); }
+        }
+        @keyframes scrollBounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(8px); }
+        }
+        @keyframes shineSweep {
+          0% { left: -80%; }
+          100% { left: 180%; }
+        }
+        @keyframes pulseGlow {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(50,55,60,0.3); }
+          50% { box-shadow: 0 0 0 12px rgba(50,55,60,0); }
+        }
+        @keyframes iconBounce {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          25% { transform: translateY(-3px) rotate(-2deg); }
+          75% { transform: translateY(-3px) rotate(2deg); }
+        }
+        @keyframes badgeStagger {
+          from { opacity: 0; transform: translateY(10px) scale(0.9); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes navUnderline {
+          from { transform: scaleX(0); }
+          to { transform: scaleX(1); }
+        }
 
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
 
         input:focus, textarea:focus, select:focus {
-          outline: 2px solid ${C.accent};
-          outline-offset: 1px;
+          outline: none;
+          border-color: ${C.accent} !important;
+          box-shadow: 0 0 0 3px ${C.accent}20;
+          transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .nav-link-drive {
+          position: relative;
+        }
+        .nav-link-drive::after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: ${C.accent};
+          border-radius: 1px;
+          transform: scaleX(0);
+          transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+          transform-origin: center;
+        }
+        .nav-link-drive:hover::after {
+          transform: scaleX(1);
+        }
+
+        .btn-drive {
+          position: relative;
+          overflow: hidden;
+          transition: transform 0.25s cubic-bezier(.34,1.3,.64,1), box-shadow 0.25s ease, background 0.2s;
+        }
+        .btn-drive:hover {
+          transform: scale(1.04) translateY(-1px);
+          box-shadow: 0 6px 20px rgba(50,55,60,0.22);
+        }
+        .btn-drive::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -80%;
+          width: 60%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+          transform: skewX(-20deg);
+        }
+        .btn-drive:hover::after {
+          animation: shineSweep 0.6s ease forwards;
+        }
+
+        .card-drive {
+          transition: transform 0.3s cubic-bezier(.34,1.3,.64,1), box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .card-drive:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+          border-color: ${C.accent} !important;
+        }
+
+        .cta-pulse {
+          animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .icon-bounce:hover svg {
+          animation: iconBounce 0.5s ease;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+          }
         }
       `}</style>
 
@@ -202,9 +389,11 @@ export default function R02Page() {
           left: 0,
           right: 0,
           zIndex: 1000,
-          background: C.white,
+          background: scrolled ? `${C.white}f0` : C.white,
+          backdropFilter: scrolled ? "blur(12px)" : undefined,
+          WebkitBackdropFilter: scrolled ? "blur(12px)" : undefined,
           borderBottom: scrolled ? `1px solid ${C.border}` : "1px solid transparent",
-          transition: "border-color 0.3s",
+          transition: "border-color 0.3s, background 0.3s",
         }}
       >
         <div
@@ -273,6 +462,7 @@ export default function R02Page() {
               <a
                 key={l.href}
                 href={l.href}
+                className="nav-link-drive"
                 style={{
                   fontSize: 13,
                   fontWeight: 500,
@@ -287,6 +477,7 @@ export default function R02Page() {
             ))}
             <a
               href="#apply"
+              className="btn-drive"
               style={{
                 fontSize: 13,
                 fontWeight: 700,
@@ -294,10 +485,7 @@ export default function R02Page() {
                 background: C.accent,
                 padding: "8px 20px",
                 borderRadius: 50,
-                transition: "background 0.2s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = C.accentHover)}
-              onMouseLeave={(e) => (e.currentTarget.style.background = C.accent)}
             >
               応募する
             </a>
@@ -406,6 +594,7 @@ export default function R02Page() {
             muted
             loop
             playsInline
+            poster={IMG.heroBg}
             style={{
               position: "absolute",
               inset: 0,
@@ -425,6 +614,56 @@ export default function R02Page() {
             }}
           />
 
+          {/* Floating geometric elements */}
+          <div style={{
+            position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1, overflow: "hidden",
+          }}>
+            {/* Circle */}
+            <div style={{
+              position: "absolute", top: "15%", right: "12%",
+              width: 80, height: 80, borderRadius: "50%",
+              border: `3px solid ${C.accent}15`,
+              animation: "floatGeo1 8s ease-in-out infinite",
+            }} />
+            {/* Square */}
+            <div style={{
+              position: "absolute", top: "55%", right: "8%",
+              width: 50, height: 50, borderRadius: 8,
+              background: `${C.accent}08`,
+              border: `2px solid ${C.accent}12`,
+              animation: "floatGeo2 10s ease-in-out infinite",
+            }} />
+            {/* Triangle */}
+            <div style={{
+              position: "absolute", top: "30%", right: "25%",
+              width: 0, height: 0,
+              borderLeft: "20px solid transparent",
+              borderRight: "20px solid transparent",
+              borderBottom: `35px solid ${C.accent}10`,
+              animation: "floatGeo3 7s ease-in-out infinite",
+            }} />
+            {/* Small dots */}
+            {[
+              { top: "20%", left: "8%", size: 12, delay: "0s" },
+              { top: "70%", left: "5%", size: 8, delay: "2s" },
+              { top: "80%", right: "15%", size: 10, delay: "4s" },
+              { top: "40%", left: "15%", size: 6, delay: "1s" },
+            ].map((dot, i) => (
+              <div key={i} style={{
+                position: "absolute",
+                top: dot.top,
+                left: (dot as any).left,
+                right: (dot as any).right,
+                width: dot.size,
+                height: dot.size,
+                borderRadius: "50%",
+                background: `${C.accent}18`,
+                animation: `floatGeo${(i % 3) + 1} ${6 + i * 2}s ease-in-out infinite`,
+                animationDelay: dot.delay,
+              }} />
+            ))}
+          </div>
+
           <div
             style={{
               position: "relative",
@@ -435,14 +674,13 @@ export default function R02Page() {
               width: "100%",
             }}
           >
-            {/* バッジ */}
+            {/* バッジ with stagger */}
             <div
               style={{
                 display: "flex",
                 flexWrap: "wrap",
                 gap: 10,
                 marginBottom: 28,
-                ...slideUp(heroRef.visible, 0),
               }}
             >
               {hero.badges.map((b, i) => (
@@ -457,6 +695,9 @@ export default function R02Page() {
                     padding: "6px 18px",
                     borderRadius: 50,
                     border: `1px solid ${C.accentPaleBorder}`,
+                    opacity: heroLoaded ? 1 : 0,
+                    transform: heroLoaded ? "translateY(0) scale(1)" : "translateY(10px) scale(0.9)",
+                    transition: `opacity 0.5s cubic-bezier(.34,1.56,.64,1) ${0.2 + i * 0.1}s, transform 0.5s cubic-bezier(.34,1.56,.64,1) ${0.2 + i * 0.1}s`,
                   }}
                 >
                   {b}
@@ -464,7 +705,7 @@ export default function R02Page() {
               ))}
             </div>
 
-            {/* キャッチコピー */}
+            {/* キャッチコピー with spring */}
             {hero.headlineParts.map((line, i) => (
               <h1
                 key={i}
@@ -475,7 +716,9 @@ export default function R02Page() {
                   lineHeight: 1.3,
                   color: C.text,
                   marginBottom: i === hero.headlineParts.length - 1 ? 24 : 4,
-                  ...slideLeft(heroRef.visible, 0.1 + i * 0.15),
+                  opacity: heroLoaded ? 1 : 0,
+                  transform: heroLoaded ? "translateX(0) scale(1)" : "translateX(-30px) scale(0.97)",
+                  transition: `opacity 0.7s cubic-bezier(.34,1.56,.64,1) ${0.3 + i * 0.15}s, transform 0.7s cubic-bezier(.34,1.56,.64,1) ${0.3 + i * 0.15}s`,
                 }}
               >
                 {line}
@@ -483,7 +726,12 @@ export default function R02Page() {
             ))}
 
             {/* サブテキスト */}
-            <div style={{ marginBottom: 32, ...slideUp(heroRef.visible, 0.35) }}>
+            <div style={{
+              marginBottom: 32,
+              opacity: heroLoaded ? 1 : 0,
+              transform: heroLoaded ? "translateY(0)" : "translateY(16px)",
+              transition: "opacity 0.7s ease 0.55s, transform 0.7s ease 0.55s",
+            }}>
               {hero.subtext.map((t, i) => (
                 <p
                   key={i}
@@ -498,14 +746,16 @@ export default function R02Page() {
               ))}
             </div>
 
-            {/* 月収 */}
+            {/* 月収 with gradient text and counter */}
             <div
               style={{
                 display: "inline-flex",
                 alignItems: "baseline",
                 gap: 6,
                 marginBottom: 36,
-                ...bounceIn(heroRef.visible, 0.5),
+                opacity: heroLoaded ? 1 : 0,
+                transform: heroLoaded ? "scale(1)" : "scale(0.85)",
+                transition: "opacity 0.6s cubic-bezier(.34,1.56,.64,1) 0.65s, transform 0.7s cubic-bezier(.34,1.56,.64,1) 0.65s",
               }}
             >
               <span style={{ fontSize: 15, color: C.textSub, fontWeight: 500 }}>
@@ -516,11 +766,14 @@ export default function R02Page() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontWeight: 700,
                   fontSize: "clamp(48px, 8vw, 72px)",
-                  color: C.text,
+                  background: `linear-gradient(135deg, ${C.text} 0%, ${C.accent} 50%, #5a6068 100%)`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
                   lineHeight: 1,
                 }}
               >
-                {hero.salaryMin}
+                {salaryMinCount}
               </span>
               <span style={{ fontSize: 20, color: C.textSub, fontWeight: 500 }}>
                 万〜
@@ -530,11 +783,14 @@ export default function R02Page() {
                   fontFamily: "'DM Sans', sans-serif",
                   fontWeight: 700,
                   fontSize: "clamp(48px, 8vw, 72px)",
-                  color: C.text,
+                  background: `linear-gradient(135deg, ${C.text} 0%, ${C.accent} 50%, #5a6068 100%)`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
                   lineHeight: 1,
                 }}
               >
-                {hero.salaryMax}
+                {salaryMaxCount}
               </span>
               <span style={{ fontSize: 20, color: C.textSub, fontWeight: 500 }}>
                 万円
@@ -547,11 +803,14 @@ export default function R02Page() {
                 display: "flex",
                 flexWrap: "wrap",
                 gap: 16,
-                ...slideUp(heroRef.visible, 0.65),
+                opacity: heroLoaded ? 1 : 0,
+                transform: heroLoaded ? "translateY(0)" : "translateY(20px)",
+                transition: "opacity 0.7s ease 0.8s, transform 0.7s ease 0.8s",
               }}
             >
               <a
                 href="#apply"
+                className="btn-drive cta-pulse"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -562,13 +821,6 @@ export default function R02Page() {
                   fontWeight: 700,
                   padding: "16px 36px",
                   borderRadius: 50,
-                  transition: "background 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = C.accentHover;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = C.accent;
                 }}
               >
                 {hero.cta}
@@ -576,6 +828,7 @@ export default function R02Page() {
               </a>
               <a
                 href={`tel:${company.phone.replace(/-/g, "")}`}
+                className="btn-drive"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -587,14 +840,54 @@ export default function R02Page() {
                   padding: "16px 32px",
                   borderRadius: 50,
                   border: `2px solid ${C.text}`,
-                  transition: "background 0.2s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = C.bg)}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>
                 {company.phone}
               </a>
+            </div>
+          </div>
+
+          {/* Scroll indicator */}
+          <div style={{
+            position: "absolute",
+            bottom: 32,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 3,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 8,
+            opacity: heroLoaded ? 0.6 : 0,
+            transition: "opacity 1s ease 1.2s",
+          }}>
+            <span style={{
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+              color: C.textSub,
+              fontFamily: "'DM Sans', sans-serif",
+            }}>Scroll</span>
+            <div style={{
+              width: 24,
+              height: 40,
+              borderRadius: 12,
+              border: `2px solid ${C.accent}40`,
+              position: "relative",
+            }}>
+              <div style={{
+                width: 4,
+                height: 8,
+                borderRadius: 2,
+                background: C.accent,
+                position: "absolute",
+                top: 6,
+                left: "50%",
+                marginLeft: -2,
+                animation: "scrollBounce 1.8s ease-in-out infinite",
+              }} />
             </div>
           </div>
         </section>
@@ -608,9 +901,22 @@ export default function R02Page() {
             background: C.accent,
             padding: "14px 0",
             overflow: "hidden",
+            position: "relative",
             ...slideUp(marqueeRef.visible),
           }}
         >
+          {/* Gradient fade edges */}
+          <div style={{
+            position: "absolute", top: 0, left: 0, bottom: 0, width: 80,
+            background: `linear-gradient(to right, ${C.accent}, transparent)`,
+            zIndex: 2, pointerEvents: "none",
+          }} />
+          <div style={{
+            position: "absolute", top: 0, right: 0, bottom: 0, width: 80,
+            background: `linear-gradient(to left, ${C.accent}, transparent)`,
+            zIndex: 2, pointerEvents: "none",
+          }} />
+
           {[marquee.top, marquee.bottom].map((row, ri) => (
             <div
               key={ri}
@@ -641,6 +947,9 @@ export default function R02Page() {
           ))}
         </section>
 
+        {/* Wave: accent -> white */}
+        <WaveDivider from={C.accent} to={C.white} />
+
         {/* ═══════════════════════════════════
             4. REASONS
             ═══════════════════════════════════ */}
@@ -648,122 +957,134 @@ export default function R02Page() {
           id="reasons"
           ref={reasonsRef.ref}
           style={{
+            background: C.white,
+            position: "relative",
+          }}
+        >
+          {/* Section background image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${IMG.reasons})`,
+            backgroundSize: "cover", backgroundPosition: "center",
+            opacity: 0.03, pointerEvents: "none",
+          }} />
+
+          <div style={{
             maxWidth: 1200,
             margin: "0 auto",
             padding: "60px 24px 60px",
-          }}
-        >
-          <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(reasonsRef.visible) }}>
-            <p
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 13,
-                fontWeight: 700,
-                color: C.textSub,
-                letterSpacing: 3,
-                textTransform: "uppercase",
-                marginBottom: 8,
-              }}
-            >
-              ─ Why Choose Us ─
-            </p>
-            <h2
-              style={{
-                fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                fontWeight: 700,
-                fontSize: "clamp(24px, 4vw, 36px)",
-                color: C.text,
-              }}
-            >
-              選ばれる<span style={{ color: C.accent }}>3つ</span>の理由
-            </h2>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 24,
-            }}
-          >
-            {reasons.map((r, i) => (
-              <div
-                key={i}
+            position: "relative",
+            zIndex: 1,
+          }}>
+            <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(reasonsRef.visible) }}>
+              <p
                 style={{
-                  display: "flex",
-                  gap: 24,
-                  background: C.white,
-                  borderRadius: "0.75rem",
-                  padding: "36px 32px",
-                  boxShadow: shadowMain,
-                  border: `1px solid ${C.border}`,
-                  transition: "box-shadow 0.3s, border-color 0.3s",
-                  cursor: "default",
-                  ...slideRight(reasonsRef.visible, 0.1 + i * 0.15),
-                  flexWrap: "wrap",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = shadowMainHover;
-                  e.currentTarget.style.borderColor = C.accent;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = shadowMain;
-                  e.currentTarget.style.borderColor = C.border;
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: C.textSub,
+                  letterSpacing: 3,
+                  textTransform: "uppercase",
+                  marginBottom: 8,
                 }}
               >
+                ─ Why Choose Us ─
+              </p>
+              <h2
+                style={{
+                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "clamp(24px, 4vw, 36px)",
+                  color: C.text,
+                }}
+              >
+                選ばれる<span style={{ color: C.accent }}>3つ</span>の理由
+              </h2>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 24,
+              }}
+            >
+              {reasons.map((r, i) => (
                 <div
+                  key={i}
+                  className="card-drive"
                   style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontWeight: 700,
-                    fontSize: "clamp(40px, 5vw, 56px)",
-                    color: `${C.accent}18`,
-                    lineHeight: 1,
-                    minWidth: 70,
-                    flexShrink: 0,
+                    display: "flex",
+                    gap: 24,
+                    background: C.white,
+                    borderRadius: "0.75rem",
+                    padding: "36px 32px",
+                    boxShadow: shadowMain,
+                    border: `1px solid ${C.border}`,
+                    cursor: "default",
+                    ...scaleIn(reasonsRef.visible, 0.1 + i * 0.15),
+                    flexWrap: "wrap",
                   }}
                 >
-                  {r.num}
-                </div>
-                {/* 画像 */}
-                <div style={{
-                  flex: "0 0 180px",
-                  height: 140,
-                  borderRadius: "0.5rem",
-                  overflow: "hidden",
-                  flexShrink: 0,
-                }}>
-                  <img
-                    src={IMG.strength(i + 1)}
-                    alt={r.title}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                  />
-                </div>
-                <div style={{ flex: 1, minWidth: 200 }}>
-                  <h3
+                  <div
                     style={{
-                      fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
+                      fontFamily: "'DM Sans', sans-serif",
                       fontWeight: 700,
-                      fontSize: "clamp(18px, 2.5vw, 22px)",
-                      color: C.text,
-                      marginBottom: 10,
+                      fontSize: "clamp(40px, 5vw, 56px)",
+                      color: `${C.accent}18`,
+                      lineHeight: 1,
+                      minWidth: 70,
+                      flexShrink: 0,
                     }}
                   >
-                    ─ {r.title}
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: 15,
-                      color: C.textSub,
-                      lineHeight: 1.85,
-                    }}
-                  >
-                    {nl2br(r.text)}
-                  </p>
+                    {r.num}
+                  </div>
+                  {/* 画像 */}
+                  <div style={{
+                    flex: "0 0 180px",
+                    height: 140,
+                    borderRadius: "0.5rem",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                  }}>
+                    <img
+                      src={IMG.strength(i + 1)}
+                      alt={r.title}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.5s" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.06)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 200 }}>
+                    <h3
+                      style={{
+                        fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
+                        fontWeight: 700,
+                        fontSize: "clamp(18px, 2.5vw, 22px)",
+                        color: C.text,
+                        marginBottom: 10,
+                      }}
+                    >
+                      ─ {r.title}
+                    </h3>
+                    <p
+                      style={{
+                        fontSize: 15,
+                        color: C.textSub,
+                        lineHeight: 1.85,
+                      }}
+                    >
+                      {nl2br(r.text)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
+
+        {/* Wave: white -> bg */}
+        <WaveDivider from={C.white} to={C.bg} />
 
         {/* ═══════════════════════════════════
             5. JOBS
@@ -773,10 +1094,19 @@ export default function R02Page() {
           ref={jobsRef.ref}
           style={{
             background: C.bg,
-            padding: "110px 24px 90px",
+            padding: "60px 24px 90px",
+            position: "relative",
           }}
         >
-          <div style={{ maxWidth: 860, margin: "0 auto" }}>
+          {/* Section background image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${IMG.jobs})`,
+            backgroundSize: "cover", backgroundPosition: "center",
+            opacity: 0.03, pointerEvents: "none",
+          }} />
+
+          <div style={{ maxWidth: 860, margin: "0 auto", position: "relative", zIndex: 1 }}>
             <div style={{ textAlign: "center", marginBottom: 48, ...slideUp(jobsRef.visible) }}>
               <p
                 style={{
@@ -808,11 +1138,13 @@ export default function R02Page() {
             </div>
 
             <div
+              className="card-drive"
               style={{
                 background: C.white,
                 borderRadius: "1.25rem",
                 boxShadow: shadowMain,
                 overflow: "hidden",
+                border: `1px solid ${C.border}`,
                 ...slideUp(jobsRef.visible, 0.15),
               }}
             >
@@ -899,6 +1231,9 @@ export default function R02Page() {
           </div>
         </section>
 
+        {/* Wave: bg -> white */}
+        <WaveDivider from={C.bg} to={C.white} />
+
         {/* ═══════════════════════════════════
             6. BENEFITS
             ═══════════════════════════════════ */}
@@ -906,21 +1241,24 @@ export default function R02Page() {
           id="benefits"
           ref={benefitsRef.ref}
           style={{
-            maxWidth: 1200,
-            margin: "0 auto",
-            padding: "105px 24px 88px",
+            background: C.white,
             position: "relative",
           }}
         >
           {/* 背景画像 */}
           <div style={{
             position: "absolute", inset: 0,
-            backgroundImage: `url(${IMG.workplace})`,
+            backgroundImage: `url(${IMG.benefits})`,
             backgroundSize: "cover", backgroundPosition: "center",
-            opacity: 0.04,
-            borderRadius: "1.25rem",
+            opacity: 0.04, pointerEvents: "none",
           }} />
-          <div style={{ position: "relative", zIndex: 1 }}>
+          <div style={{
+            maxWidth: 1200,
+            margin: "0 auto",
+            padding: "60px 24px 88px",
+            position: "relative",
+            zIndex: 1,
+          }}>
             <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(benefitsRef.visible) }}>
               <p
                 style={{
@@ -943,7 +1281,7 @@ export default function R02Page() {
                   color: C.text,
                 }}
               >
-                ✓ 待遇・福利厚生
+                待遇・福利厚生
               </h2>
             </div>
 
@@ -963,22 +1301,14 @@ export default function R02Page() {
               {benefits.map((b, i) => (
                 <div
                   key={i}
+                  className="card-drive icon-bounce"
                   style={{
                     background: C.white,
                     borderRadius: "0.75rem",
                     padding: "32px 24px",
                     boxShadow: shadowSub,
                     border: `1px solid ${C.border}`,
-                    transition: "box-shadow 0.3s, border-color 0.3s",
-                    ...bounceIn(benefitsRef.visible, 0.08 * i),
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = shadowSubHover;
-                    e.currentTarget.style.borderColor = C.accent;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = shadowSub;
-                    e.currentTarget.style.borderColor = C.border;
+                    ...scaleIn(benefitsRef.visible, 0.08 * i),
                   }}
                 >
                   <div
@@ -992,6 +1322,7 @@ export default function R02Page() {
                       alignItems: "center",
                       justifyContent: "center",
                       marginBottom: 18,
+                      transition: "transform 0.3s cubic-bezier(.34,1.56,.64,1)",
                     }}
                   >
                     {benefitIcons[i]}
@@ -1005,7 +1336,7 @@ export default function R02Page() {
                       marginBottom: 8,
                     }}
                   >
-                    ✓ {b.title}
+                    {b.title}
                   </h3>
                   <p
                     style={{
@@ -1022,6 +1353,9 @@ export default function R02Page() {
           </div>
         </section>
 
+        {/* Wave: white -> bg */}
+        <WaveDivider from={C.white} to={C.bg} />
+
         {/* ═══════════════════════════════════
             7. DAILY
             ═══════════════════════════════════ */}
@@ -1030,10 +1364,19 @@ export default function R02Page() {
           ref={dailyRef.ref}
           style={{
             background: C.bg,
-            padding: "100px 24px 80px",
+            padding: "60px 24px 80px",
+            position: "relative",
           }}
         >
-          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          {/* Section background image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${IMG.dailyFlow})`,
+            backgroundSize: "cover", backgroundPosition: "center",
+            opacity: 0.03, pointerEvents: "none",
+          }} />
+
+          <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
             <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(dailyRef.visible) }}>
               <p
                 style={{
@@ -1064,7 +1407,7 @@ export default function R02Page() {
               </p>
             </div>
 
-            {/* 水平タイムライン */}
+            {/* 水平タイムライン with animated line */}
             <div
               style={{
                 position: "relative",
@@ -1072,7 +1415,7 @@ export default function R02Page() {
                 paddingBottom: 16,
               }}
             >
-              {/* 接続ライン（デスクトップ） */}
+              {/* Animated connecting line */}
               <div
                 className="timeline-line"
                 style={{
@@ -1081,10 +1424,19 @@ export default function R02Page() {
                   left: 40,
                   right: 40,
                   height: 3,
-                  background: `${C.accent}30`,
+                  background: `${C.accent}15`,
                   borderRadius: 2,
+                  overflow: "hidden",
                 }}
-              />
+              >
+                <div style={{
+                  height: "100%",
+                  background: `linear-gradient(90deg, ${C.accent}, ${C.accent}80)`,
+                  borderRadius: 2,
+                  width: `${timelineProgress * 100}%`,
+                  transition: "width 0.05s linear",
+                }} />
+              </div>
               <style>{`
                 @media (max-width: 768px) {
                   .timeline-line { display: none !important; }
@@ -1111,10 +1463,10 @@ export default function R02Page() {
                       minWidth: 150,
                       textAlign: "center",
                       position: "relative",
-                      ...slideUp(dailyRef.visible, 0.1 + i * 0.1),
+                      ...bounceIn(dailyRef.visible, 0.15 + i * 0.12),
                     }}
                   >
-                    {/* ドット */}
+                    {/* ドット with pulse on appear */}
                     <div
                       style={{
                         width: 16,
@@ -1126,6 +1478,8 @@ export default function R02Page() {
                         margin: "0 auto 18px",
                         position: "relative",
                         zIndex: 2,
+                        transform: dailyRef.visible ? "scale(1)" : "scale(0)",
+                        transition: `transform 0.4s cubic-bezier(.34,1.56,.64,1) ${0.3 + i * 0.12}s`,
                       }}
                     />
                     <div
@@ -1147,7 +1501,7 @@ export default function R02Page() {
                         marginBottom: 8,
                       }}
                     >
-                      ● {s.title}
+                      {s.title}
                     </h4>
                     <p
                       style={{
@@ -1163,8 +1517,35 @@ export default function R02Page() {
                 ))}
               </div>
             </div>
+
+            {/* Inline delivery scene video */}
+            <div style={{
+              marginTop: 48,
+              borderRadius: "1rem",
+              overflow: "hidden",
+              boxShadow: shadowMain,
+              maxWidth: 700,
+              margin: "48px auto 0",
+              ...slideUp(dailyRef.visible, 0.6),
+            }}>
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                style={{
+                  width: "100%",
+                  display: "block",
+                }}
+              >
+                <source src="/keikamotsu-new-templates/videos/delivery-scene.mp4" type="video/mp4" />
+              </video>
+            </div>
           </div>
         </section>
+
+        {/* Wave: bg -> white */}
+        <WaveDivider from={C.bg} to={C.white} />
 
         {/* ═══════════════════════════════════
             8. GALLERY
@@ -1173,129 +1554,145 @@ export default function R02Page() {
           id="gallery"
           ref={galleryRef.ref}
           style={{
-            maxWidth: 1200,
-            margin: "0 auto",
-            padding: "80px 24px 70px",
+            background: C.white,
+            padding: "60px 24px 70px",
           }}
         >
-          <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(galleryRef.visible) }}>
-            <p
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 13,
-                fontWeight: 700,
-                color: C.textSub,
-                letterSpacing: 3,
-                textTransform: "uppercase",
-                marginBottom: 8,
-              }}
-            >
-              ─ Workplace ─
-            </p>
-            <h2
-              style={{
-                fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                fontWeight: 700,
-                fontSize: "clamp(24px, 4vw, 36px)",
-                color: C.text,
-                marginBottom: 16,
-              }}
-            >
-              {gallery.heading}
-            </h2>
-            <p style={{ fontSize: 15, color: C.textSub, lineHeight: 1.8 }}>
-              {nl2br(gallery.intro)}
-            </p>
-          </div>
-
-          {/* 不均等グリッド: 大1枚 + 小4枚 */}
-          <div
-            className="gallery-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1.05fr 0.95fr",
-              gridTemplateRows: "240px 240px",
-              gap: 16,
-              ...slideUp(galleryRef.visible, 0.15),
-            }}
-          >
-            <style>{`
-              @media (max-width: 768px) {
-                .gallery-grid {
-                  grid-template-columns: 1fr !important;
-                  grid-template-rows: auto !important;
-                }
-                .gallery-grid > div:first-child {
-                  grid-row: span 1 !important;
-                }
-              }
-            `}</style>
-            {gallery.images.map((img, i) => (
-              <div
-                key={i}
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(galleryRef.visible) }}>
+              <p
                 style={{
-                  position: "relative",
-                  borderRadius: i === 0 ? "1.25rem" : "0.75rem",
-                  overflow: "hidden",
-                  cursor: "pointer",
-                  ...(i === 0 ? { gridRow: "span 2" } : {}),
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: C.textSub,
+                  letterSpacing: 3,
+                  textTransform: "uppercase",
+                  marginBottom: 8,
                 }}
               >
-                <img
-                  src={img.src}
-                  alt={img.alt}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    display: "block",
-                    transition: "transform 0.5s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.06)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                />
-                {/* ホバーオーバーレイ+キャプション */}
+                ─ Workplace ─
+              </p>
+              <h2
+                style={{
+                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "clamp(24px, 4vw, 36px)",
+                  color: C.text,
+                  marginBottom: 16,
+                }}
+              >
+                {gallery.heading}
+              </h2>
+              <p style={{ fontSize: 15, color: C.textSub, lineHeight: 1.8 }}>
+                {nl2br(gallery.intro)}
+              </p>
+            </div>
+
+            {/* 不均等グリッド */}
+            <div
+              className="gallery-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1.05fr 0.95fr",
+                gridTemplateRows: "240px 240px",
+                gap: 16,
+                ...slideUp(galleryRef.visible, 0.15),
+              }}
+            >
+              <style>{`
+                @media (max-width: 768px) {
+                  .gallery-grid {
+                    grid-template-columns: 1fr !important;
+                    grid-template-rows: auto !important;
+                  }
+                  .gallery-grid > div:first-child {
+                    grid-row: span 1 !important;
+                  }
+                }
+              `}</style>
+              {gallery.images.map((img, i) => (
                 <div
+                  key={i}
                   style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%)",
-                    display: "flex",
-                    alignItems: "flex-end",
-                    padding: 20,
-                    opacity: 0,
-                    transition: "opacity 0.35s",
+                    position: "relative",
+                    borderRadius: i === 0 ? "1.25rem" : "0.75rem",
+                    overflow: "hidden",
+                    cursor: "pointer",
+                    ...(i === 0 ? { gridRow: "span 2" } : {}),
+                    transition: "transform 0.3s ease",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                 >
-                  <p
+                  <img
+                    src={img.src}
+                    alt={img.alt}
                     style={{
-                      color: C.white,
-                      fontSize: 14,
-                      fontWeight: 500,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                      transition: "transform 0.5s",
                     }}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.06)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                  />
+                  {/* ホバーオーバーレイ+キャプション */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%)",
+                      display: "flex",
+                      alignItems: "flex-end",
+                      padding: 20,
+                      opacity: 0,
+                      transition: "opacity 0.35s",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
                   >
-                    {img.caption}
-                  </p>
+                    <p
+                      style={{
+                        color: C.white,
+                        fontSize: 14,
+                        fontWeight: 500,
+                      }}
+                    >
+                      {img.caption}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
+        {/* Wave: white -> bg */}
+        <WaveDivider from={C.white} to={C.bg} />
+
         {/* ═══════════════════════════════════
-            9. VOICES
+            9. VOICES - Speech bubble design
             ═══════════════════════════════════ */}
         <section
           id="voices"
           ref={voicesRef.ref}
           style={{
             background: C.bg,
-            padding: "95px 24px 75px",
+            padding: "60px 24px 75px",
+            position: "relative",
           }}
         >
-          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+          {/* Section background image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${IMG.voices})`,
+            backgroundSize: "cover", backgroundPosition: "center",
+            opacity: 0.03, pointerEvents: "none",
+          }} />
+
+          <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
             <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(voicesRef.visible) }}>
               <p
                 style={{
@@ -1339,102 +1736,117 @@ export default function R02Page() {
                 <div
                   key={i}
                   style={{
-                    background: C.white,
-                    borderRadius: "0.75rem",
-                    padding: "32px 28px",
-                    boxShadow: shadowSub,
-                    border: `1px solid ${C.border}`,
                     position: "relative",
-                    transition: "box-shadow 0.3s, border-color 0.3s",
-                    ...slideUp(voicesRef.visible, 0.1 + i * 0.1),
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = shadowSubHover;
-                    e.currentTarget.style.borderColor = C.accent;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = shadowSub;
-                    e.currentTarget.style.borderColor = C.border;
+                    ...bounceIn(voicesRef.visible, 0.1 + i * 0.12),
                   }}
                 >
-                  {/* 大きなクォート */}
+                  {/* Speech bubble card */}
                   <div
+                    className="card-drive"
                     style={{
-                      position: "absolute",
-                      top: 16,
-                      left: 20,
-                      fontFamily: "'DM Sans', serif",
-                      fontSize: 72,
-                      lineHeight: 1,
-                      color: `${C.accent}15`,
-                      fontWeight: 700,
-                      pointerEvents: "none",
-                      userSelect: "none",
+                      background: C.white,
+                      borderRadius: "1rem",
+                      padding: "28px 24px 24px",
+                      boxShadow: shadowSub,
+                      border: `1px solid ${C.border}`,
+                      position: "relative",
+                      marginBottom: 16,
                     }}
                   >
-                    &ldquo;
-                  </div>
-
-                  <div style={{ position: "relative", zIndex: 1 }}>
+                    {/* Large quote */}
                     <div
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 12,
-                        marginBottom: 16,
+                        position: "absolute",
+                        top: 12,
+                        left: 18,
+                        fontFamily: "'DM Sans', serif",
+                        fontSize: 72,
+                        lineHeight: 1,
+                        color: `${C.accent}12`,
+                        fontWeight: 700,
+                        pointerEvents: "none",
+                        userSelect: "none",
                       }}
                     >
-                      <div
+                      &ldquo;
+                    </div>
+
+                    <div style={{ position: "relative", zIndex: 1 }}>
+                      <p
                         style={{
-                          width: 44,
-                          height: 44,
-                          borderRadius: "50%",
-                          background: C.accent,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: C.white,
-                          fontWeight: 700,
-                          fontSize: 16,
-                          flexShrink: 0,
+                          fontSize: 14,
+                          color: C.textSub,
+                          lineHeight: 1.85,
+                          marginBottom: 14,
+                          paddingTop: 4,
                         }}
                       >
-                        {v.name.charAt(0)}
-                      </div>
-                      <div>
-                        <div style={{ fontWeight: 700, fontSize: 15, color: C.text }}>
-                          {v.name}
-                          <span style={{ fontWeight: 400, fontSize: 13, color: C.textSub, marginLeft: 8 }}>
-                            {v.age}
-                          </span>
-                        </div>
-                        <div style={{ fontSize: 12, color: C.textSub }}>{v.prev}</div>
+                        {nl2br(v.text)}
+                      </p>
+
+                      <div
+                        style={{
+                          display: "inline-block",
+                          background: C.accentPale,
+                          color: C.accent,
+                          fontSize: 13,
+                          fontWeight: 700,
+                          padding: "5px 14px",
+                          borderRadius: "0.5rem",
+                        }}
+                      >
+                        {v.highlight}
                       </div>
                     </div>
 
-                    <p
-                      style={{
-                        fontSize: 14,
-                        color: C.textSub,
-                        lineHeight: 1.85,
-                        marginBottom: 14,
-                      }}
-                    >
-                      {nl2br(v.text)}
-                    </p>
+                    {/* Speech bubble tail */}
+                    <div style={{
+                      position: "absolute",
+                      bottom: -10,
+                      left: 32,
+                      width: 0,
+                      height: 0,
+                      borderLeft: "10px solid transparent",
+                      borderRight: "10px solid transparent",
+                      borderTop: `10px solid ${C.white}`,
+                      filter: "drop-shadow(0 2px 1px rgba(0,0,0,0.04))",
+                    }} />
+                  </div>
 
+                  {/* Person info below bubble */}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      paddingLeft: 20,
+                    }}
+                  >
                     <div
                       style={{
-                        display: "inline-block",
-                        background: C.accentPale,
-                        color: C.accent,
-                        fontSize: 13,
+                        width: 44,
+                        height: 44,
+                        borderRadius: "50%",
+                        background: C.accent,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: C.white,
                         fontWeight: 700,
-                        padding: "5px 14px",
-                        borderRadius: "0.5rem",
+                        fontSize: 16,
+                        flexShrink: 0,
                       }}
                     >
-                      {v.highlight}
+                      {v.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 15, color: C.text }}>
+                        {v.name}
+                        <span style={{ fontWeight: 400, fontSize: 13, color: C.textSub, marginLeft: 8 }}>
+                          {v.age}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: 12, color: C.textSub }}>{v.prev}</div>
                     </div>
                   </div>
                 </div>
@@ -1443,142 +1855,170 @@ export default function R02Page() {
           </div>
         </section>
 
+        {/* Wave: bg -> white */}
+        <WaveDivider from={C.bg} to={C.white} />
+
         {/* ═══════════════════════════════════
-            10. FAQ
+            10. FAQ - Smooth controlled accordion
             ═══════════════════════════════════ */}
         <section
           id="faq"
           ref={faqRef.ref}
           style={{
-            maxWidth: 860,
-            margin: "0 auto",
-            padding: "90px 24px 85px",
+            background: C.white,
+            position: "relative",
           }}
         >
-          <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(faqRef.visible) }}>
-            <p
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 13,
-                fontWeight: 700,
-                color: C.textSub,
-                letterSpacing: 3,
-                textTransform: "uppercase",
-                marginBottom: 8,
-              }}
-            >
-              ─ FAQ ─
-            </p>
-            <h2
-              style={{
-                fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                fontWeight: 700,
-                fontSize: "clamp(24px, 4vw, 36px)",
-                color: C.text,
-              }}
-            >
-              よくある質問
-            </h2>
-          </div>
+          {/* Section background image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${IMG.faq})`,
+            backgroundSize: "cover", backgroundPosition: "center",
+            opacity: 0.03, pointerEvents: "none",
+          }} />
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {faq.map((item, i) => {
-              const isOpen = openFaq === i;
-              return (
-                <div
-                  key={i}
-                  style={{
-                    background: C.white,
-                    borderRadius: "0.75rem",
-                    boxShadow: shadowSub,
-                    border: `1px solid ${C.border}`,
-                    overflow: "hidden",
-                    ...slideUp(faqRef.visible, 0.05 * i),
-                  }}
-                >
-                  <button
-                    onClick={() => setOpenFaq(isOpen ? null : i)}
+          <div style={{
+            maxWidth: 860,
+            margin: "0 auto",
+            padding: "60px 24px 85px",
+            position: "relative",
+            zIndex: 1,
+          }}>
+            <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(faqRef.visible) }}>
+              <p
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: C.textSub,
+                  letterSpacing: 3,
+                  textTransform: "uppercase",
+                  marginBottom: 8,
+                }}
+              >
+                ─ FAQ ─
+              </p>
+              <h2
+                style={{
+                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "clamp(24px, 4vw, 36px)",
+                  color: C.text,
+                }}
+              >
+                よくある質問
+              </h2>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {faq.map((item, i) => {
+                const isOpen = openFaq === i;
+                return (
+                  <div
+                    key={i}
+                    className="card-drive"
                     style={{
-                      width: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 16,
-                      padding: "20px 24px",
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                      textAlign: "left",
-                      fontFamily: "'Noto Sans JP', sans-serif",
+                      background: C.white,
+                      borderRadius: "0.75rem",
+                      boxShadow: shadowSub,
+                      border: `1px solid ${isOpen ? C.accent : C.border}`,
+                      overflow: "hidden",
+                      ...scaleIn(faqRef.visible, 0.05 * i),
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                      <span
-                        style={{
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontWeight: 700,
-                          fontSize: 16,
-                          color: C.accent,
-                          flexShrink: 0,
-                        }}
-                      >
-                        ▸ Q.
-                      </span>
-                      <span
-                        style={{
-                          fontSize: 15,
-                          fontWeight: 600,
-                          color: C.text,
-                          lineHeight: 1.5,
-                        }}
-                      >
-                        {item.q}
-                      </span>
-                    </div>
-                    <span
+                    <button
+                      onClick={() => setOpenFaq(isOpen ? null : i)}
                       style={{
-                        width: 28,
-                        height: 28,
-                        borderRadius: "50%",
-                        background: isOpen ? C.accent : C.accentPale,
-                        color: isOpen ? C.white : C.accent,
+                        width: "100%",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 18,
-                        fontWeight: 500,
-                        flexShrink: 0,
-                        transition: "background 0.2s, color 0.2s, transform 0.3s",
-                        transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
-                        lineHeight: 1,
+                        justifyContent: "space-between",
+                        gap: 16,
+                        padding: "20px 24px",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        textAlign: "left",
+                        fontFamily: "'Noto Sans JP', sans-serif",
+                        transition: "background 0.2s",
                       }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = `${C.accent}05`)}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                     >
-                      +
-                    </span>
-                  </button>
-                  <div
-                    style={{
-                      maxHeight: isOpen ? 300 : 0,
-                      overflow: "hidden",
-                      transition: "max-height 0.4s cubic-bezier(.23,1,.32,1)",
-                    }}
-                  >
+                      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                        <span
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontWeight: 700,
+                            fontSize: 16,
+                            color: C.accent,
+                            flexShrink: 0,
+                          }}
+                        >
+                          Q.
+                        </span>
+                        <span
+                          style={{
+                            fontSize: 15,
+                            fontWeight: 600,
+                            color: C.text,
+                            lineHeight: 1.5,
+                          }}
+                        >
+                          {item.q}
+                        </span>
+                      </div>
+                      <span
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          background: isOpen ? C.accent : C.accentPale,
+                          color: isOpen ? C.white : C.accent,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: 18,
+                          fontWeight: 500,
+                          flexShrink: 0,
+                          transition: "background 0.3s, color 0.3s, transform 0.4s cubic-bezier(.34,1.56,.64,1)",
+                          transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
+                          lineHeight: 1,
+                        }}
+                      >
+                        +
+                      </span>
+                    </button>
                     <div
                       style={{
-                        padding: "0 24px 20px 54px",
-                        fontSize: 14,
-                        color: C.textSub,
-                        lineHeight: 1.85,
+                        maxHeight: isOpen ? 400 : 0,
+                        overflow: "hidden",
+                        transition: "max-height 0.5s cubic-bezier(.23,1,.32,1)",
                       }}
                     >
-                      {nl2br(item.a)}
+                      <div
+                        style={{
+                          padding: "0 24px 20px 54px",
+                          fontSize: 14,
+                          color: C.textSub,
+                          lineHeight: 1.85,
+                          opacity: isOpen ? 1 : 0,
+                          transform: isOpen ? "translateY(0)" : "translateY(-8px)",
+                          transition: "opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s",
+                        }}
+                      >
+                        {nl2br(item.a)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </section>
+
+        {/* Wave: white -> bg */}
+        <WaveDivider from={C.white} to={C.bg} />
 
         {/* ═══════════════════════════════════
             11. NEWS
@@ -1588,7 +2028,7 @@ export default function R02Page() {
           ref={newsRef.ref}
           style={{
             background: C.bg,
-            padding: "75px 24px 65px",
+            padding: "60px 24px 65px",
           }}
         >
           <div style={{ maxWidth: 860, margin: "0 auto" }}>
@@ -1629,6 +2069,7 @@ export default function R02Page() {
                 return (
                   <div
                     key={i}
+                    className="card-drive"
                     style={{
                       background: C.white,
                       borderRadius: "0.75rem",
@@ -1639,11 +2080,8 @@ export default function R02Page() {
                       alignItems: "center",
                       gap: 16,
                       flexWrap: "wrap",
-                      transition: "border-color 0.2s",
                       ...slideLeft(newsRef.visible, 0.08 * i),
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = C.accent)}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = C.border)}
                   >
                     <span
                       style={{
@@ -1685,6 +2123,9 @@ export default function R02Page() {
           </div>
         </section>
 
+        {/* Wave: bg -> accent */}
+        <WaveDivider from={C.bg} to={C.accent} />
+
         {/* ═══════════════════════════════════
             12. ACCESS
             ═══════════════════════════════════ */}
@@ -1693,7 +2134,7 @@ export default function R02Page() {
           ref={accessRef.ref}
           style={{
             background: C.accent,
-            padding: "84px 24px 76px",
+            padding: "60px 24px 76px",
           }}
         >
           <div style={{ maxWidth: 1000, margin: "0 auto" }}>
@@ -1803,6 +2244,9 @@ export default function R02Page() {
           </div>
         </section>
 
+        {/* Wave: accent -> white */}
+        <WaveDivider from={C.accent} to={C.white} />
+
         {/* ═══════════════════════════════════
             13. COMPANY
             ═══════════════════════════════════ */}
@@ -1810,87 +2254,107 @@ export default function R02Page() {
           id="company"
           ref={companyRef.ref}
           style={{
-            maxWidth: 860,
-            margin: "0 auto",
-            padding: "88px 24px 72px",
+            background: C.white,
+            position: "relative",
           }}
         >
-          <div style={{ textAlign: "center", marginBottom: 48, ...slideUp(companyRef.visible) }}>
-            <p
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: 13,
-                fontWeight: 700,
-                color: C.textSub,
-                letterSpacing: 3,
-                textTransform: "uppercase",
-                marginBottom: 8,
-              }}
-            >
-              ─ Company ─
-            </p>
-            <h2
-              style={{
-                fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                fontWeight: 700,
-                fontSize: "clamp(24px, 4vw, 36px)",
-                color: C.text,
-              }}
-            >
-              会社概要
-            </h2>
-          </div>
+          {/* Section background image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${IMG.company})`,
+            backgroundSize: "cover", backgroundPosition: "center",
+            opacity: 0.03, pointerEvents: "none",
+          }} />
 
-          <div
-            style={{
-              background: C.white,
-              borderRadius: "1.25rem",
-              boxShadow: shadowMain,
-              overflow: "hidden",
-              ...slideUp(companyRef.visible, 0.12),
-            }}
-          >
-            <table
+          <div style={{
+            maxWidth: 860,
+            margin: "0 auto",
+            padding: "60px 24px 72px",
+            position: "relative",
+            zIndex: 1,
+          }}>
+            <div style={{ textAlign: "center", marginBottom: 48, ...slideUp(companyRef.visible) }}>
+              <p
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: C.textSub,
+                  letterSpacing: 3,
+                  textTransform: "uppercase",
+                  marginBottom: 8,
+                }}
+              >
+                ─ Company ─
+              </p>
+              <h2
+                style={{
+                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "clamp(24px, 4vw, 36px)",
+                  color: C.text,
+                }}
+              >
+                会社概要
+              </h2>
+            </div>
+
+            <div
+              className="card-drive"
               style={{
-                width: "100%",
-                borderCollapse: "collapse",
+                background: C.white,
+                borderRadius: "1.25rem",
+                boxShadow: shadowMain,
+                overflow: "hidden",
+                border: `1px solid ${C.border}`,
+                ...slideUp(companyRef.visible, 0.12),
               }}
             >
-              <tbody>
-                {companyInfo.map((row, i) => (
-                  <tr key={i}>
-                    <th
-                      style={{
-                        textAlign: "left",
-                        padding: "18px 24px",
-                        fontSize: 14,
-                        fontWeight: 700,
-                        color: C.text,
-                        background: C.bg,
-                        borderBottom: `1px solid ${C.border}`,
-                        width: "30%",
-                        verticalAlign: "top",
-                      }}
-                    >
-                      {row.dt}
-                    </th>
-                    <td
-                      style={{
-                        padding: "18px 24px",
-                        fontSize: 14,
-                        color: C.textSub,
-                        borderBottom: `1px solid ${C.border}`,
-                        lineHeight: 1.7,
-                      }}
-                    >
-                      {nl2br(row.dd)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                }}
+              >
+                <tbody>
+                  {companyInfo.map((row, i) => (
+                    <tr key={i}>
+                      <th
+                        style={{
+                          textAlign: "left",
+                          padding: "18px 24px",
+                          fontSize: 14,
+                          fontWeight: 700,
+                          color: C.text,
+                          background: C.bg,
+                          borderBottom: `1px solid ${C.border}`,
+                          width: "30%",
+                          verticalAlign: "top",
+                        }}
+                      >
+                        {row.dt}
+                      </th>
+                      <td
+                        style={{
+                          padding: "18px 24px",
+                          fontSize: 14,
+                          color: C.textSub,
+                          borderBottom: `1px solid ${C.border}`,
+                          lineHeight: 1.7,
+                        }}
+                      >
+                        {nl2br(row.dd)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
+
+        {/* Wave: white -> bg */}
+        <WaveDivider from={C.white} to={C.bg} />
 
         {/* ═══════════════════════════════════
             14. APPLY FORM
@@ -1900,7 +2364,7 @@ export default function R02Page() {
           ref={applyRef.ref}
           style={{
             background: C.bg,
-            padding: "92px 24px 78px",
+            padding: "60px 24px 78px",
           }}
         >
           <div style={{ maxWidth: 680, margin: "0 auto" }}>
@@ -1975,11 +2439,12 @@ export default function R02Page() {
                         width: "100%",
                         padding: "12px 16px",
                         fontSize: 15,
-                        border: `1px solid ${C.border}`,
+                        border: `2px solid ${C.border}`,
                         borderRadius: "0.5rem",
                         background: C.bg,
                         color: C.text,
                         fontFamily: "'Noto Sans JP', sans-serif",
+                        transition: "border-color 0.3s, box-shadow 0.3s",
                       }}
                     />
                   </div>
@@ -2004,11 +2469,12 @@ export default function R02Page() {
                       width: "100%",
                       padding: "12px 16px",
                       fontSize: 15,
-                      border: `1px solid ${C.border}`,
+                      border: `2px solid ${C.border}`,
                       borderRadius: "0.5rem",
                       background: C.bg,
                       color: C.text,
                       fontFamily: "'Noto Sans JP', sans-serif",
+                      transition: "border-color 0.3s, box-shadow 0.3s",
                     }}
                   >
                     <option value="">選択してください</option>
@@ -2042,18 +2508,20 @@ export default function R02Page() {
                       width: "100%",
                       padding: "12px 16px",
                       fontSize: 15,
-                      border: `1px solid ${C.border}`,
+                      border: `2px solid ${C.border}`,
                       borderRadius: "0.5rem",
                       background: C.bg,
                       color: C.text,
                       fontFamily: "'Noto Sans JP', sans-serif",
                       resize: "vertical",
+                      transition: "border-color 0.3s, box-shadow 0.3s",
                     }}
                   />
                 </div>
 
                 <button
                   type="submit"
+                  className="btn-drive cta-pulse"
                   style={{
                     width: "100%",
                     padding: "16px 0",
@@ -2065,13 +2533,6 @@ export default function R02Page() {
                     borderRadius: 50,
                     cursor: "pointer",
                     fontFamily: "'Noto Sans JP', sans-serif",
-                    transition: "background 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = C.accentHover;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = C.accent;
                   }}
                 >
                   送信する
@@ -2081,6 +2542,9 @@ export default function R02Page() {
           </div>
         </section>
 
+        {/* Wave: bg -> accent */}
+        <WaveDivider from={C.bg} to={C.accent} />
+
         {/* ═══════════════════════════════════
             15. CTA SECTION
             ═══════════════════════════════════ */}
@@ -2088,7 +2552,7 @@ export default function R02Page() {
           ref={ctaRef.ref}
           style={{
             background: C.accent,
-            padding: "120px 24px 130px",
+            padding: "80px 24px 100px",
             position: "relative",
             overflow: "hidden",
           }}
@@ -2137,6 +2601,7 @@ export default function R02Page() {
 
             <a
               href={`tel:${cta.phone.replace(/-/g, "")}`}
+              className="btn-drive"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -2149,11 +2614,8 @@ export default function R02Page() {
                 padding: "18px 44px",
                 borderRadius: 50,
                 boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-                transition: "transform 0.2s",
                 marginBottom: 20,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.04)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>
               {cta.phone}
@@ -2165,6 +2627,7 @@ export default function R02Page() {
             <div style={{ marginTop: 28 }}>
               <a
                 href="#apply"
+                className="btn-drive"
                 style={{
                   display: "inline-block",
                   background: "transparent",
@@ -2174,13 +2637,6 @@ export default function R02Page() {
                   padding: "14px 40px",
                   borderRadius: 50,
                   border: `2px solid ${C.white}`,
-                  transition: "background 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = `${C.white}18`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
                 }}
               >
                 {cta.webLabel}
@@ -2198,8 +2654,18 @@ export default function R02Page() {
           background: C.dark,
           color: `${C.white}cc`,
           padding: "60px 24px 32px",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
+        {/* Footer background image */}
+        <div style={{
+          position: "absolute", inset: 0,
+          backgroundImage: `url(${IMG.footerBg})`,
+          backgroundSize: "cover", backgroundPosition: "center",
+          opacity: 0.05, pointerEvents: "none",
+        }} />
+
         <div
           className="footer-cols"
           style={{
@@ -2209,6 +2675,8 @@ export default function R02Page() {
             gridTemplateColumns: "1.5fr 1.05fr 0.95fr",
             gap: 48,
             marginBottom: 48,
+            position: "relative",
+            zIndex: 1,
           }}
         >
           <style>{`
@@ -2336,6 +2804,8 @@ export default function R02Page() {
             textAlign: "center",
             fontSize: 12,
             color: `${C.white}55`,
+            position: "relative",
+            zIndex: 1,
           }}
         >
           &copy; {new Date().getFullYear()} {company.name} All rights reserved.
