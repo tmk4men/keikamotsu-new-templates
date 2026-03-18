@@ -103,6 +103,30 @@ const scaleInStyle = (visible: boolean, delay = 0): React.CSSProperties => ({
   transition: `opacity 0.8s ease ${delay}s, transform 0.8s ease ${delay}s`,
 });
 
+/* ─────────────────── Typewriter フック ─────────────────── */
+function useTypewriter(text: string, speed = 80, delay = 500) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    setDisplayed("");
+    setDone(false);
+    const timeout = setTimeout(() => {
+      let i = 0;
+      const iv = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(iv);
+          setDone(true);
+        }
+      }, speed);
+      return () => clearInterval(iv);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, delay]);
+  return { displayed, done };
+}
+
 /* ─────────────────── fonts ─────────────────── */
 const fontGothic = "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif";
 const fontOswald = "'Oswald', sans-serif";
@@ -221,6 +245,8 @@ function GlobalStyles() {
         from { opacity: 0; transform: scale(0.92); }
         to { opacity: 1; transform: scale(1); }
       }
+
+      @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
       .cp03-nav-link {
         position: relative;
@@ -669,6 +695,7 @@ function Header({
 
 function HeroSection({ isMobile }: { isMobile: boolean }) {
   const iv = useInView(0.1);
+  const heroTyped = useTypewriter(hero.headline, 80, 500);
 
   return (
     <section
@@ -782,18 +809,17 @@ function HeroSection({ isMobile }: { isMobile: boolean }) {
       }}>
         <h1
           style={{
-            fontFamily: fontGothic,
+            fontFamily: "'Shippori Mincho B1', 'Shippori Mincho', 'Zen Kaku Gothic New', 'Noto Sans JP', serif",
             fontSize: isMobile ? 36 : 72,
             fontWeight: 700,
             lineHeight: 1.2,
             letterSpacing: "0.08em",
             color: "#fff",
             margin: 0,
-            clipPath: iv.visible ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
-            transition: "clip-path 1.2s cubic-bezier(0.77, 0, 0.175, 1) 0.2s",
           }}
         >
-          {hero.headline}
+          {heroTyped.displayed}
+          {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
         </h1>
 
         <div

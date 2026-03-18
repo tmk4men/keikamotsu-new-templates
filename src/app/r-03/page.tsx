@@ -104,6 +104,8 @@ const keyframesCSS = `
     to { transform: translateX(-50%); }
   }
 
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
   details summary::-webkit-details-marker { display: none; }
   details summary::marker { display: none; content: ''; }
   details[open] summary span:last-child { transform: rotate(45deg); }
@@ -319,12 +321,39 @@ function WaveDivider({ topColor, bottomColor, flip = false }: { topColor: string
 }
 
 /* ───────────────────────────────────────────
+   Typewriter フック
+   ─────────────────────────────────────────── */
+function useTypewriter(text: string, speed = 80, delay = 500) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    setDisplayed("");
+    setDone(false);
+    const timeout = setTimeout(() => {
+      let i = 0;
+      const iv = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(iv);
+          setDone(true);
+        }
+      }, speed);
+      return () => clearInterval(iv);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, delay]);
+  return { displayed, done };
+}
+
+/* ───────────────────────────────────────────
    メインコンポーネント
    ─────────────────────────────────────────── */
 export default function R03TrustPage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const heroTyped = useTypewriter(hero.headlineParts[0], 80, 500);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -626,14 +655,18 @@ export default function R03TrustPage() {
               textShadow: "0 2px 20px rgba(0,0,0,0.3)",
             }}
           >
-            {hero.headlineParts.map((line, i) => (
-              <span key={i} style={{
+            <span style={{ display: "block" }}>
+              {heroTyped.displayed}
+              {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
+            </span>
+            {heroTyped.done && (
+              <span style={{
                 display: "block",
-                animation: `heroTextReveal 0.9s cubic-bezier(0.77,0,0.175,1) ${0.3 + i * 0.25}s both`,
+                animation: "heroTextReveal 0.9s cubic-bezier(0.77,0,0.175,1) 0.1s both",
               }}>
-                {line}
+                {hero.headlineParts[1]}
               </span>
-            ))}
+            )}
           </h1>
           <p
             style={{

@@ -96,7 +96,32 @@ const KEYFRAMES = `
   0%, 100% { box-shadow: 0 4px 20px rgba(59,89,152,0.08); }
   50% { box-shadow: 0 8px 32px rgba(59,89,152,0.15); }
 }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 `;
+
+/* ─────────────── Typewriter フック ─────────────── */
+function useTypewriter(text: string, speed = 80, delay = 500) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    setDisplayed("");
+    setDone(false);
+    const timeout = setTimeout(() => {
+      let i = 0;
+      const iv = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(iv);
+          setDone(true);
+        }
+      }, speed);
+      return () => clearInterval(iv);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, delay]);
+  return { displayed, done };
+}
 
 /* ─────────────── フェードインHook ─────────────── */
 function useFadeIn(threshold = 0.15) {
@@ -270,6 +295,7 @@ export default function CP02Page() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [heroLoaded, setHeroLoaded] = useState(false);
+  const heroTyped = useTypewriter(hero.headline, 80, 500);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -715,18 +741,17 @@ export default function CP02Page() {
       >
         <h1
           style={{
-            fontFamily: "'Zen Kaku Gothic New', sans-serif",
+            fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
             fontSize: isMobile ? 28 : 44,
             fontWeight: 700,
             color: C.text,
             lineHeight: 1.35,
             letterSpacing: "0.06em",
             marginBottom: 20,
-            animation: heroLoaded ? "cp02-heroReveal 1s ease forwards" : "none",
-            clipPath: heroLoaded ? undefined : "inset(0 100% 0 0)",
           }}
         >
-          {hero.headline}
+          {heroTyped.displayed}
+          {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
         </h1>
         <p
           style={{

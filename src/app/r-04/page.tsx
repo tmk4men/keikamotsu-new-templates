@@ -334,6 +334,32 @@ function ImageBand({ src, alt, height = "340px" }: { src: string; alt: string; h
 
 
 /* ═══════════════════════════════════════════
+   Typewriter フック
+   ═══════════════════════════════════════════ */
+function useTypewriter(text: string, speed = 80, delay = 500) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    setDisplayed("");
+    setDone(false);
+    const timeout = setTimeout(() => {
+      let i = 0;
+      const iv = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(iv);
+          setDone(true);
+        }
+      }, speed);
+      return () => clearInterval(iv);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, delay]);
+  return { displayed, done };
+}
+
+/* ═══════════════════════════════════════════
    メインコンポーネント
    ═══════════════════════════════════════════ */
 export default function R04Flow() {
@@ -342,6 +368,7 @@ export default function R04Flow() {
   const [submitted, setSubmitted] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const heroTyped = useTypewriter("物流で、未来を", 80, 500);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -408,6 +435,8 @@ export default function R04Flow() {
           0% { left: -100%; }
           100% { left: 200%; }
         }
+
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
         /* Nav animated underline */
         .flow-nav-link {
@@ -684,15 +713,17 @@ export default function R04Flow() {
                 Green Logistics Recruiting
               </p>
             </FadeIn>
-            <FadeIn delay={0.6} scale>
+            <div>
               <h1 style={{
                 fontFamily: F.heading, fontSize: isMobile ? "28px" : "52px",
                 fontWeight: 700, color: "#fff", lineHeight: 1.3,
                 letterSpacing: "0.08em",
               }}>
-                物流で、未来を<br />変えていく。
+                {heroTyped.displayed}
+                {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
+                {heroTyped.done && <><br />変えていく。</>}
               </h1>
-            </FadeIn>
+            </div>
             <FadeIn delay={0.9}>
               <p style={{
                 fontFamily: F.sans, fontSize: isMobile ? "12px" : "14px",

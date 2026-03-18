@@ -131,7 +131,34 @@ const KEYFRAMES = `
   0%, 100% { transform: translateX(0); }
   50% { transform: translateX(-20px); }
 }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 `;
+
+/* ───────────────────────────────────────────
+   Typewriter フック
+   ─────────────────────────────────────────── */
+function useTypewriter(text: string, speed = 80, delay = 500) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    setDisplayed("");
+    setDone(false);
+    const timeout = setTimeout(() => {
+      let i = 0;
+      const iv = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(iv);
+          setDone(true);
+        }
+      }, speed);
+      return () => clearInterval(iv);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, delay]);
+  return { displayed, done };
+}
 
 /* ───────────────────────────────────────────
    IntersectionObserver フック
@@ -299,6 +326,7 @@ export default function CP01Page() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [heroLoaded, setHeroLoaded] = useState(false);
+  const heroTyped = useTypewriter(hero.headline, 80, 500);
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
@@ -690,18 +718,17 @@ export default function CP01Page() {
         <div style={{ maxWidth: 640 }}>
           <h1
             style={{
-              fontFamily: "'Noto Sans JP', sans-serif",
+              fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
               fontSize: isMobile ? "2rem" : "3rem",
-              fontWeight: 800,
+              fontWeight: 700,
               color: C.white,
               lineHeight: 1.1,
               letterSpacing: "0.05em",
               marginBottom: 28,
-              animation: heroLoaded ? "cp01-heroTextReveal 1s ease forwards" : "none",
-              clipPath: heroLoaded ? undefined : "inset(0 100% 0 0)",
             }}
           >
-            {hero.headline}
+            {heroTyped.displayed}
+            {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
           </h1>
           {hero.subtext.map((line, i) => (
             <p
@@ -2327,6 +2354,7 @@ function NumberCard({
             fontFamily: "'Oswald', sans-serif",
             fontSize: "2.8rem",
             fontWeight: 700,
+            fontFeatureSettings: "'tnum'",
             background: `linear-gradient(135deg, ${C.gold}, ${C.goldLight})`,
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",

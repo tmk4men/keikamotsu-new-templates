@@ -186,12 +186,36 @@ const nl2br = (text: string) =>
 /* ───────────────────────────────────────
    メインコンポーネント
    ─────────────────────────────────────── */
+function useTypewriter(text: string, speed = 80, delay = 500) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    setDisplayed("");
+    setDone(false);
+    const timeout = setTimeout(() => {
+      let i = 0;
+      const iv = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(iv);
+          setDone(true);
+        }
+      }, speed);
+      return () => clearInterval(iv);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, delay]);
+  return { displayed, done };
+}
+
 export default function R02Page() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [timelineProgress, setTimelineProgress] = useState(0);
+  const heroTyped = useTypewriter(hero.headlineParts[0], 80, 500);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -299,6 +323,8 @@ export default function R02Page() {
           from { transform: scaleX(0); }
           to { transform: scaleX(1); }
         }
+
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
@@ -705,25 +731,37 @@ export default function R02Page() {
               ))}
             </div>
 
-            {/* キャッチコピー with spring */}
-            {hero.headlineParts.map((line, i) => (
+            {/* キャッチコピー with typewriter */}
+            <h1
+              style={{
+                fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+                fontWeight: 700,
+                fontSize: "clamp(28px, 5vw, 52px)",
+                lineHeight: 1.3,
+                color: C.text,
+                marginBottom: 4,
+              }}
+            >
+              {heroTyped.displayed}
+              {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
+            </h1>
+            {heroTyped.done && (
               <h1
-                key={i}
                 style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
+                  fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
                   fontSize: "clamp(28px, 5vw, 52px)",
                   lineHeight: 1.3,
                   color: C.text,
-                  marginBottom: i === hero.headlineParts.length - 1 ? 24 : 4,
+                  marginBottom: 24,
                   opacity: heroLoaded ? 1 : 0,
                   transform: heroLoaded ? "translateX(0) scale(1)" : "translateX(-30px) scale(0.97)",
-                  transition: `opacity 0.7s cubic-bezier(.34,1.56,.64,1) ${0.3 + i * 0.15}s, transform 0.7s cubic-bezier(.34,1.56,.64,1) ${0.3 + i * 0.15}s`,
+                  transition: "opacity 0.7s cubic-bezier(.34,1.56,.64,1) 0.15s, transform 0.7s cubic-bezier(.34,1.56,.64,1) 0.15s",
                 }}
               >
-                {line}
+                {hero.headlineParts[1]}
               </h1>
-            ))}
+            )}
 
             {/* サブテキスト */}
             <div style={{

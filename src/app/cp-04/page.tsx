@@ -104,6 +104,30 @@ function useCounter(end: number, visible: boolean, duration = 2000) {
   return count;
 }
 
+/* ───────────────────── HOOK: Typewriter ───────────────────── */
+function useTypewriter(text: string, speed = 80, delay = 500) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    setDisplayed("");
+    setDone(false);
+    const timeout = setTimeout(() => {
+      let i = 0;
+      const iv = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(iv);
+          setDone(true);
+        }
+      }, speed);
+      return () => clearInterval(iv);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, delay]);
+  return { displayed, done };
+}
+
 /* ───────────────────── SECTION WRAPPER ───────────────────── */
 function Section({
   id,
@@ -141,6 +165,7 @@ export default function CP04Page() {
   const isMobile = useIsMobile();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const heroTyped = useTypewriter(hero.headline, 80, 500);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -425,17 +450,19 @@ export default function CP04Page() {
               }}
             />
             <h1
-              className="cp04-hero-heading"
               style={{
-                ...headingStyle,
+                fontFamily: "'Oswald', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+                fontWeight: 800,
                 fontSize: isMobile ? 32 : 56,
                 color: LIGHT,
                 lineHeight: 1.15,
                 letterSpacing: "-0.02em",
                 marginBottom: 24,
+                textTransform: "uppercase",
               }}
             >
-              {hero.headline}
+              {heroTyped.displayed}
+              {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
             </h1>
             <p
               style={{
@@ -1970,6 +1997,8 @@ export default function CP04Page() {
           0%, 100% { box-shadow: 0 0 0 0 rgba(50,55,60,0.4); }
           50% { box-shadow: 0 0 0 12px rgba(50,55,60,0); }
         }
+
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
         /* ── Card perspective tilt ── */
         .cp04-service-card {

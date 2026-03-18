@@ -43,6 +43,29 @@ const IMG = {
   delivery: "/keikamotsu-new-templates/images/delivery.webp",
 };
 
+function useTypewriter(text: string, speed = 80, delay = 500) {
+  const [displayed, setDisplayed] = useState("");
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    setDisplayed("");
+    setDone(false);
+    const timeout = setTimeout(() => {
+      let i = 0;
+      const iv = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) {
+          clearInterval(iv);
+          setDone(true);
+        }
+      }, speed);
+      return () => clearInterval(iv);
+    }, delay);
+    return () => clearTimeout(timeout);
+  }, [text, speed, delay]);
+  return { displayed, done };
+}
+
 export default function R01Page() {
   const [isMobile, setIsMobile] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -50,6 +73,7 @@ export default function R01Page() {
   const [galleryIdx, setGalleryIdx] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [formData, setFormData] = useState({ name: "", phone: "", email: "", message: "" });
+  const heroTyped = useTypewriter(hero.headlineParts[0], 80, 500);
 
   // Responsive
   useEffect(() => {
@@ -133,6 +157,7 @@ export default function R01Page() {
         @keyframes grainShift { 0%,100%{transform:translate(0,0)} 25%{transform:translate(-2%,-2%)} 50%{transform:translate(2%,1%)} 75%{transform:translate(-1%,2%)} }
         @keyframes neonGlow { 0%,100%{box-shadow:0 0 8px rgba(85,85,85,0.3), inset 0 0 8px rgba(85,85,85,0.05)} 50%{box-shadow:0 0 20px rgba(85,85,85,0.5), inset 0 0 12px rgba(85,85,85,0.1)} }
         @keyframes clipRevealLTR { from{clip-path:inset(0 100% 0 0)} to{clip-path:inset(0 0 0 0)} }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         details summary { cursor:pointer; list-style:none; }
         details summary::-webkit-details-marker { display:none; }
         details[open] summary .faq-arrow { transform:rotate(180deg); }
@@ -245,16 +270,25 @@ export default function R01Page() {
           display: "flex", flexDirection: "column", justifyContent: "center",
           padding: isMobile ? "0 20px" : "0 8%", maxWidth: "1200px", margin: "0 auto",
         }}>
-          {hero.headlineParts.map((line, i) => (
-            <h1 key={i} style={{
+          <h1 style={{
+            fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
+            fontSize: isMobile ? "28px" : "52px", lineHeight: 1.1, letterSpacing: "0.05em",
+            color: TEXT_W,
+            marginBottom: "8px",
+          }}>
+            {heroTyped.displayed}
+            {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
+          </h1>
+          {heroTyped.done && (
+            <h1 style={{
               fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800,
               fontSize: isMobile ? "28px" : "52px", lineHeight: 1.1, letterSpacing: "0.05em",
-              color: TEXT_W, animation: `heroFade 0.9s ${0.3 + i * 0.35}s both`,
-              marginBottom: i === 0 ? "8px" : "0",
+              color: TEXT_W, animation: "heroFade 0.9s 0.1s both",
+              marginBottom: "0",
             }}>
-              {line}
+              {hero.headlineParts[1]}
             </h1>
-          ))}
+          )}
 
           <div style={{ marginTop: "28px", animation: "heroFade 0.9s 1.1s both" }}>
             <span style={{ fontFamily: "'Oswald','Noto Sans JP',sans-serif", fontWeight: 800, color: TEXT_W, fontSize: isMobile ? "18px" : "22px", letterSpacing: "0.04em" }}>
