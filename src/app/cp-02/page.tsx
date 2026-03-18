@@ -1593,6 +1593,9 @@ export default function CP02Page() {
               e.currentTarget.style.boxShadow = "none";
             }}
           >
+            <div style={{ width: 56, height: 56, borderRadius: "50%", overflow: "hidden", margin: "0 auto 10px", border: `1px solid ${C.border}` }}>
+              <img src={p.logo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            </div>
             <p
               style={{
                 fontFamily: "'Noto Sans JP', sans-serif",

@@ -1890,28 +1890,22 @@ function PartnersSection({
             >
               <div
                 style={{
-                  width: isMobile ? 48 : 64,
-                  height: isMobile ? 48 : 64,
-                  background: C.light,
+                  width: isMobile ? 56 : 72,
+                  height: isMobile ? 56 : 72,
                   borderRadius: "50%",
                   marginBottom: 16,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  filter: "grayscale(100%)",
+                  overflow: "hidden",
+                  border: `1px solid ${C.line}`,
+                  filter: "grayscale(40%)",
+                  transition: "filter 0.3s",
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.filter = "grayscale(0%)"}
+                onMouseLeave={(e) => e.currentTarget.style.filter = "grayscale(40%)"}
               >
-                <span
-                  style={{
-                    fontFamily: fontSerif,
-                    fontSize: isMobile ? 18 : 22,
-                    color: C.muted,
-                    fontWeight: 600,
-                  }}
-                >
-                  {p.name.slice(-2, -1)}
-                </span>
+                <img src={p.logo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
               </div>
+
+
               <p
                 style={{
                   margin: 0,

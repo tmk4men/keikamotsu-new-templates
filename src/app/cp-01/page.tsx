@@ -1605,22 +1605,16 @@ export default function CP01Page() {
             >
               <div
                 style={{
-                  width: 56,
-                  height: 56,
+                  width: 72,
+                  height: 72,
                   borderRadius: "50%",
                   background: C.bg3,
                   border: `1px solid ${C.gold}`,
                   margin: "0 auto 14px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontFamily: "'Oswald', sans-serif",
-                  fontSize: "0.9rem",
-                  color: C.gold,
-                  fontWeight: 600,
+                  overflow: "hidden",
                 }}
               >
-                {p.name.charAt(p.name.length - 2)}社
+                <img src={p.logo} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
               </div>
               <p
                 style={{
