@@ -98,6 +98,14 @@ const KEYFRAMES = `
   50% { box-shadow: 0 8px 32px rgba(59,89,152,0.15); }
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes cp02-underlineReveal {
+  from { width: 0; }
+  to { width: 100%; }
+}
+@keyframes cp02-truckDrive {
+  from { transform: translateX(-100px); }
+  to { transform: translateX(calc(100% + 100px)); }
+}
 `;
 
 /* ─────────────── Typewriter フック ─────────────── */
@@ -1056,16 +1064,16 @@ export default function CP02Page() {
                 borderRadius: 10,
                 overflow: "hidden",
                 borderTop: `3px solid ${C.accent}`,
+                boxShadow: "8px 8px 0 rgba(139,90,43,0.35)",
                 transition: "box-shadow 0.4s ease, transform 0.3s ease",
-                animation: strRef.visible ? "cp02-softShadow 4s ease-in-out infinite" : "none",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-3px)";
-                e.currentTarget.style.boxShadow = "0 12px 40px rgba(59,89,152,0.12)";
+                e.currentTarget.style.boxShadow = "8px 8px 0 rgba(139,90,43,0.35), 0 12px 40px rgba(59,89,152,0.12)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 20px rgba(59,89,152,0.08)";
+                e.currentTarget.style.boxShadow = "8px 8px 0 rgba(139,90,43,0.35)";
               }}
             >
               {/* Image */}
@@ -1351,140 +1359,180 @@ export default function CP02Page() {
     "/keikamotsu-new-templates/images/history-2025.webp",
   ];
 
-  const renderHistory = () => (
+  const renderHistory = () => {
+    const totalItems = history.length;
+    return (
     <section
       id="history"
       ref={hisRef.ref}
       style={{
-        padding: isMobile ? "64px 20px 48px" : "96px 40px 84px",
-        maxWidth: 1100,
-        margin: "0 auto",
         position: "relative",
+        height: isMobile ? "auto" : `${(totalItems + 1) * 100}vh`,
       }}
     >
-      <div style={fadeStyle(hisRef.visible)}>
-        <SectionHeading en="History" ja="沿革" visible={hisRef.visible} icon={sectionIcons.history} />
-      </div>
-
-      {/* 水平タイムライン */}
       <div
         style={{
-          overflowX: "auto",
-          paddingBottom: 12,
-          WebkitOverflowScrolling: "touch",
+          position: isMobile ? "relative" : "sticky",
+          top: 0,
+          height: isMobile ? "auto" : "100vh",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: isMobile ? "64px 20px 48px" : "0 40px",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            gap: 0,
-            minWidth: isMobile ? 700 : "auto",
-            position: "relative",
-          }}
-        >
-          {/* 水平線 */}
-          <div
-            style={{
-              position: "absolute",
-              top: 18,
-              left: 0,
-              right: 0,
-              height: 2,
-              backgroundColor: C.border,
-            }}
-          />
-          {/* Animated progress line */}
-          <div
-            style={{
-              position: "absolute",
-              top: 18,
-              left: 0,
-              height: 2,
-              width: hisRef.visible ? "100%" : "0%",
-              background: `linear-gradient(90deg, ${C.accent}, ${C.accentLight})`,
-              transition: "width 2s ease",
-              zIndex: 1,
-            }}
-          />
+        <div style={{ maxWidth: 1100, margin: "0 auto", width: "100%" }}>
+          <div style={fadeStyle(hisRef.visible)}>
+            <SectionHeading en="History" ja="沿革" visible={hisRef.visible} icon={sectionIcons.history} />
+          </div>
 
-          {history.map((h, i) => (
+          {/* 水平スクロールタイムライン */}
+          <div
+            style={{
+              overflowX: isMobile ? "auto" : "hidden",
+              paddingBottom: 12,
+              WebkitOverflowScrolling: "touch",
+              ...(isMobile ? { scrollSnapType: "x mandatory" } : {}),
+            }}
+          >
             <div
-              key={i}
               style={{
-                ...fadeStyle(hisRef.visible, 0.2 + i * 0.15),
-                flex: 1,
-                minWidth: isMobile ? 140 : 160,
+                display: "flex",
+                gap: 0,
+                minWidth: isMobile ? 700 : `${totalItems * 280}px`,
                 position: "relative",
-                paddingTop: 40,
-                paddingRight: 20,
+                transition: isMobile ? "none" : "transform 0.6s ease",
+                transform: isMobile ? "none" : `translateX(calc(-${100 / totalItems}% * var(--history-progress, 0)))`,
+              }}
+              ref={(el) => {
+                if (!el || isMobile) return;
+                const section = document.getElementById("history");
+                if (!section) return;
+                const handleScroll = () => {
+                  const rect = section.getBoundingClientRect();
+                  const sectionHeight = section.offsetHeight - window.innerHeight;
+                  const scrolled = -rect.top;
+                  const progress = Math.max(0, Math.min(totalItems - 1, (scrolled / sectionHeight) * totalItems));
+                  el.style.transform = `translateX(-${(progress / totalItems) * (el.scrollWidth - el.parentElement!.clientWidth)}px)`;
+                };
+                window.addEventListener("scroll", handleScroll, { passive: true });
+                handleScroll();
               }}
             >
-              {/* ドット */}
+              {/* 水平線 */}
               <div
                 style={{
                   position: "absolute",
-                  top: 10,
+                  top: 18,
                   left: 0,
-                  width: 16,
-                  height: 16,
-                  borderRadius: "50%",
-                  backgroundColor: C.accent,
-                  border: `3px solid ${C.white}`,
-                  boxShadow: `0 0 0 2px ${C.accent}`,
-                  zIndex: 2,
+                  right: 0,
+                  height: 2,
+                  backgroundColor: C.border,
                 }}
               />
-              <p
+              {/* Animated progress line */}
+              <div
                 style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 18,
-                  fontWeight: 700,
-                  background: `linear-gradient(135deg, ${C.accent}, ${C.accentLight})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  marginBottom: 8,
-                  letterSpacing: "0.04em",
+                  position: "absolute",
+                  top: 18,
+                  left: 0,
+                  height: 2,
+                  width: hisRef.visible ? "100%" : "0%",
+                  background: `linear-gradient(90deg, ${C.accent}, ${C.accentLight})`,
+                  transition: "width 2s ease",
+                  zIndex: 1,
                 }}
-              >
-                {h.year}
-              </p>
-              <p
-                style={{
-                  fontFamily: "'Noto Sans JP', sans-serif",
-                  fontSize: 13,
-                  color: C.textSub,
-                  lineHeight: 1.75,
-                  letterSpacing: "0.05em",
-                  marginBottom: 10,
-                }}
-              >
-                {h.event}
-              </p>
-              {/* History image */}
-              {historyImages[i] && (
+              />
+
+              {history.map((h, i) => (
                 <div
+                  key={i}
                   style={{
-                    width: "90%",
-                    height: 70,
-                    borderRadius: 6,
-                    overflow: "hidden",
-                    border: `1px solid ${C.border}`,
+                    ...fadeStyle(hisRef.visible, 0.2 + i * 0.15),
+                    flex: "0 0 auto",
+                    width: isMobile ? 160 : 280,
+                    position: "relative",
+                    paddingTop: 40,
+                    paddingRight: 20,
+                    ...(isMobile ? { scrollSnapAlign: "start" } : {}),
                   }}
                 >
-                  <img
-                    src={historyImages[i]}
-                    alt={`${h.year}`}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  {/* ドット */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 10,
+                      left: 0,
+                      width: 16,
+                      height: 16,
+                      borderRadius: "50%",
+                      backgroundColor: C.accent,
+                      border: `3px solid ${C.white}`,
+                      boxShadow: `0 0 0 2px ${C.accent}`,
+                      zIndex: 2,
+                    }}
                   />
+                  <p
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: 18,
+                      fontWeight: 700,
+                      background: `linear-gradient(135deg, ${C.accent}, ${C.accentLight})`,
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      marginBottom: 8,
+                      letterSpacing: "0.04em",
+                    }}
+                  >
+                    {h.year}
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "'Noto Sans JP', sans-serif",
+                      fontSize: 13,
+                      color: C.textSub,
+                      lineHeight: 1.75,
+                      letterSpacing: "0.05em",
+                      marginBottom: 10,
+                    }}
+                  >
+                    {h.event}
+                  </p>
+                  {/* History image */}
+                  {historyImages[i] && (
+                    <div
+                      style={{
+                        width: "90%",
+                        height: 70,
+                        borderRadius: 6,
+                        overflow: "hidden",
+                        border: `1px solid ${C.border}`,
+                      }}
+                    >
+                      <img
+                        src={historyImages[i]}
+                        alt={`${h.year}`}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+                          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
-  );
+    );
+  };
 
   /* ─── Numbers ─── */
   const renderNumbers = () => (
@@ -1624,6 +1672,46 @@ export default function CP02Page() {
             </p>
           </div>
         ))}
+      </div>
+      {/* Truck animation */}
+      <div style={{ position: "relative", height: 60, marginTop: 32, overflow: "hidden", opacity: 0.12 }}>
+        {/* Cityscape silhouette background */}
+        <svg viewBox="0 0 1200 60" preserveAspectRatio="none" style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 40 }}>
+          <rect x="50" y="20" width="30" height="40" fill={C.textSub} />
+          <rect x="90" y="10" width="40" height="50" fill={C.textSub} />
+          <rect x="140" y="25" width="25" height="35" fill={C.textSub} />
+          <rect x="200" y="15" width="35" height="45" fill={C.textSub} />
+          <rect x="260" y="30" width="20" height="30" fill={C.textSub} />
+          <rect x="310" y="8" width="45" height="52" fill={C.textSub} />
+          <rect x="380" y="22" width="28" height="38" fill={C.textSub} />
+          <rect x="430" y="12" width="38" height="48" fill={C.textSub} />
+          <rect x="500" y="28" width="22" height="32" fill={C.textSub} />
+          <rect x="550" y="5" width="50" height="55" fill={C.textSub} />
+          <rect x="620" y="18" width="32" height="42" fill={C.textSub} />
+          <rect x="680" y="25" width="26" height="35" fill={C.textSub} />
+          <rect x="740" y="10" width="42" height="50" fill={C.textSub} />
+          <rect x="810" y="20" width="30" height="40" fill={C.textSub} />
+          <rect x="870" y="30" width="24" height="30" fill={C.textSub} />
+          <rect x="920" y="14" width="36" height="46" fill={C.textSub} />
+          <rect x="980" y="22" width="28" height="38" fill={C.textSub} />
+          <rect x="1030" y="8" width="44" height="52" fill={C.textSub} />
+          <rect x="1100" y="18" width="32" height="42" fill={C.textSub} />
+          <polygon points="170,25 185,10 200,25" fill={C.textSub} />
+          <polygon points="460,28 472,15 484,28" fill={C.textSub} />
+          <polygon points="770,10 782,0 794,10" fill={C.textSub} />
+        </svg>
+        {/* Truck SVG */}
+        <div style={{ position: "absolute", bottom: 4, left: 0, width: "100%", height: 36, overflow: "hidden" }}>
+          <svg viewBox="0 0 80 32" style={{ width: 80, height: 32, animation: "cp02-truckDrive 15s linear infinite" }}>
+            <rect x="0" y="4" width="50" height="24" rx="3" fill={C.accent} />
+            <rect x="50" y="10" width="22" height="18" rx="2" fill={C.accentLight} />
+            <rect x="54" y="13" width="14" height="9" rx="1" fill={C.white} opacity="0.5" />
+            <circle cx="14" cy="28" r="5" fill={C.text} />
+            <circle cx="14" cy="28" r="2.5" fill={C.textSub} />
+            <circle cx="60" cy="28" r="5" fill={C.text} />
+            <circle cx="60" cy="28" r="2.5" fill={C.textSub} />
+          </svg>
+        </div>
       </div>
     </section>
   );
@@ -1793,9 +1881,23 @@ export default function CP02Page() {
             letterSpacing: "0.04em",
             marginBottom: 20,
             lineHeight: 1.5,
+            position: "relative",
+            display: "inline-block",
           }}
         >
           {recruit.heading}
+          <span
+            style={{
+              position: "absolute",
+              bottom: -4,
+              left: 0,
+              height: 3,
+              background: `linear-gradient(90deg, ${C.accentLight}, ${C.white})`,
+              borderRadius: 2,
+              width: recRef.visible ? "100%" : "0%",
+              transition: "width 0.8s ease 0.3s",
+            }}
+          />
         </h2>
         {/* Decorative gradient line */}
         <div
@@ -2035,7 +2137,15 @@ export default function CP02Page() {
             }}
           >
             <form onSubmit={(e) => e.preventDefault()}>
-              {contact.fields.map((field, i) => (
+              {contact.fields.map((field, i) => {
+                const placeholders: Record<string, string> = {
+                  company: "例）グリーンロジスティクス株式会社",
+                  name: "例）山田 太郎",
+                  email: "例）info@example.co.jp",
+                  phone: "例）090-1234-5678",
+                  message: "例）配送サービスについてお見積もりをお願いしたいです。",
+                };
+                return (
                 <div key={i} style={{ marginBottom: 22 }}>
                   <label
                     style={{
@@ -2069,6 +2179,7 @@ export default function CP02Page() {
                     <textarea
                       name={field.name}
                       required={field.required}
+                      placeholder={placeholders[field.name] || ""}
                       rows={5}
                       style={{
                         width: "100%",
@@ -2098,6 +2209,7 @@ export default function CP02Page() {
                       type={field.type}
                       name={field.name}
                       required={field.required}
+                      placeholder={placeholders[field.name] || ""}
                       style={{
                         width: "100%",
                         fontFamily: "'Noto Sans JP', sans-serif",
@@ -2121,7 +2233,8 @@ export default function CP02Page() {
                     />
                   )}
                 </div>
-              ))}
+                );
+              })}
 
               <button
                 type="submit"

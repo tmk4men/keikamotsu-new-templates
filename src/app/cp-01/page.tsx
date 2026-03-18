@@ -133,6 +133,14 @@ const KEYFRAMES = `
   50% { transform: translateX(-20px); }
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes cp01-underlineReveal {
+  from { width: 0; }
+  to { width: 100%; }
+}
+@keyframes cp01-truckDrive {
+  from { transform: translateX(-100px); }
+  to { transform: translateX(calc(100% + 100px)); }
+}
 `;
 
 /* ───────────────────────────────────────────
@@ -1086,15 +1094,16 @@ export default function CP01Page() {
                 borderRadius: "0.75rem",
                 overflow: "hidden",
                 border: `1px solid ${C.border}`,
+                boxShadow: "8px 8px 0 rgba(139,90,43,0.35)",
                 transition: "border-color 0.4s ease, box-shadow 0.4s ease",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = C.gold;
-                e.currentTarget.style.boxShadow = `0 4px 24px rgba(200,169,96,0.08)`;
+                e.currentTarget.style.boxShadow = `8px 8px 0 rgba(139,90,43,0.35), 0 4px 24px rgba(200,169,96,0.08)`;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = C.border;
-                e.currentTarget.style.boxShadow = "none";
+                e.currentTarget.style.boxShadow = "8px 8px 0 rgba(139,90,43,0.35)";
               }}
             >
               {/* Image side */}
@@ -1416,7 +1425,9 @@ export default function CP01Page() {
               <div
                 key={h.year}
                 style={{
-                  ...fadeStyle(hisRef.visible, 0.15 + i * 0.12),
+                  opacity: hisRef.visible ? 1 : 0,
+                  transform: hisRef.visible ? "translateY(0)" : "translateY(30px)",
+                  transition: `opacity 0.7s ease ${i * 0.15}s, transform 0.7s ease ${i * 0.15}s`,
                   position: "relative",
                   paddingBottom: i < total - 1 ? 40 : 0,
                   display: isMobile ? "block" : "flex",
@@ -1450,18 +1461,30 @@ export default function CP01Page() {
                   >
                     {h.year}
                   </span>
-                  <p
-                    style={{
-                      fontFamily: "'Noto Sans JP', sans-serif",
-                      fontSize: "0.88rem",
-                      color: C.text,
-                      lineHeight: 1.8,
-                      letterSpacing: "0.05em",
-                      marginTop: 8,
-                    }}
-                  >
-                    {h.event}
-                  </p>
+                  <div style={{ position: "relative", display: "inline-block", marginTop: 8 }}>
+                    <p
+                      style={{
+                        fontFamily: "'Noto Sans JP', sans-serif",
+                        fontSize: "0.88rem",
+                        color: C.text,
+                        lineHeight: 1.8,
+                        letterSpacing: "0.05em",
+                      }}
+                    >
+                      {h.event}
+                    </p>
+                    <span
+                      style={{
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        height: 2,
+                        background: `linear-gradient(90deg, ${C.gold}, ${C.goldDark})`,
+                        width: hisRef.visible ? "100%" : "0%",
+                        transition: `width 0.8s ease ${0.3 + i * 0.15}s`,
+                      }}
+                    />
+                  </div>
                 </div>
                 {/* History image */}
                 {!isMobile && historyImages[i] && (
@@ -1478,7 +1501,14 @@ export default function CP01Page() {
                     <img
                       src={historyImages[i]}
                       alt={`${h.year}`}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", filter: "grayscale(30%) brightness(0.7)" }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        filter: "grayscale(30%) brightness(0.7)",
+                        maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+                        WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+                      }}
                     />
                   </div>
                 )}
@@ -1517,7 +1547,7 @@ export default function CP01Page() {
         style={{
           position: "absolute",
           inset: 0,
-          background: "rgba(10,10,10,0.85)",
+          background: "rgba(10,10,10,0.55)",
         }}
       />
       {/* Gold gradient line top */}
@@ -1642,6 +1672,46 @@ export default function CP01Page() {
               </p>
             </div>
           ))}
+        </div>
+        {/* Truck animation */}
+        <div style={{ position: "relative", height: 60, marginTop: 32, overflow: "hidden", opacity: 0.12 }}>
+          {/* Cityscape silhouette background */}
+          <svg viewBox="0 0 1200 60" preserveAspectRatio="none" style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 40 }}>
+            <rect x="50" y="20" width="30" height="40" fill={C.text} />
+            <rect x="90" y="10" width="40" height="50" fill={C.text} />
+            <rect x="140" y="25" width="25" height="35" fill={C.text} />
+            <rect x="200" y="15" width="35" height="45" fill={C.text} />
+            <rect x="260" y="30" width="20" height="30" fill={C.text} />
+            <rect x="310" y="8" width="45" height="52" fill={C.text} />
+            <rect x="380" y="22" width="28" height="38" fill={C.text} />
+            <rect x="430" y="12" width="38" height="48" fill={C.text} />
+            <rect x="500" y="28" width="22" height="32" fill={C.text} />
+            <rect x="550" y="5" width="50" height="55" fill={C.text} />
+            <rect x="620" y="18" width="32" height="42" fill={C.text} />
+            <rect x="680" y="25" width="26" height="35" fill={C.text} />
+            <rect x="740" y="10" width="42" height="50" fill={C.text} />
+            <rect x="810" y="20" width="30" height="40" fill={C.text} />
+            <rect x="870" y="30" width="24" height="30" fill={C.text} />
+            <rect x="920" y="14" width="36" height="46" fill={C.text} />
+            <rect x="980" y="22" width="28" height="38" fill={C.text} />
+            <rect x="1030" y="8" width="44" height="52" fill={C.text} />
+            <rect x="1100" y="18" width="32" height="42" fill={C.text} />
+            <polygon points="170,25 185,10 200,25" fill={C.text} />
+            <polygon points="460,28 472,15 484,28" fill={C.text} />
+            <polygon points="770,10 782,0 794,10" fill={C.text} />
+          </svg>
+          {/* Truck SVG */}
+          <div style={{ position: "absolute", bottom: 4, left: 0, width: "100%", height: 36, overflow: "hidden" }}>
+            <svg viewBox="0 0 80 32" style={{ width: 80, height: 32, animation: "cp01-truckDrive 15s linear infinite" }}>
+              <rect x="0" y="4" width="50" height="24" rx="3" fill={C.gold} />
+              <rect x="50" y="10" width="22" height="18" rx="2" fill={C.goldLight} />
+              <rect x="54" y="13" width="14" height="9" rx="1" fill={C.bg1} opacity="0.5" />
+              <circle cx="14" cy="28" r="5" fill={C.text} />
+              <circle cx="14" cy="28" r="2.5" fill={C.muted} />
+              <circle cx="60" cy="28" r="5" fill={C.text} />
+              <circle cx="60" cy="28" r="2.5" fill={C.muted} />
+            </svg>
+          </div>
         </div>
       </div>
     </section>
@@ -1816,9 +1886,23 @@ export default function CP01Page() {
                 lineHeight: 1.3,
                 letterSpacing: "0.05em",
                 marginBottom: 20,
+                position: "relative",
+                display: "inline-block",
               }}
             >
               {recruit.heading}
+              <span
+                style={{
+                  position: "absolute",
+                  bottom: -4,
+                  left: 0,
+                  height: 3,
+                  background: `linear-gradient(90deg, ${C.gold}, ${C.goldDark})`,
+                  borderRadius: 2,
+                  width: recRef.visible ? "100%" : "0%",
+                  transition: "width 0.8s ease 0.3s",
+                }}
+              />
             </h2>
             <p
               style={{
@@ -2048,7 +2132,15 @@ export default function CP01Page() {
             onSubmit={(e) => e.preventDefault()}
             style={{ display: "flex", flexDirection: "column", gap: 24 }}
           >
-            {contact.fields.map((f) => (
+            {contact.fields.map((f) => {
+              const placeholders: Record<string, string> = {
+                company: "例）グリーンロジスティクス株式会社",
+                name: "例）山田 太郎",
+                email: "例）info@example.co.jp",
+                phone: "例）090-1234-5678",
+                message: "例）配送サービスについてお見積もりをお願いしたいです。",
+              };
+              return (
               <div key={f.name}>
                 <label
                   style={{
@@ -2083,6 +2175,7 @@ export default function CP01Page() {
                   <textarea
                     name={f.name}
                     required={f.required}
+                    placeholder={placeholders[f.name] || ""}
                     rows={5}
                     style={{
                       width: "100%",
@@ -2113,6 +2206,7 @@ export default function CP01Page() {
                     type={f.type}
                     name={f.name}
                     required={f.required}
+                    placeholder={placeholders[f.name] || ""}
                     style={{
                       width: "100%",
                       padding: "14px 16px",
@@ -2137,7 +2231,8 @@ export default function CP01Page() {
                   />
                 )}
               </div>
-            ))}
+              );
+            })}
             <div style={{ textAlign: "center", marginTop: 8 }}>
               <button
                 type="submit"

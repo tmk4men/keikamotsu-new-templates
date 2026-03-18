@@ -127,7 +127,7 @@ function FadeIn({
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "none" : transforms[direction],
-        transition: `opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}s, transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}s`,
+        transition: `opacity 1s cubic-bezier(0.22,1,0.36,1) ${delay}s, transform 1s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
         ...style,
       }}
     >
@@ -321,6 +321,7 @@ export default function R01Page() {
         @keyframes marqueeLeft { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes marqueeRight { 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
         @keyframes navUnderline { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+        @keyframes truckDrive { 0%{left:-80px} 100%{left:calc(100% + 80px)} }
         .nav-link { position:relative; }
         .nav-link::after { content:''; position:absolute; bottom:-2px; left:0; width:100%; height:1px; background:${TEXT_W}; transform:scaleX(0); transform-origin:left; transition:transform 0.3s ease; }
         .nav-link:hover::after { transform:scaleX(1); }
@@ -966,7 +967,7 @@ export default function R01Page() {
         }}
       >
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 20px" : "0 48px" }}>
-          <SectionTitle label="WHY US" title="選ばれる理由" num="01" />
+          <SectionTitle label="WHY US" title="⚑ 選ばれる理由" num="01" />
         </div>
 
         <div
@@ -1018,7 +1019,7 @@ export default function R01Page() {
                   <img
                     src={IMG.strength(i + 1)}
                     alt={r.title}
-                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)", maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)" }}
                   />
                 </div>
                 {/* Text */}
@@ -1087,7 +1088,7 @@ export default function R01Page() {
           }}
         />
         <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <SectionTitle label="RECRUIT" title="求人情報" num="02" />
+          <SectionTitle label="RECRUIT" title="☰ 求人情報" num="02" />
           <FadeIn delay={0.1}>
             <p
               style={{
@@ -1177,9 +1178,9 @@ export default function R01Page() {
                   月収目安
                 </p>
                 <div style={{ fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: TEXT_W }}>
-                  <span style={{ fontSize: isMobile ? "56px" : "72px", lineHeight: 1 }}>{hero.salaryMin}</span>
+                  <CounterNum target={hero.salaryMin} style={{ fontSize: isMobile ? "56px" : "72px", lineHeight: 1, fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: TEXT_W }} />
                   <span style={{ fontSize: isMobile ? "20px" : "24px", margin: "0 4px" }}>万〜</span>
-                  <span style={{ fontSize: isMobile ? "56px" : "72px", lineHeight: 1 }}>{hero.salaryMax}</span>
+                  <CounterNum target={hero.salaryMax} style={{ fontSize: isMobile ? "56px" : "72px", lineHeight: 1, fontFamily: "'Oswald',sans-serif", fontWeight: 800, color: TEXT_W }} />
                   <span style={{ fontSize: isMobile ? "20px" : "24px" }}>万円</span>
                 </div>
                 <p
@@ -1268,7 +1269,7 @@ export default function R01Page() {
           }}
         />
         <div style={{ position: "relative", zIndex: 1, maxWidth: "1200px", margin: "0 auto" }}>
-          <SectionTitle label="BENEFITS" title="待遇・福利厚生" num="03" />
+          <SectionTitle label="BENEFITS" title="✓ 待遇・福利厚生" num="03" />
           <div
             style={{
               marginTop: "44px",
@@ -1350,7 +1351,7 @@ export default function R01Page() {
           }}
         />
         <div style={{ maxWidth: "900px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <SectionTitle label="DAILY" title="1日の流れ" num="04" />
+          <SectionTitle label="DAILY" title="⏱ 1日の流れ" num="04" />
           <FadeIn delay={0.1}>
             <p
               style={{
@@ -1379,7 +1380,7 @@ export default function R01Page() {
             />
 
             {daily.steps.map((s, i) => (
-              <FadeIn key={i} delay={i * 0.1} direction={i % 2 === 0 ? "left" : "right"}>
+              <FadeIn key={i} delay={i * 0.18} direction={i % 2 === 0 ? "left" : "right"}>
                 <div
                   style={{
                     marginBottom: i < daily.steps.length - 1 ? "36px" : "48px",
@@ -1446,7 +1447,6 @@ export default function R01Page() {
               <video
                 autoPlay
                 muted
-                loop
                 playsInline
                 style={{ width: "100%", display: "block", filter: "brightness(0.9)" }}
               >
@@ -1480,7 +1480,7 @@ export default function R01Page() {
         }}
       >
         <div style={{ maxWidth: "1200px", margin: "0 auto", padding: isMobile ? "0 20px" : "0 48px" }}>
-          <SectionTitle label="GALLERY" title={gallery.heading} num="05" />
+          <SectionTitle label="GALLERY" title={`⌂ ${gallery.heading}`} num="05" />
           <FadeIn delay={0.1}>
             <p
               style={{
@@ -1674,7 +1674,7 @@ export default function R01Page() {
           }}
         />
         <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <SectionTitle label="VOICES" title="先輩の声" num="06" />
+          <SectionTitle label="VOICES" title={`\u301D 先輩の声`} num="06" />
 
           <div
             style={{
@@ -1686,70 +1686,84 @@ export default function R01Page() {
           >
             {voices.map((v, i) => (
               <FadeIn key={i} delay={i * 0.12} direction={i % 2 === 0 ? "left" : "right"}>
-                <div
-                  style={{
-                    background: BG_DARK,
-                    padding: isMobile ? "28px 22px" : "40px 36px",
-                    borderRadius: "6px",
-                    position: "relative",
-                    transition: "box-shadow 0.4s, transform 0.3s",
-                    cursor: "default",
-                    height: "100%",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow =
-                      "0 0 20px rgba(85,85,85,0.2), inset 0 0 8px rgba(85,85,85,0.05)";
-                    e.currentTarget.style.transform = "translateY(-3px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.boxShadow = "none";
-                    e.currentTarget.style.transform = "translateY(0)";
-                  }}
-                >
-                  <span
+                <div style={{ position: "relative" }}>
+                  {/* Speech bubble */}
+                  <div
                     style={{
-                      fontFamily: "'Oswald',sans-serif",
-                      fontWeight: 800,
-                      fontSize: "48px",
-                      color: "rgba(255,255,255,0.08)",
+                      background: BG_DARK,
+                      padding: isMobile ? "28px 22px" : "40px 36px",
+                      borderRadius: i % 2 === 0 ? "16px 16px 16px 4px" : "16px 16px 4px 16px",
+                      position: "relative",
+                      transition: "box-shadow 0.4s, transform 0.3s",
+                      cursor: "default",
+                      marginBottom: "20px",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow =
+                        "0 0 20px rgba(85,85,85,0.2), inset 0 0 8px rgba(85,85,85,0.05)";
+                      e.currentTarget.style.transform = "translateY(-3px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.transform = "translateY(0)";
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: "'Oswald',sans-serif",
+                        fontWeight: 800,
+                        fontSize: "48px",
+                        color: "rgba(255,255,255,0.08)",
+                        position: "absolute",
+                        top: "12px",
+                        left: "20px",
+                        lineHeight: 1,
+                        pointerEvents: "none",
+                      }}
+                    >
+                      &ldquo;
+                    </span>
+                    <blockquote
+                      style={{
+                        fontSize: "14px",
+                        lineHeight: 1.85,
+                        color: TEXT_G,
+                        letterSpacing: "0.05em",
+                        marginBottom: "16px",
+                        paddingTop: "8px",
+                      }}
+                    >
+                      {nl2br(v.text)}
+                    </blockquote>
+                    <p
+                      style={{
+                        display: "inline-block",
+                        background: ACCENT,
+                        border: "1px solid rgba(255,255,255,0.15)",
+                        padding: "4px 14px",
+                        borderRadius: "2px",
+                        fontSize: "13px",
+                        fontWeight: 700,
+                        color: TEXT_W,
+                        letterSpacing: "0.04em",
+                      }}
+                    >
+                      {v.highlight}
+                    </p>
+                    {/* Speech bubble tail */}
+                    <div style={{
                       position: "absolute",
-                      top: "12px",
-                      left: "20px",
-                      lineHeight: 1,
-                      pointerEvents: "none",
-                    }}
-                  >
-                    &ldquo;
-                  </span>
-                  <blockquote
-                    style={{
-                      fontSize: "14px",
-                      lineHeight: 1.85,
-                      color: TEXT_G,
-                      letterSpacing: "0.05em",
-                      marginBottom: "16px",
-                      paddingTop: "8px",
-                    }}
-                  >
-                    {nl2br(v.text)}
-                  </blockquote>
-                  <p
-                    style={{
-                      display: "inline-block",
-                      background: ACCENT,
-                      border: "1px solid rgba(255,255,255,0.15)",
-                      padding: "4px 14px",
-                      borderRadius: "2px",
-                      fontSize: "13px",
-                      fontWeight: 700,
-                      color: TEXT_W,
-                      letterSpacing: "0.04em",
-                      marginBottom: "14px",
-                    }}
-                  >
-                    {v.highlight}
-                  </p>
-                  <div style={{ fontSize: "13px", color: TEXT_G, letterSpacing: "0.05em" }}>
+                      bottom: -10,
+                      [i % 2 === 0 ? "left" : "right"]: 28,
+                      width: 0,
+                      height: 0,
+                      borderLeft: "10px solid transparent",
+                      borderRight: "10px solid transparent",
+                      borderTop: `10px solid ${BG_DARK}`,
+                    }} />
+                  </div>
+                  {/* Person info below bubble */}
+                  <div style={{ fontSize: "13px", color: TEXT_G, letterSpacing: "0.05em", paddingLeft: i % 2 === 0 ? "16px" : "0", paddingRight: i % 2 !== 0 ? "16px" : "0", textAlign: i % 2 === 0 ? "left" : "right" }}>
                     <span style={{ color: TEXT_W, fontWeight: 700, marginRight: "8px" }}>{v.name}</span>
                     {v.age}・{v.prev}
                   </div>
@@ -1791,7 +1805,7 @@ export default function R01Page() {
           }}
         />
         <div style={{ maxWidth: "860px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <SectionTitle label="FAQ" title="よくある質問" num="07" />
+          <SectionTitle label="FAQ" title="? よくある質問" num="07" />
 
           <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "12px" }}>
             {faq.map((f, i) => {
@@ -1904,7 +1918,7 @@ export default function R01Page() {
         }}
       >
         <div style={{ maxWidth: "860px", margin: "0 auto" }}>
-          <SectionTitle label="NEWS" title="お知らせ" num="08" />
+          <SectionTitle label="NEWS" title={`\u2398 お知らせ`} num="08" />
 
           <div style={{ marginTop: "36px" }}>
             {news.map((n, i) => (
@@ -1984,7 +1998,7 @@ export default function R01Page() {
         }}
       >
         <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
-          <SectionTitle label="ACCESS" title={access.heading} num="09" />
+          <SectionTitle label="ACCESS" title={`⌖ ${access.heading}`} num="09" />
           <FadeIn delay={0.1}>
             <div style={{ marginTop: "28px" }}>
               <p
@@ -2039,35 +2053,14 @@ export default function R01Page() {
         id="company"
         style={{
           padding: isMobile ? "56px 20px 44px" : "72px 48px 64px",
-          background: BG_CARD,
+          background: `url(${IMG.company}) center/cover no-repeat`,
+          position: "relative",
         }}
       >
-        <div style={{ maxWidth: "860px", margin: "0 auto" }}>
-          <SectionTitle label="COMPANY" title="会社概要" num="10" />
-          {/* Full-width company image */}
-          <FadeIn delay={0.1} direction="scale">
-            <div
-              style={{
-                marginTop: "28px",
-                marginBottom: "28px",
-                borderRadius: "6px",
-                overflow: "hidden",
-                aspectRatio: "21/9",
-              }}
-            >
-              <img
-                src={IMG.company}
-                alt="会社"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                  filter: "brightness(0.85)",
-                }}
-              />
-            </div>
-          </FadeIn>
+        {/* Dark overlay */}
+        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.75)" }} />
+        <div style={{ maxWidth: "860px", margin: "0 auto", position: "relative", zIndex: 1 }}>
+          <SectionTitle label="COMPANY" title="⌂ 会社概要" num="10" />
           <FadeIn delay={0.15}>
             <dl style={{ marginTop: "36px" }}>
               {companyInfo.map((row, i) => (
@@ -2122,7 +2115,7 @@ export default function R01Page() {
         }}
       >
         <div style={{ maxWidth: "680px", margin: "0 auto" }}>
-          <SectionTitle label="APPLY" title="Web応募フォーム" num="11" />
+          <SectionTitle label="APPLY" title="✎ Web応募フォーム" num="11" />
           <FadeIn delay={0.15}>
             <form
               onSubmit={handleSubmit}
@@ -2134,9 +2127,9 @@ export default function R01Page() {
               }}
             >
               {[
-                { key: "name" as const, label: "お名前", type: "text", required: true },
-                { key: "phone" as const, label: "電話番号", type: "tel", required: true },
-                { key: "email" as const, label: "メールアドレス", type: "email", required: false },
+                { key: "name" as const, label: "お名前", type: "text", required: true, placeholder: "例）山田 太郎" },
+                { key: "phone" as const, label: "電話番号", type: "tel", required: true, placeholder: "例）090-1234-5678" },
+                { key: "email" as const, label: "メールアドレス", type: "email", required: false, placeholder: "例）info@example.co.jp" },
               ].map((field) => (
                 <div key={field.key}>
                   <label
@@ -2154,6 +2147,7 @@ export default function R01Page() {
                   <input
                     type={field.type}
                     required={field.required}
+                    placeholder={field.placeholder}
                     value={formData[field.key]}
                     onChange={(e) => setFormData({ ...formData, [field.key]: e.target.value })}
                     style={{
@@ -2193,6 +2187,7 @@ export default function R01Page() {
                 </label>
                 <textarea
                   rows={4}
+                  placeholder="例）応募を検討しています。詳しい話を聞きたいです。"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   style={{
@@ -2264,6 +2259,30 @@ export default function R01Page() {
         </div>
       </section>
 
+      {/* ── Truck animation ── */}
+      <div style={{ background: BG_DARK, overflow: "hidden", position: "relative", height: 80 }}>
+        {/* Faint cityscape */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, opacity: 0.08, lineHeight: 0 }}>
+          <svg viewBox="0 0 800 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: 60 }}>
+            <path d="M0,58 L60,58 L60,40 L55,40 L55,35 L50,30 L45,35 L45,40 L40,40 L40,58 L80,58 L80,28 L85,28 L85,22 L90,22 L90,28 L100,28 L100,58 L120,58 L125,45 L130,58 L140,58 L140,20 L145,20 L145,15 L150,15 L150,20 L160,20 L160,58 L200,58 L200,30 L210,30 L210,25 L220,25 L220,30 L230,30 L230,58 L250,58 L255,48 L260,52 L265,46 L270,58 L290,58 L290,35 L295,35 L295,12 L300,12 L305,12 L305,35 L310,35 L310,58 L340,58 L340,42 L350,42 L350,38 L355,34 L360,38 L360,42 L370,42 L370,58 L400,58 L400,22 L405,22 L410,18 L415,22 L420,22 L420,58 L440,58 L445,50 L450,45 L455,50 L460,58 L480,58 L480,30 L490,30 L490,58 L510,58 L510,15 L515,15 L515,10 L520,7 L525,10 L525,15 L530,15 L530,58 L560,58 L560,38 L565,38 L570,32 L575,38 L580,38 L580,58 L600,58 L600,45 L610,45 L610,40 L620,40 L620,45 L630,45 L630,58 L650,58 L650,25 L660,20 L670,25 L670,58 L700,58 L700,48 L705,48 L705,42 L710,38 L715,35 L720,38 L720,42 L730,42 L730,48 L735,48 L735,58 L760,58 L760,30 L770,30 L770,58 L800,58" stroke={TEXT_G} strokeWidth="1" />
+          </svg>
+        </div>
+        {/* Road line */}
+        <div style={{ position: "absolute", bottom: 12, left: 0, right: 0, height: 2, background: `linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)` }} />
+        {/* Truck SVG */}
+        <div style={{ position: "absolute", bottom: 14, animation: "truckDrive 12s linear infinite" }}>
+          <svg width="64" height="36" viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="4" width="36" height="24" rx="3" fill={ACCENT_LIGHT} opacity="0.6" />
+            <rect x="36" y="12" width="22" height="16" rx="2" fill={ACCENT} opacity="0.7" />
+            <circle cx="14" cy="30" r="5" fill={TEXT_G} opacity="0.5" />
+            <circle cx="14" cy="30" r="2.5" fill={BG_DARK} />
+            <circle cx="50" cy="30" r="5" fill={TEXT_G} opacity="0.5" />
+            <circle cx="50" cy="30" r="2.5" fill={BG_DARK} />
+            <rect x="40" y="16" width="8" height="6" rx="1" fill="rgba(255,255,255,0.2)" />
+          </svg>
+        </div>
+      </div>
+
       {/* ── Apply -> CTA divider ── */}
       <TriangleDivider fromColor={BG_DARK} toColor={BG_ALT} />
 
@@ -2315,7 +2334,7 @@ export default function R01Page() {
                 marginBottom: "20px",
               }}
             >
-              {cta.heading}
+              {nl2br(cta.heading)}
             </h2>
             <p
               style={{

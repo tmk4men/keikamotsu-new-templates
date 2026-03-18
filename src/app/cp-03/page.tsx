@@ -249,6 +249,29 @@ function GlobalStyles() {
 
       @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
+      @keyframes truckDrive {
+        from { transform: translateX(-60px); }
+        to { transform: translateX(calc(100vw + 60px)); }
+      }
+
+      .cp03-h2-underline {
+        position: relative;
+        display: inline-block;
+      }
+      .cp03-h2-underline::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: ${C.accent};
+        transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+      .cp03-h2-underline.visible::after {
+        width: 100%;
+      }
+
       .cp03-nav-link {
         position: relative;
         text-decoration: none;
@@ -310,11 +333,11 @@ function GlobalStyles() {
 
       .cp03-photo-frame {
         transition: transform 0.5s ease, box-shadow 0.5s ease;
-        box-shadow: 4px 4px 16px rgba(0,0,0,0.06);
+        box-shadow: 6px 6px 20px rgba(0,0,0,0.25);
       }
       .cp03-photo-frame:hover {
         transform: rotate(-1deg) scale(1.02);
-        box-shadow: 8px 8px 32px rgba(0,0,0,0.1);
+        box-shadow: 10px 10px 36px rgba(0,0,0,0.3);
       }
 
       .cp03-input-animated {
@@ -928,6 +951,7 @@ function ServicesSection({
     >
       <SectionLabel label="Services" num="01" visible={iv.visible} icon={sectionIcons.services} />
       <h2
+        className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
         style={{
           fontFamily: fontGothic,
           fontSize: isMobile ? 24 : 32,
@@ -1082,6 +1106,7 @@ function StrengthsSection({
       >
         <SectionLabel label="Strengths" num="02" visible={iv.visible} icon={sectionIcons.strengths} />
         <h2
+          className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
           style={{
             fontFamily: fontGothic,
             fontSize: isMobile ? 24 : 32,
@@ -1124,9 +1149,10 @@ function StrengthItem({
         maxWidth: 1100,
         margin: "0 auto",
         marginBottom: isMobile ? 48 : 100,
-        paddingLeft: isMobile ? 24 : 48,
-        paddingRight: isMobile ? 24 : 48,
+        padding: isMobile ? "24px" : "32px 48px",
         gap: isMobile ? 0 : 64,
+        boxShadow: "8px 8px 0 rgba(139,90,43,0.35)",
+        background: "#ffffff",
       }}
     >
       {/* Image */}
@@ -1299,6 +1325,7 @@ function CeoSection({
         <div style={{ flex: 1 }}>
           <SectionLabel label="Message" num="03" visible={iv.visible} icon={sectionIcons.message} />
           <h2
+            className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
             style={{
               fontFamily: fontGothic,
               fontSize: isMobile ? 24 : 32,
@@ -1434,6 +1461,7 @@ function CompanySection({
         <div style={{ flex: 1 }}>
           <SectionLabel label="Company" num="04" visible={iv.visible} icon={sectionIcons.company} />
           <h2
+            className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
             style={{
               fontFamily: fontGothic,
               fontSize: isMobile ? 24 : 32,
@@ -1527,6 +1555,7 @@ function HistorySection({
       }}>
         <SectionLabel label="History" num="05" visible={iv.visible} icon={sectionIcons.history} />
         <h2
+          className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
           style={{
             fontFamily: fontGothic,
             fontSize: isMobile ? 24 : 32,
@@ -1724,6 +1753,7 @@ function NumbersSection({
       >
         <SectionLabel label="Numbers" num="06" visible={iv.visible} icon={sectionIcons.numbers} />
         <h2
+          className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
           style={{
             fontFamily: fontGothic,
             fontSize: isMobile ? 24 : 32,
@@ -1851,6 +1881,7 @@ function PartnersSection({
       }}>
         <SectionLabel label="Partners" num="07" visible={iv.visible} icon={sectionIcons.partners} />
         <h2
+          className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
           style={{
             fontFamily: fontGothic,
             fontSize: isMobile ? 24 : 32,
@@ -1930,6 +1961,23 @@ function PartnersSection({
             </div>
           ))}
         </div>
+
+        {/* トラックアニメーション */}
+        <div style={{ position: "relative", height: 60, overflow: "hidden", marginTop: 40, opacity: 0.12 }}>
+          {/* 背景の街並み */}
+          <svg viewBox="0 0 800 60" fill="none" style={{ position: "absolute", bottom: 0, width: "100%", height: 60 }}>
+            <path d="M0,58 L60,58 L60,40 L55,35 L50,30 L45,35 L40,40 L40,58 L100,58 L100,28 L110,28 L110,58 L140,58 L140,20 L150,15 L160,20 L160,58 L200,58 L200,30 L220,25 L230,30 L230,58 L270,58 L290,35 L295,12 L305,12 L310,35 L310,58 L370,58 L370,42 L355,34 L370,42 L370,58 L420,58 L420,22 L410,18 L420,22 L420,58 L480,58 L480,30 L490,30 L490,58 L530,58 L530,15 L520,7 L530,15 L530,58 L580,58 L580,38 L570,32 L580,38 L580,58 L630,58 L630,45 L620,40 L630,45 L630,58 L670,58 L670,25 L660,20 L670,25 L670,58 L735,58 L735,48 L710,38 L735,48 L735,58 L770,58 L770,30 L770,58 L800,58" stroke="currentColor" strokeWidth="1" fill="none" />
+          </svg>
+          {/* トラック */}
+          <div style={{ position: "absolute", bottom: 2, animation: "truckDrive 20s linear infinite" }}>
+            <svg width="48" height="28" viewBox="0 0 48 28" fill="currentColor" opacity="0.8">
+              <rect x="0" y="4" width="28" height="18" rx="2" />
+              <rect x="28" y="10" width="16" height="12" rx="1" />
+              <circle cx="10" cy="24" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+              <circle cx="38" cy="24" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+            </svg>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -1964,6 +2012,7 @@ function NewsSection({
       }}>
         <SectionLabel label="News" num="08" visible={iv.visible} icon={sectionIcons.news} />
         <h2
+          className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
           style={{
             fontFamily: fontGothic,
             fontSize: isMobile ? 24 : 32,
@@ -2087,6 +2136,7 @@ function RecruitSection({
 
         <div style={revealStyle(iv.visible, 0.2)}>
           <h2
+            className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
             style={{
               fontFamily: fontGothic,
               fontSize: isMobile ? 20 : 28,
@@ -2277,6 +2327,7 @@ function ContactSection({
       }}>
         <SectionLabel label="Contact" num="10" visible={iv.visible} icon={sectionIcons.contact} />
         <h2
+          className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
           style={{
             fontFamily: fontGothic,
             fontSize: isMobile ? 24 : 32,
@@ -2360,6 +2411,9 @@ function ContactSection({
                     required={f.required}
                     rows={5}
                     className="cp03-input-animated"
+                    placeholder={
+                      f.name === "message" ? "例）配送サービスについてお見積もりをお願いしたいです。" : undefined
+                    }
                     style={{
                       fontFamily: fontBody,
                       fontWeight: 300,
@@ -2373,6 +2427,12 @@ function ContactSection({
                     name={f.name}
                     required={f.required}
                     className="cp03-input-animated"
+                    placeholder={
+                      f.name === "company" ? "例）株式会社サンプル" :
+                      f.name === "name" ? "例）山田 太郎" :
+                      f.name === "email" ? "例）info@example.co.jp" :
+                      f.name === "phone" ? "例）090-1234-5678" : undefined
+                    }
                     style={{
                       fontFamily: fontBody,
                       fontWeight: 300,

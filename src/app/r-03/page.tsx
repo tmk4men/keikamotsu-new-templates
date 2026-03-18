@@ -106,6 +106,16 @@ const keyframesCSS = `
 
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
+  @keyframes truckDrive {
+    from { transform: translateX(-60px); }
+    to { transform: translateX(calc(100vw + 60px)); }
+  }
+
+  @keyframes underlineReveal {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
   details summary::-webkit-details-marker { display: none; }
   details summary::marker { display: none; content: ''; }
   details[open] summary span:last-child { transform: rotate(45deg); }
@@ -208,6 +218,37 @@ function FadeIn({
 }
 
 /* ───────────────────────────────────────────
+   月収カウントアップ表示
+   ─────────────────────────────────────────── */
+function SalaryCountUp({ min, max }: { min: number; max: number }) {
+  const { ref, visible } = useInView(0.3);
+  const salaryMin = useCountUp(min, visible);
+  const salaryMax = useCountUp(max, visible, 2200);
+  return (
+    <div ref={ref} style={{
+      display: "flex", alignItems: "baseline", gap: 8, marginBottom: 32,
+      padding: "20px 0", borderBottom: `1px solid ${C.line}`,
+    }}>
+      <span style={{ fontSize: 13, color: C.sub }}>月収</span>
+      <span style={{
+        fontSize: "clamp(32px, 6vw, 48px)", fontWeight: 700, color: C.text,
+        fontFamily: "'Oswald', sans-serif", letterSpacing: 2,
+      }}>
+        {salaryMin}
+      </span>
+      <span style={{ fontSize: 16, color: C.sub }}>万〜</span>
+      <span style={{
+        fontSize: "clamp(32px, 6vw, 48px)", fontWeight: 700, color: C.text,
+        fontFamily: "'Oswald', sans-serif", letterSpacing: 2,
+      }}>
+        {salaryMax}
+      </span>
+      <span style={{ fontSize: 16, color: C.sub }}>万円</span>
+    </div>
+  );
+}
+
+/* ───────────────────────────────────────────
    セクション区切り - 繊細な二重線 + 中央ドット
    ─────────────────────────────────────────── */
 function SectionDivider({ bg = "transparent", style: extraStyle }: { bg?: string; style?: React.CSSProperties }) {
@@ -221,6 +262,23 @@ function SectionDivider({ bg = "transparent", style: extraStyle }: { bg?: string
     </div>
   );
 }
+
+/* ───────────────────────────────────────────
+   セクション見出しアイコン（line-art style）
+   ─────────────────────────────────────────── */
+const sectionIcons: Record<string, React.ReactNode> = {
+  Reasons: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z" /></svg>,
+  "Job Info": <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" /></svg>,
+  Benefits: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z" /></svg>,
+  "Daily Schedule": <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>,
+  Voices: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>,
+  Gallery: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>,
+  FAQ: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01" /></svg>,
+  News: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2v-9h4" /><path d="M18 14h-8M18 18h-8M10 6h8" /></svg>,
+  Access: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>,
+  Company: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4" /><path d="M9 9h1M9 13h1M9 17h1" /></svg>,
+  Apply: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" /></svg>,
+};
 
 /* ───────────────────────────────────────────
    セクションタイトル（強化版）
@@ -258,6 +316,16 @@ function SectionTitle({
         }}>
           {num}
         </span>
+      )}
+      {/* アイコン */}
+      {sectionIcons[en] && (
+        <div style={{
+          display: "flex", justifyContent: align === "center" ? "center" : "flex-start",
+          marginBottom: 10, color: C.sub, opacity: visible ? 1 : 0,
+          transition: "opacity 0.6s ease 0.1s",
+        }}>
+          {sectionIcons[en]}
+        </div>
       )}
       <p
         style={{
@@ -354,6 +422,7 @@ export default function R03TrustPage() {
   const [scrolled, setScrolled] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const heroTyped = useTypewriter(hero.headlineParts[0], 80, 500);
+  const footerTyped = useTypewriter(footer.catchphrase, 60, 1000);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -740,7 +809,7 @@ export default function R03TrustPage() {
         {/* 左右グラデーションフェード */}
         <div style={{ position: "absolute", top: 0, left: 0, width: 80, height: "100%", background: `linear-gradient(to right, ${C.bg}, transparent)`, zIndex: 2 }} />
         <div style={{ position: "absolute", top: 0, right: 0, width: 80, height: "100%", background: `linear-gradient(to left, ${C.bg}, transparent)`, zIndex: 2 }} />
-        <div style={{ display: "flex", animation: "marqueeSmoothLeft 25s linear infinite", whiteSpace: "nowrap" }}>
+        <div style={{ display: "flex", width: "max-content", animation: "marqueeSmoothLeft 25s linear infinite", whiteSpace: "nowrap" }}>
           {[...Array(2)].map((_, repeat) => (
             <div key={repeat} style={{ display: "flex", gap: 0, flexShrink: 0 }}>
               {["未経験OK", "月収40万〜100万円", "配達車 無料貸出", "リース料・加盟料ゼロ", "入社祝い金5万円", "20〜60代活躍中", "週払い対応可"].map((text, i) => (
@@ -814,9 +883,16 @@ export default function R03TrustPage() {
                     fontWeight: 600, color: C.text,
                     fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
                     lineHeight: 1.6, margin: "16px 0 20px",
+                    position: "relative", display: "inline-block", paddingBottom: 8,
                   }}
                 >
                   {r.title}
+                  <span style={{
+                    position: "absolute", bottom: 0, left: 0, width: "100%", height: 2,
+                    background: `linear-gradient(to right, ${C.accent}, transparent)`,
+                    transformOrigin: "left", transform: "scaleX(0)",
+                    animation: "underlineReveal 0.8s ease 0.4s forwards",
+                  }} />
                 </h3>
                 <p style={{ fontSize: 15, color: C.sub, lineHeight: 2 }}>
                   {typeof r.text === "string" && r.text.includes("\n")
@@ -862,6 +938,10 @@ export default function R03TrustPage() {
               <p style={{ color: C.sub, fontSize: 15, lineHeight: 2, marginBottom: 32 }}>
                 {jobs.intro}
               </p>
+
+              {/* 月収カウントアップ */}
+              <SalaryCountUp min={hero.salaryMin} max={hero.salaryMax} />
+
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 15 }}>
                 <tbody>
                   {jobs.rows.map((row) => (
@@ -1062,68 +1142,82 @@ export default function R03TrustPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 56 }}>
             {voices.map((v, i) => (
               <FadeIn key={v.name} delay={i * 0.1} direction={i % 2 === 0 ? "left" : "right"}>
-                <div
-                  style={{
-                    padding: "48px clamp(24px, 5vw, 56px)",
-                    background: `linear-gradient(135deg, ${C.bgWarm}, ${C.bg})`,
-                    borderRadius: 12,
-                    border: `1px solid ${C.lineSoft}`,
-                    position: "relative",
-                    overflow: "hidden",
-                    transition: "transform 0.3s, box-shadow 0.3s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.06)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                >
-                  {/* 大きな引用符 */}
-                  <span style={{
-                    position: "absolute", top: 16, left: 24,
-                    fontSize: 96, fontFamily: "Georgia, serif", color: C.lineSoft,
-                    lineHeight: 1, pointerEvents: "none", fontWeight: 700,
-                  }}>"</span>
+                <div style={{ position: "relative", paddingBottom: 20 }}>
+                  {/* 吹き出し本体 */}
+                  <div
+                    style={{
+                      padding: "48px clamp(24px, 5vw, 56px)",
+                      background: `linear-gradient(135deg, ${C.bgWarm}, ${C.bg})`,
+                      borderRadius: i % 2 === 0 ? "16px 16px 16px 4px" : "16px 16px 4px 16px",
+                      border: `1px solid ${C.lineSoft}`,
+                      position: "relative",
+                      overflow: "hidden",
+                      transition: "transform 0.3s, box-shadow 0.3s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.06)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
+                  >
+                    {/* 大きな引用符 */}
+                    <span style={{
+                      position: "absolute", top: 16, left: 24,
+                      fontSize: 96, fontFamily: "Georgia, serif", color: C.lineSoft,
+                      lineHeight: 1, pointerEvents: "none", fontWeight: 700,
+                    }}>&ldquo;</span>
 
-                  <div style={{ position: "relative", zIndex: 1 }}>
-                    {/* イニシャル + 名前 */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
-                      <div style={{
-                        width: 56, height: 56, borderRadius: "50%",
-                        background: `linear-gradient(135deg, ${C.accent}, ${C.accentSoft})`,
-                        color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 20, fontWeight: 600,
-                        fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                      }}>
-                        {v.name.charAt(0)}
+                    <div style={{ position: "relative", zIndex: 1 }}>
+                      {/* イニシャル + 名前 */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
+                        <div style={{
+                          width: 56, height: 56, borderRadius: "50%",
+                          background: `linear-gradient(135deg, ${C.accent}, ${C.accentSoft})`,
+                          color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 20, fontWeight: 600,
+                          fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                        }}>
+                          {v.name.charAt(0)}
+                        </div>
+                        <div>
+                          <span style={{ fontWeight: 600, color: C.text, fontSize: 15 }}>{v.name}</span>
+                          <span style={{ display: "block", fontSize: 12, color: C.sub }}>{v.age}・{v.prev}</span>
+                        </div>
                       </div>
-                      <div>
-                        <span style={{ fontWeight: 600, color: C.text, fontSize: 15 }}>{v.name}</span>
-                        <span style={{ display: "block", fontSize: 12, color: C.sub }}>{v.age}・{v.prev}</span>
-                      </div>
+
+                      <p style={{ fontSize: 15, color: C.sub, lineHeight: 2.1, marginBottom: 16 }}>
+                        {typeof v.text === "string" && v.text.includes("\n")
+                          ? v.text.split("\n").map((line, li) => <span key={li}>{line}{li < v.text.split("\n").length - 1 && <br />}</span>)
+                          : v.text}
+                      </p>
+
+                      {/* ハイライト */}
+                      {v.highlight && (
+                        <div style={{
+                          display: "inline-block", padding: "6px 16px",
+                          background: C.accent, color: "#fff", fontSize: 13,
+                          fontWeight: 600, borderRadius: 4,
+                        }}>
+                          {v.highlight}
+                        </div>
+                      )}
                     </div>
-
-                    <p style={{ fontSize: 15, color: C.sub, lineHeight: 2.1, marginBottom: 16 }}>
-                      {typeof v.text === "string" && v.text.includes("\n")
-                        ? v.text.split("\n").map((line, li) => <span key={li}>{line}{li < v.text.split("\n").length - 1 && <br />}</span>)
-                        : v.text}
-                    </p>
-
-                    {/* ハイライト */}
-                    {v.highlight && (
-                      <div style={{
-                        display: "inline-block", padding: "6px 16px",
-                        background: C.accent, color: "#fff", fontSize: 13,
-                        fontWeight: 600, borderRadius: 4,
-                      }}>
-                        {v.highlight}
-                      </div>
-                    )}
                   </div>
+                  {/* 吹き出し三角ポインター */}
+                  <div style={{
+                    position: "absolute",
+                    bottom: 4,
+                    left: i % 2 === 0 ? 32 : "auto",
+                    right: i % 2 === 0 ? "auto" : 32,
+                    width: 0, height: 0,
+                    borderLeft: "10px solid transparent",
+                    borderRight: "10px solid transparent",
+                    borderTop: `16px solid ${C.bg}`,
+                  }} />
                 </div>
               </FadeIn>
             ))}
@@ -1148,77 +1242,65 @@ export default function R03TrustPage() {
             </p>
           </FadeIn>
           <FadeIn delay={0.15} direction="scale">
-            <div style={{ display: "grid", gridTemplateColumns: "1.15fr 0.85fr 1fr", gap: 8 }}>
-              {gallery.images.slice(0, 3).map((img, idx) => (
-                <div
-                  key={img.src}
-                  style={{
-                    aspectRatio: "4/3", overflow: "hidden", borderRadius: 6,
-                    position: "relative", cursor: "pointer",
-                  }}
-                >
-                  <img
-                    src={img.src} alt={img.alt}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "1.2fr 0.8fr 1fr",
+              gridTemplateRows: "240px 200px",
+              gap: 12,
+              position: "relative",
+            }}>
+              {gallery.images.map((img, idx) => {
+                const gridStyles: Record<number, React.CSSProperties> = {
+                  0: { gridColumn: "1 / 2", gridRow: "1 / 3", aspectRatio: undefined },
+                  1: { gridColumn: "2 / 3", gridRow: "1 / 2" },
+                  2: { gridColumn: "3 / 4", gridRow: "1 / 2" },
+                  3: { gridColumn: "2 / 4", gridRow: "2 / 3" },
+                  4: { gridColumn: "1 / 2", gridRow: "2 / 3", display: "none" },
+                };
+                return (
+                  <div
+                    key={img.src}
                     style={{
-                      width: "100%", height: "100%", objectFit: "cover",
-                      filter: "grayscale(20%)",
-                      transition: "transform 0.5s ease, filter 0.5s ease",
+                      overflow: "hidden", borderRadius: 8,
+                      position: "relative", cursor: "pointer",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+                      transition: "box-shadow 0.4s ease",
+                      ...gridStyles[idx],
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "scale(1.08)";
-                      e.currentTarget.style.filter = "grayscale(0%)";
+                      e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.15)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "scale(1)";
-                      e.currentTarget.style.filter = "grayscale(20%)";
+                      e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.08)";
                     }}
-                  />
-                  <div style={{
-                    position: "absolute", bottom: 0, left: 0, right: 0,
-                    padding: "24px 12px 10px",
-                    background: "linear-gradient(transparent, rgba(0,0,0,0.5))",
-                    color: "#fff", fontSize: 12, fontWeight: 500,
-                  }}>
-                    {img.caption}
+                  >
+                    <img
+                      src={img.src} alt={img.alt}
+                      style={{
+                        width: "100%", height: "100%", objectFit: "cover",
+                        filter: "grayscale(30%) brightness(0.95)",
+                        transition: "transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.6s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "scale(1.1)";
+                        e.currentTarget.style.filter = "grayscale(0%) brightness(1)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "scale(1)";
+                        e.currentTarget.style.filter = "grayscale(30%) brightness(0.95)";
+                      }}
+                    />
+                    <div style={{
+                      position: "absolute", bottom: 0, left: 0, right: 0,
+                      padding: "32px 14px 12px",
+                      background: "linear-gradient(transparent, rgba(0,0,0,0.55))",
+                      color: "#fff", fontSize: 12, fontWeight: 500, letterSpacing: 0.5,
+                    }}>
+                      {img.caption}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 8, marginTop: 8 }}>
-              {gallery.images.slice(3, 5).map((img) => (
-                <div
-                  key={img.src}
-                  style={{
-                    aspectRatio: "3/2", overflow: "hidden", borderRadius: 6,
-                    position: "relative", cursor: "pointer",
-                  }}
-                >
-                  <img
-                    src={img.src} alt={img.alt}
-                    style={{
-                      width: "100%", height: "100%", objectFit: "cover",
-                      filter: "grayscale(20%)",
-                      transition: "transform 0.5s ease, filter 0.5s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "scale(1.08)";
-                      e.currentTarget.style.filter = "grayscale(0%)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "scale(1)";
-                      e.currentTarget.style.filter = "grayscale(20%)";
-                    }}
-                  />
-                  <div style={{
-                    position: "absolute", bottom: 0, left: 0, right: 0,
-                    padding: "24px 12px 10px",
-                    background: "linear-gradient(transparent, rgba(0,0,0,0.5))",
-                    color: "#fff", fontSize: 12, fontWeight: 500,
-                  }}>
-                    {img.caption}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </FadeIn>
         </div>
@@ -1380,22 +1462,29 @@ export default function R03TrustPage() {
       {/* ============================================
           COMPANY（会社概要）- 画像付き
           ============================================ */}
-      <section id="company" style={{ background: C.bg }}>
-        <div style={{ padding: "120px 24px", maxWidth: 1100, margin: "0 auto" }}>
+      <section id="company" style={{
+        background: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url(/keikamotsu-new-templates/images/company.webp) center/cover`,
+        position: "relative",
+      }}>
+        <div style={{ padding: "120px 24px", maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
           <FadeIn>
-            <SectionTitle en="Company" ja="会社概要" />
-          </FadeIn>
-          {/* 会社画像 */}
-          <FadeIn delay={0.1} direction="scale">
-            <div style={{
-              width: "100%", aspectRatio: "21/9", borderRadius: 8, overflow: "hidden",
-              marginBottom: 48, boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-            }}>
-              <img
-                src="/keikamotsu-new-templates/images/company.webp"
-                alt="会社"
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-              />
+            <div style={{ textAlign: "center", marginBottom: 56, position: "relative" }}>
+              {sectionIcons["Company"] && (
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: 10, color: "rgba(255,255,255,0.6)" }}>
+                  {sectionIcons["Company"]}
+                </div>
+              )}
+              <p style={{ fontSize: 11, letterSpacing: 6, color: "rgba(255,255,255,0.5)", textTransform: "uppercase", marginBottom: 8, fontWeight: 400 }}>
+                ── Company ──
+              </p>
+              <h2 style={{
+                fontSize: "clamp(22px, 4vw, 30px)", fontWeight: 600, color: "#fff",
+                fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+                lineHeight: 1.5, margin: 0,
+              }}>
+                会社概要
+              </h2>
+              <div style={{ width: 48, height: 2, background: "linear-gradient(to right, rgba(255,255,255,0.6), transparent)", margin: "16px auto 0", borderRadius: 1 }} />
             </div>
           </FadeIn>
           <FadeIn delay={0.15}>
@@ -1405,15 +1494,15 @@ export default function R03TrustPage() {
                   <tr key={row.dt}>
                     <th style={{
                       textAlign: "left", padding: "16px 16px 16px 0",
-                      borderBottom: `1px solid ${C.line}`, fontWeight: 600,
-                      color: C.text, width: "28%", verticalAlign: "top",
+                      borderBottom: "1px solid rgba(255,255,255,0.15)", fontWeight: 600,
+                      color: "rgba(255,255,255,0.9)", width: "28%", verticalAlign: "top",
                       fontSize: 14, whiteSpace: "nowrap",
                     }}>
                       {row.dt}
                     </th>
                     <td style={{
-                      padding: "16px 0", borderBottom: `1px solid ${C.line}`,
-                      color: C.sub, lineHeight: 1.8,
+                      padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.15)",
+                      color: "rgba(255,255,255,0.7)", lineHeight: 1.8,
                     }}>
                       {row.dd}
                     </td>
@@ -1424,8 +1513,6 @@ export default function R03TrustPage() {
           </FadeIn>
         </div>
       </section>
-
-      <WaveDivider topColor={C.bg} bottomColor={C.white} />
 
       {/* ============================================
           APPLY（応募フォーム）
@@ -1444,11 +1531,11 @@ export default function R03TrustPage() {
           <FadeIn delay={0.15}>
             <form onSubmit={handleSubmit} style={{ maxWidth: 600, margin: "0 auto" }}>
               {[
-                { label: "お名前", name: "name", type: "text", required: true },
-                { label: "ふりがな", name: "kana", type: "text", required: true },
-                { label: "年齢", name: "age", type: "select", required: true },
-                { label: "電話番号", name: "phone", type: "tel", required: true },
-                { label: "メールアドレス", name: "email", type: "email", required: false },
+                { label: "お名前", name: "name", type: "text", required: true, placeholder: "例：山田 太郎" },
+                { label: "ふりがな", name: "kana", type: "text", required: true, placeholder: "例：やまだ たろう" },
+                { label: "年齢", name: "age", type: "select", required: true, placeholder: "" },
+                { label: "電話番号", name: "phone", type: "tel", required: true, placeholder: "例：090-1234-5678" },
+                { label: "メールアドレス", name: "email", type: "email", required: false, placeholder: "例：taro@example.com" },
               ].map((f) => (
                 <div key={f.name} style={{ marginBottom: 36, position: "relative" }}>
                   <label style={{
@@ -1489,6 +1576,7 @@ export default function R03TrustPage() {
                       value={form[f.name as keyof typeof form]}
                       onChange={handleChange}
                       required={f.required}
+                      placeholder={f.placeholder}
                       style={{
                         width: "100%", padding: "12px 0", fontSize: 15,
                         border: "none", borderBottom: `2px solid ${C.line}`,
@@ -1512,6 +1600,7 @@ export default function R03TrustPage() {
                   value={form.message}
                   onChange={handleChange}
                   rows={4}
+                  placeholder="ご質問やご要望があればお書きください"
                   style={{
                     width: "100%", padding: "12px 0", fontSize: 15,
                     border: "none", borderBottom: `2px solid ${C.line}`,
@@ -1552,6 +1641,21 @@ export default function R03TrustPage() {
               </div>
             </form>
           </FadeIn>
+
+          {/* トラックアニメーション */}
+          <div style={{ position: "relative", height: 60, overflow: "hidden", marginTop: 20, opacity: 0.1 }}>
+            <svg viewBox="0 0 800 60" fill="none" style={{ position: "absolute", bottom: 0, width: "100%", height: 60 }}>
+              <path d="M0,58 L60,58 L60,40 L55,35 L50,30 L45,35 L40,40 L40,58 L100,58 L100,28 L110,28 L110,58 L160,58 L160,20 L150,15 L160,20 L160,58 L230,58 L230,30 L220,25 L230,30 L230,58 L310,58 L310,35 L300,12 L310,35 L310,58 L420,58 L420,22 L410,18 L420,22 L420,58 L530,58 L530,15 L520,7 L530,15 L530,58 L630,58 L630,45 L620,40 L630,45 L630,58 L770,58 L770,30 L770,58 L800,58" stroke="currentColor" strokeWidth="1" fill="none" />
+            </svg>
+            <div style={{ position: "absolute", bottom: 4, animation: "truckDrive 20s linear infinite" }}>
+              <svg width="40" height="24" viewBox="0 0 48 28" fill="currentColor" opacity="0.7">
+                <rect x="0" y="4" width="28" height="18" rx="2" />
+                <rect x="28" y="10" width="16" height="12" rx="1" />
+                <circle cx="10" cy="24" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+                <circle cx="38" cy="24" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+              </svg>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1574,9 +1678,11 @@ export default function R03TrustPage() {
               lineHeight: 1.7, marginBottom: 20,
               textShadow: "0 2px 12px rgba(0,0,0,0.3)",
             }}>
-              {cta.heading}
+              {cta.heading.includes("\n")
+                ? cta.heading.split("\n").map((line, li) => <span key={li}>{line}{li < cta.heading.split("\n").length - 1 && <br />}</span>)
+                : cta.heading}
             </p>
-            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.65)", lineHeight: 2, maxWidth: 560, margin: "0 auto 40px" }}>
+            <p style={{ fontSize: 15, color: "rgba(255,255,255,0.65)", lineHeight: 2, maxWidth: 560, margin: "0 auto 40px", whiteSpace: "pre-line" }}>
               {cta.subtext}
             </p>
             <a
@@ -1642,9 +1748,10 @@ export default function R03TrustPage() {
         <p style={{
           fontSize: 12, color: "rgba(255,255,255,0.35)",
           fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
-          marginBottom: 12, letterSpacing: 2,
+          marginBottom: 12, letterSpacing: 2, minHeight: "1.5em",
         }}>
-          {footer.catchphrase}
+          {footerTyped.displayed}
+          {!footerTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
         </p>
         <p style={{ fontSize: 13, marginBottom: 24, lineHeight: 1.8 }}>{company.address}</p>
             {/* 一筆書きシティスケープ */}

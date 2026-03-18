@@ -221,6 +221,7 @@ function SectionHeading({
         {enTitle}
       </p>
       <h2
+        className={`cp04-h2-underline${vis ? " visible" : ""}`}
         style={{
           fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
           fontWeight: 900,
@@ -293,7 +294,7 @@ export default function CP04Page() {
 
   /* CSS keyframes */
   const cssKeyframes = `
-    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;700&family=Zen+Kaku+Gothic+New:wght@400;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;700&family=Zen+Kaku+Gothic+New:wght@400;700;900&family=Zen+Kurenaido&family=Noto+Sans+JP:wght@400;500;700&display=swap');
 
     @keyframes blink {
       0%, 100% { opacity: 1; }
@@ -330,6 +331,29 @@ export default function CP04Page() {
     @keyframes expandWidth {
       from { width: 0; }
       to { width: 100%; }
+    }
+
+    @keyframes truckDrive {
+      from { transform: translateX(-60px); }
+      to { transform: translateX(calc(100vw + 60px)); }
+    }
+
+    .cp04-h2-underline {
+      position: relative;
+      display: inline-block;
+    }
+    .cp04-h2-underline::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: ${ACCENT};
+      transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .cp04-h2-underline.visible::after {
+      width: 100%;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -938,6 +962,7 @@ export default function CP04Page() {
                     : `translateY(50px)`,
                   transition: `all 0.8s cubic-bezier(.22,1,.36,1) ${delay}ms`,
                   overflow: "hidden",
+                  boxShadow: "8px 8px 0 rgba(139,90,43,0.35)",
                 }}
               >
                 {/* Image - 60% */}
@@ -1107,8 +1132,9 @@ export default function CP04Page() {
                   key={i}
                   style={{
                     ...bodyFont,
-                    fontSize: 15,
-                    color: "#333",
+                    fontSize: i === 0 ? 17 : 15,
+                    color: i === 0 ? "rgba(139,90,43,0.9)" : "#333",
+                    fontFamily: i === 0 ? "'Zen Kurenaido', 'Zen Kaku Gothic New', sans-serif" : bodyFont.fontFamily,
                     margin: "0 0 20px",
                     opacity: ceoVis ? 1 : 0,
                     transform: ceoVis ? "translateY(0)" : "translateY(20px)",
@@ -1269,7 +1295,7 @@ export default function CP04Page() {
               }}
             />
             {history.map((h, i) => {
-              const delay = 300 + i * 250;
+              const delay = 400 + i * 200;
               return (
                 <div
                   key={i}
@@ -1280,8 +1306,8 @@ export default function CP04Page() {
                     marginBottom: 40,
                     position: "relative",
                     opacity: histVis ? 1 : 0,
-                    transform: histVis ? "translateX(0)" : "translateX(-30px)",
-                    transition: `all 0.6s cubic-bezier(.22,1,.36,1) ${delay}ms`,
+                    transform: histVis ? "translateX(0) translateY(0)" : "translateX(-30px) translateY(15px)",
+                    transition: `all 0.9s cubic-bezier(0.25,0.46,0.45,0.94) ${delay}ms`,
                   }}
                 >
                   {/* Timeline dot */}
@@ -1527,6 +1553,23 @@ export default function CP04Page() {
               </div>
             ))}
           </div>
+
+          {/* トラックアニメーション */}
+          <div style={{ position: "relative", height: 60, overflow: "hidden", marginTop: 40, opacity: 0.12 }}>
+            {/* 背景の街並み */}
+            <svg viewBox="0 0 800 60" fill="none" style={{ position: "absolute", bottom: 0, width: "100%", height: 60 }}>
+              <path d="M0,58 L60,58 L60,40 L55,35 L50,30 L45,35 L40,40 L40,58 L100,58 L100,28 L110,28 L110,58 L140,58 L140,20 L150,15 L160,20 L160,58 L200,58 L200,30 L220,25 L230,30 L230,58 L270,58 L290,35 L295,12 L305,12 L310,35 L310,58 L370,58 L370,42 L355,34 L370,42 L370,58 L420,58 L420,22 L410,18 L420,22 L420,58 L480,58 L480,30 L490,30 L490,58 L530,58 L530,15 L520,7 L530,15 L530,58 L580,58 L580,38 L570,32 L580,38 L580,58 L630,58 L630,45 L620,40 L630,45 L630,58 L670,58 L670,25 L660,20 L670,25 L670,58 L735,58 L735,48 L710,38 L735,48 L735,58 L770,58 L770,30 L770,58 L800,58" stroke="currentColor" strokeWidth="1" fill="none" />
+            </svg>
+            {/* トラック */}
+            <div style={{ position: "absolute", bottom: 2, animation: "truckDrive 20s linear infinite" }}>
+              <svg width="48" height="28" viewBox="0 0 48 28" fill="currentColor" opacity="0.8">
+                <rect x="0" y="4" width="28" height="18" rx="2" />
+                <rect x="28" y="10" width="16" height="12" rx="1" />
+                <circle cx="10" cy="24" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+                <circle cx="38" cy="24" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+              </svg>
+            </div>
+          </div>
         </div>
       </section>
     </>
@@ -1660,7 +1703,7 @@ export default function CP04Page() {
             <p style={{ ...oswald, fontWeight: 300, fontSize: 13, color: ACCENT, letterSpacing: "0.2em", textTransform: "uppercase" as const, margin: "0 0 12px" }}>
               Recruit
             </p>
-            <h2 style={{ ...zenKaku, fontWeight: 900, fontSize: isMobile ? 24 : 32, color: LIGHT, margin: "0 0 24px" }}>
+            <h2 className={`cp04-h2-underline${recVis ? " visible" : ""}`} style={{ ...zenKaku, fontWeight: 900, fontSize: isMobile ? 24 : 32, color: LIGHT, margin: "0 0 24px" }}>
               {recruit.heading}
             </h2>
             <p style={{ ...bodyFont, fontSize: 15, color: "rgba(255,255,255,0.75)", whiteSpace: "pre-line", margin: "0 0 36px" }}>
@@ -1862,6 +1905,7 @@ export default function CP04Page() {
                       required={f.required}
                       value={formData[f.name] || ""}
                       onChange={(e) => setFormData({ ...formData, [f.name]: e.target.value })}
+                      placeholder="例）配送サービスについてお見積もりをお願いしたいです。"
                       style={{ resize: "vertical" }}
                     />
                   ) : (
@@ -1871,6 +1915,12 @@ export default function CP04Page() {
                       required={f.required}
                       value={formData[f.name] || ""}
                       onChange={(e) => setFormData({ ...formData, [f.name]: e.target.value })}
+                      placeholder={
+                        f.name === "name" ? "例）山田 太郎" :
+                        f.name === "phone" ? "例）090-1234-5678" :
+                        f.name === "email" ? "例）info@example.co.jp" :
+                        f.name === "company" ? "例）株式会社サンプル" : undefined
+                      }
                     />
                   )}
                 </div>

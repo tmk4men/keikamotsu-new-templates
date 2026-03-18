@@ -254,7 +254,7 @@ export default function R02Page() {
     let start: number;
     const animate = (ts: number) => {
       if (!start) start = ts;
-      const progress = Math.min((ts - start) / 1200, 1);
+      const progress = Math.min((ts - start) / 2000, 1);
       setTimelineProgress(progress);
       if (progress < 1) requestAnimationFrame(animate);
     };
@@ -325,6 +325,11 @@ export default function R02Page() {
         }
 
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes underlineReveal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        @keyframes truckDrive { 0%{left:-80px} 100%{left:calc(100% + 80px)} }
+        .section-heading-underline { position: relative; display: inline-block; }
+        .section-heading-underline::after { content:''; position:absolute; bottom:-6px; left:0; width:100%; height:3px; background:${C.accent}; border-radius:2px; transform:scaleX(0); transform-origin:left; }
+        .section-heading-underline.visible::after { animation: underlineReveal 0.8s cubic-bezier(.23,1,.32,1) forwards; }
 
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
@@ -959,28 +964,35 @@ export default function R02Page() {
             <div
               key={ri}
               style={{
-                display: "flex",
+                overflow: "hidden",
                 whiteSpace: "nowrap",
-                animation: `marqueeScroll ${28 + ri * 6}s linear infinite`,
-                animationDirection: ri === 1 ? "reverse" : "normal",
                 marginBottom: ri === 0 ? 6 : 0,
               }}
             >
-              {[...row, ...row, ...row, ...row].map((item, i) => (
-                <span
-                  key={i}
-                  style={{
-                    display: "inline-block",
-                    color: C.white,
-                    fontSize: 14,
-                    fontWeight: 700,
-                    padding: "0 32px",
-                    opacity: 0.95,
-                  }}
-                >
-                  {item}
-                </span>
-              ))}
+              <div
+                style={{
+                  display: "inline-flex",
+                  gap: 48,
+                  animation: `marqueeScroll ${28 + ri * 6}s linear infinite`,
+                  animationDirection: ri === 1 ? "reverse" : "normal",
+                }}
+              >
+                {[...row, ...row, ...row, ...row].map((item, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      display: "inline-block",
+                      color: C.white,
+                      fontSize: 14,
+                      fontWeight: 700,
+                      paddingRight: 48,
+                      opacity: 0.95,
+                    }}
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
             </div>
           ))}
         </section>
@@ -1029,6 +1041,7 @@ export default function R02Page() {
                 ─ Why Choose Us ─
               </p>
               <h2
+                className={`section-heading-underline${reasonsRef.visible ? " visible" : ""}`}
                 style={{
                   fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
@@ -1036,7 +1049,7 @@ export default function R02Page() {
                   color: C.text,
                 }}
               >
-                選ばれる<span style={{ color: C.accent }}>3つ</span>の理由
+                ⚑ 選ばれる<span style={{ color: C.accent }}>3つ</span>の理由
               </h2>
             </div>
 
@@ -1088,7 +1101,7 @@ export default function R02Page() {
                     <img
                       src={IMG.strength(i + 1)}
                       alt={r.title}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.5s" }}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.5s", WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)", maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)" }}
                       onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.06)")}
                       onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                     />
@@ -1160,6 +1173,7 @@ export default function R02Page() {
                 ─ Recruit ─
               </p>
               <h2
+                className={`section-heading-underline${jobsRef.visible ? " visible" : ""}`}
                 style={{
                   fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
@@ -1168,7 +1182,7 @@ export default function R02Page() {
                   marginBottom: 16,
                 }}
               >
-                求人情報
+                ☰ 求人情報
               </h2>
               <p style={{ fontSize: 15, color: C.textSub, lineHeight: 1.8 }}>
                 {nl2br(jobs.intro)}
@@ -1312,6 +1326,7 @@ export default function R02Page() {
                 ─ Benefits ─
               </p>
               <h2
+                className={`section-heading-underline${benefitsRef.visible ? " visible" : ""}`}
                 style={{
                   fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
@@ -1319,7 +1334,7 @@ export default function R02Page() {
                   color: C.text,
                 }}
               >
-                待遇・福利厚生
+                ✓ 待遇・福利厚生
               </h2>
             </div>
 
@@ -1430,6 +1445,7 @@ export default function R02Page() {
                 ─ Daily Schedule ─
               </p>
               <h2
+                className={`section-heading-underline${dailyRef.visible ? " visible" : ""}`}
                 style={{
                   fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
@@ -1438,7 +1454,7 @@ export default function R02Page() {
                   marginBottom: 16,
                 }}
               >
-                1日の流れ
+                ⏱ 1日の流れ
               </h2>
               <p style={{ fontSize: 15, color: C.textSub, lineHeight: 1.8, maxWidth: 600, margin: "0 auto" }}>
                 {nl2br(daily.intro)}
@@ -1501,7 +1517,7 @@ export default function R02Page() {
                       minWidth: 150,
                       textAlign: "center",
                       position: "relative",
-                      ...bounceIn(dailyRef.visible, 0.15 + i * 0.12),
+                      ...bounceIn(dailyRef.visible, 0.25 + i * 0.2),
                     }}
                   >
                     {/* ドット with pulse on appear */}
@@ -1517,7 +1533,7 @@ export default function R02Page() {
                         position: "relative",
                         zIndex: 2,
                         transform: dailyRef.visible ? "scale(1)" : "scale(0)",
-                        transition: `transform 0.4s cubic-bezier(.34,1.56,.64,1) ${0.3 + i * 0.12}s`,
+                        transition: `transform 0.6s cubic-bezier(.34,1.56,.64,1) ${0.4 + i * 0.2}s`,
                       }}
                     />
                     <div
@@ -1569,7 +1585,6 @@ export default function R02Page() {
               <video
                 autoPlay
                 muted
-                loop
                 playsInline
                 style={{
                   width: "100%",
@@ -1612,6 +1627,7 @@ export default function R02Page() {
                 ─ Workplace ─
               </p>
               <h2
+                className={`section-heading-underline${galleryRef.visible ? " visible" : ""}`}
                 style={{
                   fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
@@ -1620,21 +1636,21 @@ export default function R02Page() {
                   marginBottom: 16,
                 }}
               >
-                {gallery.heading}
+                {"⌂ "}{gallery.heading}
               </h2>
               <p style={{ fontSize: 15, color: C.textSub, lineHeight: 1.8 }}>
                 {nl2br(gallery.intro)}
               </p>
             </div>
 
-            {/* 不均等グリッド */}
+            {/* Stylish overlapping gallery */}
             <div
               className="gallery-grid"
               style={{
                 display: "grid",
-                gridTemplateColumns: "1.05fr 0.95fr",
-                gridTemplateRows: "240px 240px",
-                gap: 16,
+                gridTemplateColumns: "1fr 0.85fr 1.15fr",
+                gridTemplateRows: "220px 200px",
+                gap: 14,
                 ...slideUp(galleryRef.visible, 0.15),
               }}
             >
@@ -1644,65 +1660,70 @@ export default function R02Page() {
                     grid-template-columns: 1fr !important;
                     grid-template-rows: auto !important;
                   }
-                  .gallery-grid > div:first-child {
-                    grid-row: span 1 !important;
-                  }
+                  .gallery-grid > div { transform: none !important; margin: 0 !important; }
                 }
+                .gallery-item { transition: transform 0.4s cubic-bezier(.34,1.3,.64,1), box-shadow 0.4s ease !important; }
+                .gallery-item:hover { transform: rotate(0deg) scale(1.04) !important; box-shadow: 0 12px 36px rgba(0,0,0,0.18) !important; z-index: 5 !important; }
               `}</style>
-              {gallery.images.map((img, i) => (
-                <div
-                  key={i}
-                  style={{
-                    position: "relative",
-                    borderRadius: i === 0 ? "1.25rem" : "0.75rem",
-                    overflow: "hidden",
-                    cursor: "pointer",
-                    ...(i === 0 ? { gridRow: "span 2" } : {}),
-                    transition: "transform 0.3s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.01)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                >
-                  <img
-                    src={img.src}
-                    alt={img.alt}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                      transition: "transform 0.5s",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.06)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                  />
-                  {/* ホバーオーバーレイ+キャプション */}
+              {gallery.images.map((img, i) => {
+                const rotations = [-2, 1.5, -1, 2, -1.5];
+                const spans: React.CSSProperties[] = [
+                  { gridRow: "span 2", marginRight: -8 },
+                  { marginTop: 12 },
+                  { marginLeft: -6 },
+                  { marginTop: -10, marginRight: -4 },
+                  { marginLeft: -8, marginTop: 8 },
+                ];
+                return (
                   <div
+                    key={i}
+                    className="gallery-item"
                     style={{
-                      position: "absolute",
-                      inset: 0,
-                      background: "linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 50%)",
-                      display: "flex",
-                      alignItems: "flex-end",
-                      padding: 20,
-                      opacity: 0,
-                      transition: "opacity 0.35s",
+                      position: "relative",
+                      borderRadius: i === 0 ? "1.25rem" : "0.75rem",
+                      overflow: "hidden",
+                      cursor: "pointer",
+                      transform: `rotate(${rotations[i]}deg)`,
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+                      zIndex: i === 0 ? 3 : 1,
+                      ...spans[i],
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
                   >
-                    <p
+                    <img
+                      src={img.src}
+                      alt={img.alt}
                       style={{
-                        color: C.white,
-                        fontSize: 14,
-                        fontWeight: 500,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                        transition: "transform 0.5s",
                       }}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.08)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    />
+                    {/* ホバーオーバーレイ+キャプション */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)",
+                        display: "flex",
+                        alignItems: "flex-end",
+                        padding: 16,
+                        opacity: 0,
+                        transition: "opacity 0.35s",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                      onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
                     >
-                      {img.caption}
-                    </p>
+                      <p style={{ color: C.white, fontSize: 13, fontWeight: 500 }}>
+                        {img.caption}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -1746,6 +1767,7 @@ export default function R02Page() {
                 ─ Voices ─
               </p>
               <h2
+                className={`section-heading-underline${voicesRef.visible ? " visible" : ""}`}
                 style={{
                   fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
@@ -1753,7 +1775,7 @@ export default function R02Page() {
                   color: C.text,
                 }}
               >
-                先輩ドライバーの声
+                {"\u301D "}先輩ドライバーの声
               </h2>
             </div>
 
@@ -1937,6 +1959,7 @@ export default function R02Page() {
                 ─ FAQ ─
               </p>
               <h2
+                className={`section-heading-underline${faqRef.visible ? " visible" : ""}`}
                 style={{
                   fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
@@ -1944,7 +1967,7 @@ export default function R02Page() {
                   color: C.text,
                 }}
               >
-                よくある質問
+                ? よくある質問
               </h2>
             </div>
 
@@ -2085,6 +2108,7 @@ export default function R02Page() {
                 ─ News ─
               </p>
               <h2
+                className={`section-heading-underline${newsRef.visible ? " visible" : ""}`}
                 style={{
                   fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
@@ -2092,7 +2116,7 @@ export default function R02Page() {
                   color: C.text,
                 }}
               >
-                お知らせ
+                {"\u2398 "}お知らせ
               </h2>
             </div>
 
@@ -2191,6 +2215,7 @@ export default function R02Page() {
                 ─ Access ─
               </p>
               <h2
+                className={`section-heading-underline${accessRef.visible ? " visible" : ""}`}
                 style={{
                   fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
@@ -2198,7 +2223,7 @@ export default function R02Page() {
                   color: C.white,
                 }}
               >
-                {access.heading}
+                {"⌖ "}{access.heading}
               </h2>
             </div>
 
@@ -2326,6 +2351,7 @@ export default function R02Page() {
                 ─ Company ─
               </p>
               <h2
+                className={`section-heading-underline${companyRef.visible ? " visible" : ""}`}
                 style={{
                   fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
@@ -2333,7 +2359,7 @@ export default function R02Page() {
                   color: C.text,
                 }}
               >
-                会社概要
+                ⌂ 会社概要
               </h2>
             </div>
 
@@ -2421,6 +2447,7 @@ export default function R02Page() {
                 ─ Entry ─
               </p>
               <h2
+                className={`section-heading-underline${applyRef.visible ? " visible" : ""}`}
                 style={{
                   fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
                   fontWeight: 700,
@@ -2429,7 +2456,7 @@ export default function R02Page() {
                   marginBottom: 12,
                 }}
               >
-                応募フォーム
+                ✎ 応募フォーム
               </h2>
               <p style={{ fontSize: 15, color: C.textSub }}>
                 お気軽にお問い合わせください。担当者より折り返しご連絡いたします。
@@ -2447,10 +2474,10 @@ export default function R02Page() {
             >
               <form onSubmit={(e) => e.preventDefault()}>
                 {[
-                  { label: "お名前", type: "text", name: "name", required: true },
-                  { label: "電話番号", type: "tel", name: "phone", required: true },
-                  { label: "メールアドレス", type: "email", name: "email", required: false },
-                  { label: "年齢", type: "text", name: "age", required: false },
+                  { label: "お名前", type: "text", name: "name", required: true, placeholder: "例）山田 太郎" },
+                  { label: "電話番号", type: "tel", name: "phone", required: true, placeholder: "例）090-1234-5678" },
+                  { label: "メールアドレス", type: "email", name: "email", required: false, placeholder: "例）info@example.co.jp" },
+                  { label: "年齢", type: "text", name: "age", required: false, placeholder: "" },
                 ].map((f, i) => (
                   <div key={i} style={{ marginBottom: 22 }}>
                     <label
@@ -2473,6 +2500,7 @@ export default function R02Page() {
                       type={f.type}
                       name={f.name}
                       required={f.required}
+                      placeholder={f.placeholder}
                       style={{
                         width: "100%",
                         padding: "12px 16px",
@@ -2542,6 +2570,7 @@ export default function R02Page() {
                   <textarea
                     name="message"
                     rows={4}
+                    placeholder="例）応募を検討しています。詳しい話を聞きたいです。"
                     style={{
                       width: "100%",
                       padding: "12px 16px",
@@ -2579,6 +2608,30 @@ export default function R02Page() {
             </div>
           </div>
         </section>
+
+        {/* ── Truck animation ── */}
+        <div style={{ background: C.bg, overflow: "hidden", position: "relative", height: 80 }}>
+          {/* Faint cityscape */}
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, opacity: 0.06, lineHeight: 0 }}>
+            <svg viewBox="0 0 800 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: 60 }}>
+              <path d="M0,58 L60,58 L60,40 L55,40 L55,35 L50,30 L45,35 L45,40 L40,40 L40,58 L80,58 L80,28 L85,28 L85,22 L90,22 L90,28 L100,28 L100,58 L120,58 L125,45 L130,58 L140,58 L140,20 L145,20 L145,15 L150,15 L150,20 L160,20 L160,58 L200,58 L200,30 L210,30 L210,25 L220,25 L220,30 L230,30 L230,58 L250,58 L255,48 L260,52 L265,46 L270,58 L290,58 L290,35 L295,35 L295,12 L300,12 L305,12 L305,35 L310,35 L310,58 L340,58 L340,42 L350,42 L350,38 L355,34 L360,38 L360,42 L370,42 L370,58 L400,58 L400,22 L405,22 L410,18 L415,22 L420,22 L420,58 L440,58 L445,50 L450,45 L455,50 L460,58 L480,58 L480,30 L490,30 L490,58 L510,58 L510,15 L515,15 L515,10 L520,7 L525,10 L525,15 L530,15 L530,58 L560,58 L560,38 L565,38 L570,32 L575,38 L580,38 L580,58 L600,58 L600,45 L610,45 L610,40 L620,40 L620,45 L630,45 L630,58 L650,58 L650,25 L660,20 L670,25 L670,58 L700,58 L700,48 L705,48 L705,42 L710,38 L715,35 L720,38 L720,42 L730,42 L730,48 L735,48 L735,58 L760,58 L760,30 L770,30 L770,58 L800,58" stroke={C.textSub} strokeWidth="1" />
+            </svg>
+          </div>
+          {/* Road line */}
+          <div style={{ position: "absolute", bottom: 12, left: 0, right: 0, height: 2, background: `linear-gradient(to right, transparent, ${C.accent}30, transparent)` }} />
+          {/* Truck SVG */}
+          <div style={{ position: "absolute", bottom: 14, animation: "truckDrive 12s linear infinite" }}>
+            <svg width="64" height="36" viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="4" width="36" height="24" rx="3" fill={C.accent} opacity="0.4" />
+              <rect x="36" y="12" width="22" height="16" rx="2" fill={C.accent} opacity="0.6" />
+              <circle cx="14" cy="30" r="5" fill={C.textSub} opacity="0.4" />
+              <circle cx="14" cy="30" r="2.5" fill={C.bg} />
+              <circle cx="50" cy="30" r="5" fill={C.textSub} opacity="0.4" />
+              <circle cx="50" cy="30" r="2.5" fill={C.bg} />
+              <rect x="40" y="16" width="8" height="6" rx="1" fill={`${C.accent}30`} />
+            </svg>
+          </div>
+        </div>
 
         {/* Wave: bg -> accent */}
         <WaveDivider from={C.bg} to={C.accent} />
@@ -2622,7 +2675,7 @@ export default function R02Page() {
                 lineHeight: 1.5,
               }}
             >
-              {cta.heading}
+              {nl2br(cta.heading)}
             </h2>
             <p
               style={{
