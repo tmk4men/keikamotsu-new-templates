@@ -38,17 +38,17 @@ export const meta = {
 };
 
 export const sectionIcons: Record<string, string> = {
-  services: "◈",
-  strengths: "◆",
-  message: "✦",
-  company: "■",
-  history: "◷",
-  numbers: "▲",
-  partners: "⬡",
-  news: "◉",
-  recruit: "★",
-  access: "◎",
-  contact: "✉",
+  services: "🚛",
+  strengths: "💪",
+  message: "💬",
+  company: "🏢",
+  history: "📅",
+  numbers: "📊",
+  partners: "🤝",
+  news: "📰",
+  recruit: "👤",
+  access: "📍",
+  contact: "✉️",
 };
 
 export const navLinks = [
