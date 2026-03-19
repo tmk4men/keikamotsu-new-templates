@@ -734,7 +734,7 @@ export default function CP05() {
                 }}
               >
                 <img
-                  src={`${IMG}/service-${s.num}.webp`}
+                  src={`${IMG}/service-${["route","ec","b2b","spot"][i]}.webp`}
                   alt={s.title}
                   style={{
                     position: "absolute",
@@ -842,7 +842,7 @@ export default function CP05() {
                     }}
                   >
                     <img
-                      src={`${IMG}/strength-${s.num}.webp`}
+                      src={`${IMG}/strength-0${i+1}.webp`}
                       alt={s.title}
                       style={{
                         position: "absolute",
@@ -922,7 +922,7 @@ export default function CP05() {
               }}
             >
               <img
-                src={`${IMG}/ceo.webp`}
+                src={`${IMG}/ceo-portrait.webp`}
                 alt={ceoMessage.name}
                 style={{
                   width: "100%",
@@ -1108,7 +1108,7 @@ export default function CP05() {
                   }}
                 >
                   <img
-                    src={`${IMG}/history-${String(i + 1).padStart(2, "0")}.webp`}
+                    src={`${IMG}/history-${2021 + i}.webp`}
                     alt={h.year}
                     style={{
                       width: "100%",
@@ -1420,7 +1420,7 @@ export default function CP05() {
                       }}
                     >
                       <img
-                        src={`${IMG}/news-01.webp`}
+                        src={`${IMG}/vehicle.webp`}
                         alt={n.title}
                         style={{
                           width: "100%",
@@ -1498,7 +1498,7 @@ export default function CP05() {
             }}
           >
             <img
-              src={`${IMG}/recruit-bg.webp`}
+              src={`${IMG}/delivery.webp`}
               alt=""
               style={{
                 width: "100%",
@@ -1680,7 +1680,7 @@ export default function CP05() {
                 }}
               >
                 <img
-                  src={`${IMG}/map-placeholder.webp`}
+                  src={`${IMG}/company.webp`}
                   alt="Map"
                   style={{
                     width: "100%",
