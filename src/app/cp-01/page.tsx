@@ -2300,7 +2300,7 @@ export default function CP01Page() {
         <p
           style={{
             fontFamily: "'Noto Sans JP', sans-serif",
-            fontSize: isMobile ? "1.1rem" : "1.3rem",
+            fontSize: isMobile ? "0.85rem" : "1.3rem",
             fontWeight: 700,
             background: `linear-gradient(135deg, ${C.gold}, ${C.goldLight})`,
             WebkitBackgroundClip: "text",
@@ -2308,6 +2308,7 @@ export default function CP01Page() {
             backgroundClip: "text",
             letterSpacing: "0.08em",
             marginBottom: 28,
+            whiteSpace: "nowrap",
           }}
         >
           {footer.catchphrase}

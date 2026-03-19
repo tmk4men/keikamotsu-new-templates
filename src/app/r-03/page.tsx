@@ -1757,7 +1757,7 @@ export default function R03TrustPage() {
         <p style={{
           fontSize: 12, color: "rgba(255,255,255,0.35)",
           fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
-          marginBottom: 12, letterSpacing: 2, minHeight: "1.5em",
+          marginBottom: 12, letterSpacing: 2, minHeight: "1.5em", whiteSpace: "nowrap",
         }}>
           {footerTyped.displayed}
           {!footerTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}

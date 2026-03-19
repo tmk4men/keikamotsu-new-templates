@@ -2819,6 +2819,7 @@ export default function R02Page() {
                 fontSize: 14,
                 lineHeight: 1.8,
                 color: `${C.white}88`,
+                whiteSpace: "nowrap",
               }}
             >
               {footerData.catchphrase}

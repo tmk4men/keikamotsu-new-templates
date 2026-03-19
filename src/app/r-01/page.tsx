@@ -2465,11 +2465,12 @@ export default function R01Page() {
               style={{
                 fontFamily: "'Oswald','Noto Sans JP',sans-serif",
                 fontWeight: 800,
-                fontSize: isMobile ? "16px" : "18px",
+                fontSize: isMobile ? "12px" : "18px",
                 color: "rgba(255,255,255,0.35)",
                 letterSpacing: "0.05em",
                 marginBottom: "28px",
                 lineHeight: 1.5,
+                whiteSpace: "nowrap",
               }}
             >
               {footer.catchphrase}

@@ -1985,10 +1985,11 @@ export default function CP04Page() {
               style={{
                 ...zenKaku,
                 fontWeight: 900,
-                fontSize: isMobile ? 20 : 28,
+                fontSize: isMobile ? 16 : 28,
                 color: LIGHT,
                 margin: "0 0 8px",
                 letterSpacing: "0.06em",
+                whiteSpace: "nowrap",
               }}
             >
               {footer.catchphrase}

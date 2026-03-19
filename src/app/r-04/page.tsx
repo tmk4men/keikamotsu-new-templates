@@ -2149,7 +2149,7 @@ export default function R04Flow() {
         }}>
           <p style={{
             fontFamily: F.heading, fontSize: isMobile ? "12px" : "14px",
-            color: "rgba(255,255,255,0.3)", letterSpacing: "0.04em", lineHeight: 1.9,
+            color: "rgba(255,255,255,0.3)", letterSpacing: "0.04em", lineHeight: 1.9, whiteSpace: "nowrap",
             maxWidth: "480px", margin: "0 auto",
           }}>
             {footer.catchphrase}
