@@ -250,8 +250,8 @@ function GlobalStyles() {
       @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
       @keyframes truckDrive {
-        0% { left: -60px; }
-        100% { left: calc(100% + 60px); }
+        from { transform: translateX(-60px); }
+        to { transform: translateX(calc(100vw + 60px)); }
       }
 
       .cp03-h2-underline {
@@ -1969,7 +1969,7 @@ function PartnersSection({
             <path d="M0,58 L60,58 L60,40 L55,35 L50,30 L45,35 L40,40 L40,58 L100,58 L100,28 L110,28 L110,58 L140,58 L140,20 L150,15 L160,20 L160,58 L200,58 L200,30 L220,25 L230,30 L230,58 L270,58 L290,35 L295,12 L305,12 L310,35 L310,58 L370,58 L370,42 L355,34 L370,42 L370,58 L420,58 L420,22 L410,18 L420,22 L420,58 L480,58 L480,30 L490,30 L490,58 L530,58 L530,15 L520,7 L530,15 L530,58 L580,58 L580,38 L570,32 L580,38 L580,58 L630,58 L630,45 L620,40 L630,45 L630,58 L670,58 L670,25 L660,20 L670,25 L670,58 L735,58 L735,48 L710,38 L735,48 L735,58 L770,58 L770,30 L770,58 L800,58" stroke="currentColor" strokeWidth="1" fill="none" />
           </svg>
           {/* トラック */}
-          <div style={{ position: "absolute", bottom: 2, animation: `truckDrive ${isMobile ? 12 : 20}s linear infinite` }}>
+          <div style={{ position: "absolute", left: 0, bottom: 2, animation: `truckDrive ${isMobile ? 12 : 20}s linear infinite` }}>
             <svg width={isMobile ? 36 : 48} height={isMobile ? 20 : 28} viewBox="0 0 48 28" fill="currentColor" opacity="0.8">
               <rect x="0" y="4" width="28" height="18" rx="2" />
               <rect x="28" y="10" width="16" height="12" rx="1" />

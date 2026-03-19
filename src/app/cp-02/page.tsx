@@ -103,8 +103,8 @@ const KEYFRAMES = `
   to { width: 100%; }
 }
 @keyframes cp02-truckDrive {
-  0% { left: -100px; }
-  100% { left: calc(100% + 100px); }
+  from { transform: translateX(-100px); }
+  to { transform: translateX(calc(100vw + 100px)); }
 }
 `;
 
@@ -1701,7 +1701,7 @@ export default function CP02Page() {
           <polygon points="770,10 782,0 794,10" fill={C.textSub} />
         </svg>
         {/* Truck SVG */}
-        <div style={{ position: "absolute", bottom: isMobile ? 2 : 4, animation: `cp02-truckDrive ${isMobile ? 10 : 15}s linear infinite` }}>
+        <div style={{ position: "absolute", left: 0, bottom: isMobile ? 2 : 4, animation: `cp02-truckDrive ${isMobile ? 10 : 15}s linear infinite` }}>
           <svg viewBox="0 0 80 32" style={{ width: isMobile ? 56 : 80, height: isMobile ? 22 : 32 }}>
             <rect x="0" y="4" width="50" height="24" rx="3" fill={C.accent} />
             <rect x="50" y="10" width="22" height="18" rx="2" fill={C.accentLight} />

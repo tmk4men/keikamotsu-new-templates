@@ -326,7 +326,7 @@ export default function R02Page() {
 
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes underlineReveal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        @keyframes truckDrive { 0%{left:-80px} 100%{left:calc(100% + 80px)} }
+        @keyframes truckDrive { from{transform:translateX(-80px)} to{transform:translateX(calc(100vw + 80px))} }
         .section-heading-underline { position: relative; display: inline-block; }
         .section-heading-underline::after { content:''; position:absolute; bottom:-6px; left:0; width:100%; height:3px; background:${C.accent}; border-radius:2px; transform:scaleX(0); transform-origin:left; }
         .section-heading-underline.visible::after { animation: underlineReveal 0.8s cubic-bezier(.23,1,.32,1) forwards; }

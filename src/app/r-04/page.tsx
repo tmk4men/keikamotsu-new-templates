@@ -489,8 +489,8 @@ export default function R04Flow() {
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
         @keyframes truckDrive {
-          0% { left: -60px; }
-          100% { left: calc(100% + 60px); }
+          from { transform: translateX(-60px); }
+          to { transform: translateX(calc(100vw + 60px)); }
         }
 
         @keyframes underlineReveal {
@@ -2034,7 +2034,7 @@ export default function R04Flow() {
               <svg viewBox="0 0 800 60" fill="none" style={{ position: "absolute", bottom: 0, width: "100%", height: isMobile ? 40 : 60 }}>
                 <path d="M0,58 L60,58 L60,40 L55,35 L50,30 L45,35 L40,40 L40,58 L100,58 L100,28 L110,28 L110,58 L160,58 L160,20 L150,15 L160,20 L160,58 L230,58 L230,30 L220,25 L230,30 L230,58 L310,58 L310,35 L300,12 L310,35 L310,58 L420,58 L420,22 L410,18 L420,22 L420,58 L530,58 L530,15 L520,7 L530,15 L530,58 L630,58 L630,45 L620,40 L630,45 L630,58 L770,58 L770,30 L770,58 L800,58" stroke="currentColor" strokeWidth="1" fill="none" />
               </svg>
-              <div style={{ position: "absolute", bottom: isMobile ? 2 : 4, animation: `truckDrive ${isMobile ? 12 : 20}s linear infinite` }}>
+              <div style={{ position: "absolute", left: 0, bottom: isMobile ? 2 : 4, animation: `truckDrive ${isMobile ? 12 : 20}s linear infinite` }}>
                 <svg width={isMobile ? 30 : 40} height={isMobile ? 18 : 24} viewBox="0 0 48 28" fill="currentColor" opacity="0.7">
                   <rect x="0" y="4" width="28" height="18" rx="2" />
                   <rect x="28" y="10" width="16" height="12" rx="1" />

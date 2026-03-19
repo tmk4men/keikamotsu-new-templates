@@ -321,7 +321,7 @@ export default function R01Page() {
         @keyframes marqueeLeft { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         @keyframes marqueeRight { 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
         @keyframes navUnderline { from{transform:scaleX(0)} to{transform:scaleX(1)} }
-        @keyframes truckDrive { 0%{left:-80px} 100%{left:calc(100% + 80px)} }
+        @keyframes truckDrive { from{transform:translateX(-80px)} to{transform:translateX(calc(100vw + 80px))} }
         .nav-link { position:relative; }
         .nav-link::after { content:''; position:absolute; bottom:-2px; left:0; width:100%; height:1px; background:${TEXT_W}; transform:scaleX(0); transform-origin:left; transition:transform 0.3s ease; }
         .nav-link:hover::after { transform:scaleX(1); }
@@ -2270,7 +2270,7 @@ export default function R01Page() {
         {/* Road line */}
         <div style={{ position: "absolute", bottom: isMobile ? 6 : 12, left: 0, right: 0, height: 2, background: `linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)` }} />
         {/* Truck SVG */}
-        <div style={{ position: "absolute", bottom: isMobile ? 8 : 14, animation: `truckDrive ${isMobile ? 8 : 12}s linear infinite` }}>
+        <div style={{ position: "absolute", left: 0, bottom: isMobile ? 8 : 14, animation: `truckDrive ${isMobile ? 8 : 12}s linear infinite` }}>
           <svg width={isMobile ? 48 : 64} height={isMobile ? 27 : 36} viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="0" y="4" width="36" height="24" rx="3" fill={ACCENT_LIGHT} opacity="0.6" />
             <rect x="36" y="12" width="22" height="16" rx="2" fill={ACCENT} opacity="0.7" />

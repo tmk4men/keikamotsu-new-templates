@@ -107,8 +107,8 @@ const keyframesCSS = `
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
   @keyframes truckDrive {
-    0% { left: -60px; }
-    100% { left: calc(100% + 60px); }
+    from { transform: translateX(-60px); }
+    to { transform: translateX(calc(100vw + 60px)); }
   }
 
   @keyframes underlineReveal {
