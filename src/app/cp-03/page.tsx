@@ -171,13 +171,6 @@ const historyImages: Record<string, string> = {
 function GlobalStyles() {
   return (
     <style>{`
-      @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
 
       @keyframes scrollLine {
         0% { transform: translateY(-100%); }

@@ -450,13 +450,6 @@ export default function R04Flow() {
         body { overflow-x: hidden; }
         a { text-decoration: none; color: inherit; }
 
-        @media (prefers-reduced-motion: reduce) {
-          *, *::before, *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-          }
-        }
 
         @keyframes scrollPulse {
           0%, 100% { opacity: 0.3; transform: scaleY(1); }

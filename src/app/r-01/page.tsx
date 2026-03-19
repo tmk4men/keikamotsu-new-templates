@@ -325,7 +325,6 @@ export default function R01Page() {
         .nav-link { position:relative; }
         .nav-link::after { content:''; position:absolute; bottom:-2px; left:0; width:100%; height:1px; background:${TEXT_W}; transform:scaleX(0); transform-origin:left; transition:transform 0.3s ease; }
         .nav-link:hover::after { transform:scaleX(1); }
-        @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
       `}</style>
 
       {/* ===== HEADER ===== */}

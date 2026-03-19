@@ -37,13 +37,6 @@ const C = {
 
 /* ─────────────── CSS Keyframes ─────────────── */
 const KEYFRAMES = `
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
 
 @keyframes cp02-heroReveal {
   0% { clip-path: inset(0 100% 0 0); }

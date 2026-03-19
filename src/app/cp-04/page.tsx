@@ -356,13 +356,6 @@ export default function CP04Page() {
       width: 100%;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
 
     html { scroll-behavior: smooth; }
     body { margin: 0; padding: 0; }

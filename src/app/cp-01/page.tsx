@@ -47,13 +47,6 @@ const C = {
    CSS Keyframes (injected via style tag)
    ─────────────────────────────────────────── */
 const KEYFRAMES = `
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
 
 @keyframes cp01-float1 {
   0%, 100% { transform: translateY(0) rotate(0deg); }
