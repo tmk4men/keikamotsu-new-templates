@@ -5,7 +5,7 @@ const templates = [
     category: "コーポレートHP",
     items: [
       { id: "cp-01", name: "NOIR", desc: "ダーク×ゴールド。高級感と信頼性を両立", tone: "ダーク系" },
-      { id: "cp-02", name: "SLATE", desc: "白基調×スチールブルー。堅実で清潔感のある企業像", tone: "アクセント系" },
+      { id: "cp-02", name: "DECK", desc: "横スクロールプレゼンデッキ。ブルーアクセントのスライド型", tone: "横スクロール系" },
       { id: "cp-03", name: "MONO", desc: "グレースケール。洗練されたエディトリアルスタイル", tone: "モノトーン系" },
       { id: "cp-04", name: "EDGE", desc: "スプリットレイアウト。斜めカットのモダンデザイン", tone: "モダン系" },
       { id: "cp-05", name: "CLEAN", desc: "ホワイト×ミントグリーン。余白で魅せるミニマルデザイン", tone: "クリーン系" },
@@ -15,7 +15,7 @@ const templates = [
     category: "採用特化HP",
     items: [
       { id: "r-01", name: "BOLD", desc: "黒背景×大型写真。力強さとインパクトで惹きつける", tone: "ダーク系" },
-      { id: "r-02", name: "DRIVE", desc: "明るい差し色×動的レイアウト。若手ドライバー訴求", tone: "アクセント系" },
+      { id: "r-02", name: "FLOAT", desc: "フローティングナビ×フルスクリーン。インディゴの没入型", tone: "フローティング系" },
       { id: "r-03", name: "TRUST", desc: "モノトーン×人物写真。誠実さと安心感を伝える", tone: "モノトーン系" },
       { id: "r-04", name: "FLOW", desc: "横スクロール×マガジン風。読み物として惹き込む", tone: "マガジン系" },
       { id: "r-05", name: "FRESH", desc: "ホワイト×コーラル。明るく親しみやすい採用HP", tone: "クリーン系" },
