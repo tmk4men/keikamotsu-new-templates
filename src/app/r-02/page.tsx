@@ -21,58 +21,91 @@ import {
   meta,
 } from "@/data/siteData";
 
-/* ─── カラー定数（無彩色） ─── */
+/* ─────────────────────────── Colors ─────────────────────────── */
 const C = {
+  bg: "#fafaf8",
+  bgDark: "#18181b",
+  accent: "#6366f1",
+  accentLight: "#eef2ff",
+  text: "#18181b",
+  textSub: "#71717a",
+  muted: "#a1a1aa",
+  border: "#e4e4e7",
   white: "#ffffff",
-  bg: "#f7f8fa",
-  text: "#1a1a2e",
-  textSub: "#555555",
-  accent: "#32373c",
-  accentHover: "#3e444a",
-  accentPale: "#eee",
-  accentPaleBorder: "#ddd",
-  cta: "#32373c",
-  ctaHover: "#3e444a",
-  dark: "#1a1a2e",
-  border: "#e2e5ea",
 };
 
-/* ─── 影 ─── */
-const shadowMain = "0 2px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08)";
-const shadowMainHover = "0 3px 10px rgba(0,0,0,0.07), 0 10px 28px rgba(0,0,0,0.1)";
-const shadowSub = "0 1px 3px rgba(0,0,0,0.04)";
-const shadowSubHover = "0 1px 5px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.06)";
-
-/* ─── 画像パス ─── */
+/* ─────────────────────────── Image Paths ─────────────────────────── */
 const IMG = {
+  hero: "/keikamotsu-new-templates/images/hero-bg.webp",
   strength: (n: number) => `/keikamotsu-new-templates/images/strength-0${n}.webp`,
-  workplace: "/keikamotsu-new-templates/images/workplace.webp",
-  delivery: "/keikamotsu-new-templates/images/delivery.webp",
-  heroBg: "/keikamotsu-new-templates/images/hero-bg.webp",
-  reasons: "/keikamotsu-new-templates/images/reasons.webp",
   jobs: "/keikamotsu-new-templates/images/jobs.webp",
   benefits: "/keikamotsu-new-templates/images/benefits.webp",
   dailyFlow: "/keikamotsu-new-templates/images/daily-flow.webp",
-  voices: "/keikamotsu-new-templates/images/voices.webp",
-  faq: "/keikamotsu-new-templates/images/faq.webp",
+  vehicle: "/keikamotsu-new-templates/images/vehicle.webp",
+  delivery: "/keikamotsu-new-templates/images/delivery.webp",
   company: "/keikamotsu-new-templates/images/company.webp",
   footerBg: "/keikamotsu-new-templates/images/footer-bg.webp",
 };
 
-/* ─── IntersectionObserver フック ─── */
-function useInView(threshold = 0.12) {
+/* ─────────────────────────── Keyframes (injected once) ─────────────────────────── */
+const KEYFRAMES = `
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes marqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes truckDrive {
+  0%   { transform: translateX(-80px); }
+  100% { transform: translateX(calc(100vw + 60px)); }
+}
+@keyframes underlineGrow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes typeCursor {
+  0%, 100% { border-right-color: ${C.accent}; }
+  50%      { border-right-color: transparent; }
+}
+@keyframes pulseRing {
+  0%   { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+@keyframes radialIn {
+  from { opacity: 0; transform: scale(0.85) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes chevronBounce {
+  0%, 100% { transform: rotate(0deg); }
+  50%      { transform: rotate(180deg); }
+}
+`;
+
+/* ─────────────────────────── Hooks ─────────────────────────── */
+
+/* FadeIn observer */
+function useFadeIn(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setVisible(true);
-          obs.unobserve(el);
-        }
-      },
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
       { threshold }
     );
     obs.observe(el);
@@ -81,2843 +114,1987 @@ function useInView(threshold = 0.12) {
   return { ref, visible };
 }
 
-/* ─── カウントアップフック ─── */
-function useCountUp(target: number, visible: boolean, duration = 1200) {
-  const [count, setCount] = useState(0);
+/* Typewriter */
+function useTypewriter(texts: string[], speed = 60, pause = 1800) {
+  const [display, setDisplay] = useState("");
+  const [done, setDone] = useState(false);
   useEffect(() => {
-    if (!visible) return;
-    let start = 0;
-    const startTime = performance.now();
-    const step = (now: number) => {
-      const progress = Math.min((now - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.round(eased * target));
-      if (progress < 1) requestAnimationFrame(step);
+    let idx = 0;
+    let charIdx = 0;
+    let timeout: ReturnType<typeof setTimeout>;
+    const full = texts.join("");
+    const tick = () => {
+      if (charIdx <= full.length) {
+        setDisplay(full.slice(0, charIdx));
+        charIdx++;
+        timeout = setTimeout(tick, speed);
+      } else {
+        setDone(true);
+      }
     };
-    requestAnimationFrame(step);
-  }, [visible, target, duration]);
-  return count;
+    tick();
+    return () => clearTimeout(timeout);
+  }, []);
+  return { display, done };
 }
 
-/* ─── アニメーション スタイル ─── */
-function slideUp(visible: boolean, delay = 0): React.CSSProperties {
-  return {
-    opacity: visible ? 1 : 0,
-    transform: visible ? "translateY(0)" : "translateY(24px)",
-    transition: `opacity 0.7s cubic-bezier(.23,1,.32,1) ${delay}s, transform 0.7s cubic-bezier(.23,1,.32,1) ${delay}s`,
-  };
+/* isMobile */
+function useIsMobile(bp = 768) {
+  const [m, setM] = useState(false);
+  useEffect(() => {
+    const check = () => setM(window.innerWidth < bp);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [bp]);
+  return m;
 }
 
-function slideLeft(visible: boolean, delay = 0): React.CSSProperties {
-  return {
-    opacity: visible ? 1 : 0,
-    transform: visible ? "translateX(0)" : "translateX(-20px)",
-    transition: `opacity 0.65s ease ${delay}s, transform 0.65s ease ${delay}s`,
-  };
+/* CounterNum */
+function CounterNum({ end, suffix = "", prefix = "", duration = 1600 }: { end: number; suffix?: string; prefix?: string; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [val, setVal] = useState(0);
+  const [started, setStarted] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setStarted(true); obs.disconnect(); } }, { threshold: 0.3 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!started) return;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      setVal(Math.round(ease * end));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [started, end, duration]);
+  return <span ref={ref}>{prefix}{val}{suffix}</span>;
 }
 
-function slideRight(visible: boolean, delay = 0): React.CSSProperties {
-  return {
-    opacity: visible ? 1 : 0,
-    transform: visible ? "translateX(0)" : "translateX(20px)",
-    transition: `opacity 0.65s ease ${delay}s, transform 0.65s ease ${delay}s`,
-  };
-}
-
-function bounceIn(visible: boolean, delay = 0): React.CSSProperties {
-  return {
-    opacity: visible ? 1 : 0,
-    transform: visible ? "scale(1)" : "scale(0.85)",
-    transition: `opacity 0.5s ease ${delay}s, transform 0.6s cubic-bezier(.34,1.56,.64,1) ${delay}s`,
-  };
-}
-
-function scaleIn(visible: boolean, delay = 0): React.CSSProperties {
-  return {
-    opacity: visible ? 1 : 0,
-    transform: visible ? "scale(1) translateY(0)" : "scale(0.92) translateY(16px)",
-    transition: `opacity 0.6s ease ${delay}s, transform 0.7s cubic-bezier(.34,1.3,.64,1) ${delay}s`,
-  };
-}
-
-/* ─── Wave Divider コンポーネント ─── */
-function WaveDivider({ from, to, flip }: { from: string; to: string; flip?: boolean }) {
+/* SalaryCountUp */
+function SalaryCountUp() {
   return (
-    <div style={{ position: "relative", height: 60, marginTop: -1, marginBottom: -1, overflow: "hidden", background: to, transform: flip ? "scaleY(-1)" : undefined }}>
-      <svg viewBox="0 0 1440 60" preserveAspectRatio="none" style={{ position: "absolute", bottom: 0, width: "100%", height: "100%" }}>
-        <defs>
-          <linearGradient id={`wg-${from.replace('#','')}`} x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor={from} stopOpacity="1" />
-            <stop offset="50%" stopColor={from} stopOpacity="0.85" />
-            <stop offset="100%" stopColor={from} stopOpacity="1" />
-          </linearGradient>
-        </defs>
-        <path d="M0,0 C360,48 720,12 1080,36 C1260,48 1380,24 1440,0 L1440,60 L0,60 Z" fill={`url(#wg-${from.replace('#','')})`} />
+    <span style={{ display: "inline-flex", gap: 4, alignItems: "baseline", fontWeight: 800, fontSize: "clamp(1.6rem,4vw,2.4rem)", color: C.accent }}>
+      <CounterNum end={hero.salaryMin} prefix="" suffix="" />
+      <span style={{ fontSize: "0.6em", color: C.textSub }}>万</span>
+      <span style={{ color: C.muted, margin: "0 2px" }}>~</span>
+      <CounterNum end={hero.salaryMax} prefix="" suffix="" />
+      <span style={{ fontSize: "0.6em", color: C.textSub }}>万円</span>
+    </span>
+  );
+}
+
+/* ─────────────────────────── Inline SVG Icons ─────────────────────────── */
+const MenuIcon = (
+  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+    <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
+  </svg>
+);
+const CloseIcon = (
+  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+    <line x1="6" y1="6" x2="18" y2="18" /><line x1="18" y1="6" x2="6" y2="18" />
+  </svg>
+);
+const ChevronDown = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+);
+const ArrowRight = (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+    <line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" />
+  </svg>
+);
+const PhoneIcon = (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+  </svg>
+);
+const StarIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </svg>
+);
+const TruckIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
+  </svg>
+);
+const ClockIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+const BriefcaseIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
+  </svg>
+);
+const GiftIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <polyline points="20 12 20 22 4 22 4 12" /><rect x="2" y="7" width="20" height="5" /><line x1="12" y1="22" x2="12" y2="7" /><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z" /><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z" />
+  </svg>
+);
+const CameraIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" />
+  </svg>
+);
+const UsersIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" />
+  </svg>
+);
+const HelpCircleIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
+  </svg>
+);
+const BellIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 01-3.46 0" />
+  </svg>
+);
+const BuildingIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <rect x="4" y="2" width="16" height="20" rx="1" /><line x1="9" y1="6" x2="9" y2="6.01" /><line x1="15" y1="6" x2="15" y2="6.01" /><line x1="9" y1="10" x2="9" y2="10.01" /><line x1="15" y1="10" x2="15" y2="10.01" /><line x1="9" y1="14" x2="9" y2="14.01" /><line x1="15" y1="14" x2="15" y2="14.01" /><line x1="9" y1="18" x2="15" y2="18" />
+  </svg>
+);
+const MailIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
+  </svg>
+);
+const SendIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
+  </svg>
+);
+const MapPinIcon = (
+  <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
+  </svg>
+);
+
+/* ─────────────────────────── Stats Data ─────────────────────────── */
+const STATS = [
+  { label: "月収", value: 100, suffix: "万円~", prefix: "" },
+  { label: "直接契約率", value: 90, suffix: "%", prefix: "" },
+  { label: "活躍年齢層", value: 60, suffix: "代まで", prefix: "20~" },
+  { label: "入社祝い金", value: 5, suffix: "万円", prefix: "" },
+];
+
+/* ─────────────────────────── Benefit Icons Map ─────────────────────────── */
+const benefitIcons = [
+  /* 0: car icon */
+  <svg key="b0" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M5 17h2m10 0h2M3 11l2-6h14l2 6M3 11v6h18v-6M3 11h18" />
+    <circle cx="7.5" cy="17" r="1.5" />
+    <circle cx="16.5" cy="17" r="1.5" />
+  </svg>,
+  /* 1: gift */
+  <svg key="b1" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <polyline points="20 12 20 22 4 22 4 12" />
+    <rect x="2" y="7" width="20" height="5" />
+    <line x1="12" y1="22" x2="12" y2="7" />
+    <path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z" />
+    <path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z" />
+  </svg>,
+  /* 2: wallet */
+  <svg key="b2" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <rect x="2" y="4" width="20" height="16" rx="2" />
+    <path d="M2 10h20" />
+    <circle cx="17" cy="14" r="1" />
+  </svg>,
+  /* 3: home */
+  <svg key="b3" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+    <polyline points="9 22 9 12 15 12 15 22" />
+  </svg>,
+  /* 4: book */
+  <svg key="b4" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" />
+    <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" />
+  </svg>,
+  /* 5: smartphone */
+  <svg key="b5" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+    <line x1="12" y1="18" x2="12.01" y2="18" />
+  </svg>,
+];
+
+/* ─────────────────────────── Decorative Pattern SVG ─────────────────────────── */
+function DecorativeDots({ color = "rgba(99,102,241,0.07)", size = 400 }: { color?: string; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ position: "absolute", pointerEvents: "none" }} fill={color}>
+      {Array.from({ length: 12 }).map((_, row) =>
+        Array.from({ length: 12 }).map((_, col) => (
+          <circle
+            key={`${row}-${col}`}
+            cx={col * (size / 12) + size / 24}
+            cy={row * (size / 12) + size / 24}
+            r={2}
+          />
+        ))
+      )}
+    </svg>
+  );
+}
+
+/* ─────────────────────────── Scroll to Top Button ─────────────────────────── */
+function ScrollToTop({ visible }: { visible: boolean }) {
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      aria-label="ページトップへ"
+      style={{
+        position: "fixed",
+        bottom: 90,
+        right: 24,
+        zIndex: 9998,
+        width: 40,
+        height: 40,
+        borderRadius: "50%",
+        background: C.white,
+        color: C.accent,
+        border: `1px solid ${C.border}`,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(16px)",
+        transition: "opacity 0.3s, transform 0.3s",
+        pointerEvents: visible ? "auto" : "none",
+      }}
+    >
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+        <polyline points="18 15 12 9 6 15" />
       </svg>
+    </button>
+  );
+}
+
+/* ─────────────────────────── Sub-Components ─────────────────────────── */
+
+/* FadeIn wrapper */
+function FadeIn({ children, delay = 0, style }: { children: React.ReactNode; delay?: number; style?: React.CSSProperties }) {
+  const { ref, visible } = useFadeIn();
+  return (
+    <div
+      ref={ref}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(32px)",
+        transition: `opacity 0.7s ${delay}s cubic-bezier(.22,1,.36,1), transform 0.7s ${delay}s cubic-bezier(.22,1,.36,1)`,
+        ...style,
+      }}
+    >
+      {children}
     </div>
   );
 }
 
-/* ─── BenefitアイコンSVG ─── */
-const benefitIcons = [
-  /* 車 */
-  <svg key="b0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><path d="M5 17h14M5 17a2 2 0 01-2-2V9a2 2 0 012-2h1l2-3h8l2 3h1a2 2 0 012 2v6a2 2 0 01-2 2M5 17a2 2 0 100 4 2 2 0 000-4zm14 0a2 2 0 100 4 2 2 0 000-4z" /></svg>,
-  /* お金 */
-  <svg key="b1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><circle cx="12" cy="12" r="10" /><path d="M8 12h8M12 8v8" /></svg>,
-  /* ウォレット */
-  <svg key="b2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><rect x="2" y="6" width="20" height="14" rx="2" /><path d="M2 10h20M16 14h2" /></svg>,
-  /* 時計 */
-  <svg key="b3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>,
-  /* 学帽 */
-  <svg key="b4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><path d="M22 10l-10-5L2 10l10 5 10-5zM6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5" /></svg>,
-  /* スマホ */
-  <svg key="b5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><rect x="5" y="2" width="14" height="20" rx="2" /><path d="M12 18h.01" /></svg>,
-];
-
-/** テキスト内の \n を <br/> に変換 */
-const nl2br = (text: string) =>
-  text.split("\n").map((line, i, arr) => (
-    <React.Fragment key={i}>
-      {line}
-      {i < arr.length - 1 && <br />}
-    </React.Fragment>
-  ));
-
-/* ───────────────────────────────────────
-   メインコンポーネント
-   ─────────────────────────────────────── */
-function useTypewriter(text: string, speed = 80, delay = 500) {
-  const [displayed, setDisplayed] = useState("");
-  const [done, setDone] = useState(false);
-  useEffect(() => {
-    setDisplayed("");
-    setDone(false);
-    const timeout = setTimeout(() => {
-      let i = 0;
-      const iv = setInterval(() => {
-        i++;
-        setDisplayed(text.slice(0, i));
-        if (i >= text.length) {
-          clearInterval(iv);
-          setDone(true);
-        }
-      }, speed);
-      return () => clearInterval(iv);
-    }, delay);
-    return () => clearTimeout(timeout);
-  }, [text, speed, delay]);
-  return { displayed, done };
+/* Section heading with underline animation */
+function SectionHeading({ icon, title, sub, light }: { icon: React.ReactNode; title: string; sub: string; light?: boolean }) {
+  const { ref, visible } = useFadeIn();
+  return (
+    <div ref={ref} style={{ textAlign: "center", marginBottom: 56 }}>
+      <div style={{ display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 8, color: C.accent }}>
+        {icon}
+        <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 2, textTransform: "uppercase" }}>{sub}</span>
+      </div>
+      <h2 style={{
+        fontSize: "clamp(1.6rem,4vw,2.2rem)", fontWeight: 800, color: light ? C.white : C.text,
+        lineHeight: 1.4, margin: "0 0 12px",
+      }}>
+        {title}
+      </h2>
+      <div style={{
+        width: 48, height: 3, background: C.accent, borderRadius: 2, margin: "0 auto",
+        transform: visible ? "scaleX(1)" : "scaleX(0)",
+        transformOrigin: "center",
+        transition: "transform 0.6s 0.3s cubic-bezier(.22,1,.36,1)",
+      }} />
+    </div>
+  );
 }
 
-export default function R02Page() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [heroLoaded, setHeroLoaded] = useState(false);
-  const [timelineProgress, setTimelineProgress] = useState(0);
-  const heroTyped = useTypewriter(hero.headlineParts[0], 80, 500);
+/* Cityscape SVG */
+function CityscapeSVG() {
+  return (
+    <svg viewBox="0 0 1440 120" style={{ display: "block", width: "100%", height: 80 }} preserveAspectRatio="none" fill="none">
+      <rect x="60" y="40" width="40" height="80" fill="rgba(255,255,255,0.06)" />
+      <rect x="110" y="55" width="30" height="65" fill="rgba(255,255,255,0.04)" />
+      <rect x="160" y="20" width="50" height="100" fill="rgba(255,255,255,0.07)" />
+      <rect x="230" y="50" width="35" height="70" fill="rgba(255,255,255,0.05)" />
+      <rect x="290" y="30" width="45" height="90" fill="rgba(255,255,255,0.06)" />
+      <rect x="360" y="60" width="30" height="60" fill="rgba(255,255,255,0.04)" />
+      <rect x="420" y="15" width="55" height="105" fill="rgba(255,255,255,0.08)" />
+      <rect x="500" y="45" width="35" height="75" fill="rgba(255,255,255,0.05)" />
+      <rect x="560" y="25" width="40" height="95" fill="rgba(255,255,255,0.06)" />
+      <rect x="630" y="55" width="30" height="65" fill="rgba(255,255,255,0.04)" />
+      <rect x="690" y="10" width="60" height="110" fill="rgba(255,255,255,0.07)" />
+      <rect x="780" y="40" width="40" height="80" fill="rgba(255,255,255,0.05)" />
+      <rect x="850" y="30" width="50" height="90" fill="rgba(255,255,255,0.06)" />
+      <rect x="930" y="50" width="35" height="70" fill="rgba(255,255,255,0.04)" />
+      <rect x="1000" y="20" width="45" height="100" fill="rgba(255,255,255,0.07)" />
+      <rect x="1080" y="55" width="30" height="65" fill="rgba(255,255,255,0.05)" />
+      <rect x="1140" y="35" width="50" height="85" fill="rgba(255,255,255,0.06)" />
+      <rect x="1220" y="45" width="40" height="75" fill="rgba(255,255,255,0.04)" />
+      <rect x="1300" y="15" width="55" height="105" fill="rgba(255,255,255,0.08)" />
+      <rect x="1380" y="50" width="30" height="70" fill="rgba(255,255,255,0.05)" />
+      {/* windows */}
+      {[70,170,300,430,570,700,860,1010,1150,1310].map((x,i) => (
+        <React.Fragment key={i}>
+          <rect x={x} y={i%2===0?35:50} width="6" height="6" fill="rgba(255,255,200,0.15)" />
+          <rect x={x+12} y={i%2===0?35:50} width="6" height="6" fill="rgba(255,255,200,0.1)" />
+          <rect x={x} y={i%2===0?48:63} width="6" height="6" fill="rgba(255,255,200,0.08)" />
+        </React.Fragment>
+      ))}
+    </svg>
+  );
+}
 
+/* Truck animation SVG */
+function TruckAnimation() {
+  return (
+    <div style={{ position: "relative", height: 50, overflow: "hidden", marginTop: 24 }}>
+      {/* road line */}
+      <div style={{ position: "absolute", bottom: 10, left: 0, right: 0, height: 2, background: C.border }} />
+      <div style={{
+        position: "absolute", bottom: 12,
+        animation: "truckDrive 8s linear infinite",
+      }}>
+        <svg width="60" height="36" fill="none" stroke={C.accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 60 36">
+          <rect x="2" y="6" width="32" height="22" rx="2" />
+          <polygon points="34,14 46,14 52,20 52,28 34,28" />
+          <circle cx="14" cy="30" r="4" fill={C.accentLight} />
+          <circle cx="44" cy="30" r="4" fill={C.accentLight} />
+          <line x1="6" y1="14" x2="28" y2="14" strokeWidth="1" opacity="0.4" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════ MAIN PAGE ═══════════════════════════ */
+export default function R02Page() {
+  const isMobile = useIsMobile();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [faqOpen, setFaqOpen] = useState<number | null>(null);
+  const { display: heroText, done: heroDone } = useTypewriter(hero.headlineParts, 55, 2000);
+
+  /* scroll progress */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => {
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(h > 0 ? window.scrollY / h : 0);
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  /* close menu on scroll */
   useEffect(() => {
-    const t = setTimeout(() => setHeroLoaded(true), 100);
-    return () => clearTimeout(t);
-  }, []);
+    if (!menuOpen) return;
+    const close = () => setMenuOpen(false);
+    window.addEventListener("scroll", close, { passive: true });
+    return () => window.removeEventListener("scroll", close);
+  }, [menuOpen]);
 
-  /* IntersectionObserver refs */
-  const heroRef = useInView(0.1);
-  const marqueeRef = useInView(0.1);
-  const reasonsRef = useInView(0.1);
-  const jobsRef = useInView(0.1);
-  const benefitsRef = useInView(0.1);
-  const dailyRef = useInView(0.08);
-  const galleryRef = useInView(0.1);
-  const voicesRef = useInView(0.1);
-  const faqRef = useInView(0.1);
-  const newsRef = useInView(0.1);
-  const accessRef = useInView(0.1);
-  const companyRef = useInView(0.1);
-  const applyRef = useInView(0.1);
-  const ctaRef = useInView(0.1);
+  /* form state */
+  const [form, setForm] = useState({ name: "", kana: "", phone: "", email: "", age: "", area: "", message: "" });
+  const updateForm = (k: string, v: string) => setForm(prev => ({ ...prev, [k]: v }));
 
-  /* counter for salary */
-  const salaryMinCount = useCountUp(Number(hero.salaryMin) || 30, heroRef.visible, 1400);
-  const salaryMaxCount = useCountUp(Number(hero.salaryMax) || 50, heroRef.visible, 1600);
+  const sectionNavItems = [
+    { href: "#hero", label: "TOP" },
+    { href: "#reasons", label: "選ばれる理由" },
+    { href: "#jobs", label: "求人情報" },
+    { href: "#benefits", label: "待遇" },
+    { href: "#daily", label: "1日の流れ" },
+    { href: "#gallery", label: "雰囲気" },
+    { href: "#voices", label: "先輩の声" },
+    { href: "#faq", label: "FAQ" },
+    { href: "#news", label: "お知らせ" },
+    { href: "#company", label: "会社概要" },
+    { href: "#apply", label: "応募" },
+  ];
 
-  /* Timeline animation */
-  useEffect(() => {
-    if (!dailyRef.visible) return;
-    let start: number;
-    const animate = (ts: number) => {
-      if (!start) start = ts;
-      const progress = Math.min((ts - start) / 2000, 1);
-      setTimelineProgress(progress);
-      if (progress < 1) requestAnimationFrame(animate);
-    };
-    requestAnimationFrame(animate);
-  }, [dailyRef.visible]);
-
+  /* ─────── render ─────── */
   return (
     <>
-      {/* ─── Google Fonts + Animations ─── */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Noto Sans JP', sans-serif; color: ${C.text}; background: ${C.white}; -webkit-font-smoothing: antialiased; }
-        a { color: inherit; text-decoration: none; }
+      {/* injected keyframes */}
+      <style dangerouslySetInnerHTML={{ __html: KEYFRAMES }} />
 
-        @keyframes marqueeScroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes heroPulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.04); }
-        }
-        @keyframes floatGeo1 {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          25% { transform: translate(12px, -18px) rotate(45deg); }
-          50% { transform: translate(-8px, -30px) rotate(90deg); }
-          75% { transform: translate(16px, -12px) rotate(135deg); }
-        }
-        @keyframes floatGeo2 {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          33% { transform: translate(-20px, 15px) rotate(-30deg); }
-          66% { transform: translate(10px, -20px) rotate(30deg); }
-        }
-        @keyframes floatGeo3 {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(15px, -25px) scale(1.15); }
-        }
-        @keyframes scrollBounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(8px); }
-        }
-        @keyframes shineSweep {
-          0% { left: -80%; }
-          100% { left: 180%; }
-        }
-        @keyframes pulseGlow {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(50,55,60,0.3); }
-          50% { box-shadow: 0 0 0 12px rgba(50,55,60,0); }
-        }
-        @keyframes iconBounce {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          25% { transform: translateY(-3px) rotate(-2deg); }
-          75% { transform: translateY(-3px) rotate(2deg); }
-        }
-        @keyframes badgeStagger {
-          from { opacity: 0; transform: translateY(10px) scale(0.9); }
-          to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes navUnderline {
-          from { transform: scaleX(0); }
-          to { transform: scaleX(1); }
-        }
+      {/* scroll-snap container */}
+      <div style={{
+        scrollSnapType: "y proximity",
+        overflowY: "auto",
+        background: C.bg,
+        color: C.text,
+        fontFamily: "'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif",
+        lineHeight: 1.8,
+      }}>
 
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-        @keyframes underlineReveal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        @keyframes truckDrive { from{transform:translateX(-80px)} to{transform:translateX(calc(100vw + 80px))} }
-        .section-heading-underline { position: relative; display: inline-block; }
-        .section-heading-underline::after { content:''; position:absolute; bottom:-6px; left:0; width:100%; height:3px; background:${C.accent}; border-radius:2px; transform:scaleX(0); transform-origin:left; }
-        .section-heading-underline.visible::after { animation: underlineReveal 0.8s cubic-bezier(.23,1,.32,1) forwards; }
-
-        details > summary { list-style: none; }
-        details > summary::-webkit-details-marker { display: none; }
-
-        input:focus, textarea:focus, select:focus {
-          outline: none;
-          border-color: ${C.accent} !important;
-          box-shadow: 0 0 0 3px ${C.accent}20;
-          transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .nav-link-drive {
-          position: relative;
-        }
-        .nav-link-drive::after {
-          content: '';
-          position: absolute;
-          bottom: -4px;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: ${C.accent};
-          border-radius: 1px;
-          transform: scaleX(0);
-          transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
-          transform-origin: center;
-        }
-        .nav-link-drive:hover::after {
-          transform: scaleX(1);
-        }
-
-        .btn-drive {
-          position: relative;
-          overflow: hidden;
-          transition: transform 0.25s cubic-bezier(.34,1.3,.64,1), box-shadow 0.25s ease, background 0.2s;
-        }
-        .btn-drive:hover {
-          transform: scale(1.04) translateY(-1px);
-          box-shadow: 0 6px 20px rgba(50,55,60,0.22);
-        }
-        .btn-drive::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -80%;
-          width: 60%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-          transform: skewX(-20deg);
-        }
-        .btn-drive:hover::after {
-          animation: shineSweep 0.6s ease forwards;
-        }
-
-        .card-drive {
-          transition: transform 0.3s cubic-bezier(.34,1.3,.64,1), box-shadow 0.3s ease, border-color 0.3s ease;
-        }
-        .card-drive:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 28px rgba(0,0,0,0.1);
-          border-color: ${C.accent} !important;
-        }
-
-        .cta-pulse {
-          animation: pulseGlow 2s ease-in-out infinite;
-        }
-
-        .icon-bounce:hover svg {
-          animation: iconBounce 0.5s ease;
-        }
-
-        .r02-truck-container { height: 80px; }
-        .r02-truck-cityscape { height: 60px; }
-        .r02-truck-road { bottom: 12px; }
-        .r02-truck-vehicle { bottom: 14px; animation: truckDrive 12s linear infinite; }
-        .r02-truck-svg { width: 64px; height: 36px; }
-
-        @media (max-width: 768px) {
-          .r02-truck-container { height: 50px; }
-          .r02-truck-cityscape { height: 40px; }
-          .r02-truck-road { bottom: 6px; }
-          .r02-truck-vehicle { bottom: 8px; animation: truckDrive 8s linear infinite; }
-          .r02-truck-svg { width: 48px; height: 27px; }
-        }
-
-      `}</style>
-
-      {/* ═══════════════════════════════════
-          1. HEADER
-          ═══════════════════════════════════ */}
-      <header
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-          background: scrolled ? `${C.white}f0` : C.white,
-          backdropFilter: scrolled ? "blur(12px)" : undefined,
-          WebkitBackdropFilter: scrolled ? "blur(12px)" : undefined,
-          borderBottom: scrolled ? `1px solid ${C.border}` : "1px solid transparent",
-          transition: "border-color 0.3s, background 0.3s",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 1200,
-            margin: "0 auto",
-            padding: "0 24px",
-            height: 68,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          {/* ロゴ */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: "0.5rem",
-                background: C.accent,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: C.white,
-                fontFamily: "'DM Sans', sans-serif",
-                fontWeight: 700,
-                fontSize: 16,
-              }}
-            >
-              GL
-            </div>
-            <div>
-              <div
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: 15,
-                  color: C.text,
-                  lineHeight: 1.2,
-                }}
-              >
-                {company.nameEn}
-              </div>
-              <div style={{ fontSize: 10, color: C.textSub, lineHeight: 1.2 }}>
-                採用情報
-              </div>
-            </div>
-          </div>
-
-          {/* デスクトップナビ */}
-          <nav
-            style={{
-              display: "flex",
-              gap: 24,
-              alignItems: "center",
-            }}
-            className="desktop-nav"
-          >
-            <style>{`
-              @media (max-width: 768px) {
-                .desktop-nav { display: none !important; }
-              }
-            `}</style>
-            {navLinks.slice(0, 6).map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className="nav-link-drive"
-                style={{
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: C.textSub,
-                  transition: "color 0.2s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = C.text)}
-                onMouseLeave={(e) => (e.currentTarget.style.color = C.textSub)}
-              >
-                {l.label}
-              </a>
-            ))}
-            <a
-              href="#apply"
-              className="btn-drive"
-              style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: C.white,
-                background: C.accent,
-                padding: "8px 20px",
-                borderRadius: 50,
-              }}
-            >
-              応募する
-            </a>
-          </nav>
-
-          {/* ハンバーガー */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="メニュー"
-            className="hamburger-btn"
-            style={{
-              display: "none",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: 8,
-            }}
-          >
-            <style>{`
-              @media (max-width: 768px) {
-                .hamburger-btn { display: flex !important; flex-direction: column; gap: 5px; }
-              }
-            `}</style>
-            {[0, 1, 2].map((i) => (
-              <span
-                key={i}
-                style={{
-                  display: "block",
-                  width: 22,
-                  height: 2,
-                  background: C.text,
-                  borderRadius: 2,
-                  transition: "transform 0.3s, opacity 0.3s",
-                  ...(menuOpen && i === 0
-                    ? { transform: "translateY(7px) rotate(45deg)" }
-                    : {}),
-                  ...(menuOpen && i === 1 ? { opacity: 0 } : {}),
-                  ...(menuOpen && i === 2
-                    ? { transform: "translateY(-7px) rotate(-45deg)" }
-                    : {}),
-                }}
-              />
-            ))}
-          </button>
+        {/* ───── PROGRESS BAR (left edge) ───── */}
+        <div style={{
+          position: "fixed", top: 0, left: 0, zIndex: 9998,
+          width: 4, height: "100vh",
+          background: C.border,
+        }}>
+          <div style={{
+            width: "100%",
+            height: `${scrollProgress * 100}%`,
+            background: `linear-gradient(to bottom, ${C.accent}, #a78bfa)`,
+            borderRadius: "0 0 2px 2px",
+            transition: "height 0.1s linear",
+          }} />
         </div>
 
-        {/* モバイルメニュー */}
-        {menuOpen && (
-          <div
-            style={{
-              background: C.white,
-              borderTop: `1px solid ${C.border}`,
-              padding: "20px 24px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 16,
-            }}
-          >
-            {navLinks.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                onClick={() => setMenuOpen(false)}
-                style={{ fontSize: 15, fontWeight: 500, color: C.text }}
-              >
-                {l.label}
-              </a>
-            ))}
-            <a
-              href="#apply"
-              onClick={() => setMenuOpen(false)}
-              style={{
-                fontSize: 15,
-                fontWeight: 700,
-                color: C.white,
-                background: C.accent,
-                padding: "12px 0",
-                borderRadius: 50,
-                textAlign: "center",
-              }}
-            >
-              応募する
-            </a>
-          </div>
-        )}
-      </header>
-
-      <main>
-        {/* ═══════════════════════════════════
-            2. HERO
-            ═══════════════════════════════════ */}
-        <section
-          ref={heroRef.ref}
+        {/* ───── FLOATING NAV BUTTON ───── */}
+        <button
+          onClick={() => setMenuOpen(p => !p)}
+          aria-label="ナビゲーション"
           style={{
-            position: "relative",
-            minHeight: "100vh",
-            display: "flex",
-            alignItems: "center",
-            overflow: "hidden",
-            paddingTop: 68,
+            position: "fixed", bottom: 24, right: 24, zIndex: 9999,
+            width: 56, height: 56, borderRadius: "50%",
+            background: C.accent, color: C.white, border: "none",
+            cursor: "pointer", boxShadow: "0 4px 20px rgba(99,102,241,0.4)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            transition: "transform 0.25s",
+            transform: menuOpen ? "rotate(90deg)" : "rotate(0deg)",
           }}
         >
-          {/* 背景動画 */}
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster={IMG.heroBg}
-            style={{
-              position: "absolute",
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-            }}
-          >
-            <source src="/keikamotsu-new-templates/videos/hero-bright.mp4" type="video/mp4" />
-          </video>
-          {/* 明るいオーバーレイ */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: "linear-gradient(135deg, rgba(255,255,255,0.88) 0%, rgba(245,245,245,0.85) 100%)",
-            }}
-          />
+          {menuOpen ? CloseIcon : MenuIcon}
+        </button>
 
-          {/* Floating geometric elements */}
+        {/* pulse ring behind button */}
+        {!menuOpen && (
           <div style={{
-            position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1, overflow: "hidden",
-          }}>
-            {/* Circle */}
+            position: "fixed", bottom: 24, right: 24, zIndex: 9997,
+            width: 56, height: 56, borderRadius: "50%",
+            border: `2px solid ${C.accent}`,
+            animation: "pulseRing 2s ease-out infinite",
+            pointerEvents: "none",
+          }} />
+        )}
+
+        {/* scroll to top */}
+        <ScrollToTop visible={scrollProgress > 0.15} />
+
+        {/* ───── NAV OVERLAY ───── */}
+        {menuOpen && (
+          <>
+            {/* backdrop */}
+            <div
+              onClick={() => setMenuOpen(false)}
+              style={{
+                position: "fixed", inset: 0, zIndex: 9990,
+                background: "rgba(0,0,0,0.4)",
+                backdropFilter: "blur(4px)",
+                animation: "fadeIn 0.25s ease",
+              }}
+            />
+            {/* card */}
             <div style={{
-              position: "absolute", top: "15%", right: "12%",
-              width: 80, height: 80, borderRadius: "50%",
-              border: `3px solid ${C.accent}15`,
-              animation: "floatGeo1 8s ease-in-out infinite",
-            }} />
-            {/* Square */}
-            <div style={{
-              position: "absolute", top: "55%", right: "8%",
-              width: 50, height: 50, borderRadius: 8,
-              background: `${C.accent}08`,
-              border: `2px solid ${C.accent}12`,
-              animation: "floatGeo2 10s ease-in-out infinite",
-            }} />
-            {/* Triangle */}
-            <div style={{
-              position: "absolute", top: "30%", right: "25%",
-              width: 0, height: 0,
-              borderLeft: "20px solid transparent",
-              borderRight: "20px solid transparent",
-              borderBottom: `35px solid ${C.accent}10`,
-              animation: "floatGeo3 7s ease-in-out infinite",
-            }} />
-            {/* Small dots */}
-            {[
-              { top: "20%", left: "8%", size: 12, delay: "0s" },
-              { top: "70%", left: "5%", size: 8, delay: "2s" },
-              { top: "80%", right: "15%", size: 10, delay: "4s" },
-              { top: "40%", left: "15%", size: 6, delay: "1s" },
-            ].map((dot, i) => (
-              <div key={i} style={{
-                position: "absolute",
-                top: dot.top,
-                left: (dot as any).left,
-                right: (dot as any).right,
-                width: dot.size,
-                height: dot.size,
-                borderRadius: "50%",
-                background: `${C.accent}18`,
-                animation: `floatGeo${(i % 3) + 1} ${6 + i * 2}s ease-in-out infinite`,
-                animationDelay: dot.delay,
-              }} />
-            ))}
+              position: "fixed", bottom: 96, right: 24, zIndex: 9995,
+              width: isMobile ? "calc(100vw - 48px)" : 320,
+              maxHeight: "70vh", overflowY: "auto",
+              background: C.white, borderRadius: 16,
+              boxShadow: "0 16px 48px rgba(0,0,0,0.18)",
+              padding: "20px 0",
+              animation: "radialIn 0.3s ease",
+            }}>
+              <div style={{ padding: "0 20px 12px", borderBottom: `1px solid ${C.border}`, marginBottom: 8 }}>
+                <span style={{ fontWeight: 700, fontSize: 15, color: C.text }}>{company.name}</span>
+              </div>
+              {sectionNavItems.map((item, i) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "10px 20px", textDecoration: "none",
+                    color: C.text, fontSize: 14, fontWeight: 500,
+                    transition: "background 0.15s",
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = C.accentLight)}
+                  onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                >
+                  <span style={{ width: 24, height: 24, borderRadius: "50%", background: C.accentLight, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: C.accent }}>
+                    {i + 1}
+                  </span>
+                  {item.label}
+                </a>
+              ))}
+              <div style={{ padding: "12px 20px 4px", borderTop: `1px solid ${C.border}`, marginTop: 8 }}>
+                <a href={`tel:${company.phone}`} style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  color: C.accent, textDecoration: "none", fontWeight: 600, fontSize: 14,
+                }}>
+                  {PhoneIcon} {company.phone}
+                </a>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ═══════════ SECTION 1: HERO ═══════════ */}
+        <section id="hero" style={{
+          minHeight: "100vh", scrollSnapAlign: "start",
+          position: "relative", display: "flex", alignItems: "center", justifyContent: "center",
+          overflow: "hidden",
+        }}>
+          {/* bg image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${IMG.hero})`,
+            backgroundSize: "cover", backgroundPosition: "center",
+            filter: "brightness(0.55)",
+          }} />
+          {/* gradient overlay */}
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "linear-gradient(135deg, rgba(99,102,241,0.25) 0%, rgba(24,24,27,0.5) 100%)",
+          }} />
+
+          {/* decorative dot pattern - top right */}
+          <div style={{ position: "absolute", top: -40, right: -40, zIndex: 1, opacity: 0.5 }}>
+            <DecorativeDots color="rgba(255,255,255,0.04)" size={300} />
+          </div>
+          {/* decorative dot pattern - bottom left */}
+          <div style={{ position: "absolute", bottom: -60, left: -60, zIndex: 1, opacity: 0.4 }}>
+            <DecorativeDots color="rgba(255,255,255,0.03)" size={250} />
           </div>
 
-          <div
-            style={{
-              position: "relative",
-              zIndex: 2,
-              maxWidth: 1200,
-              margin: "0 auto",
-              padding: "60px 24px 80px",
-              width: "100%",
-            }}
-          >
-            {/* バッジ with stagger */}
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 10,
-                marginBottom: 28,
+          {/* scroll indicator at bottom */}
+          <div style={{
+            position: "absolute", bottom: 32, left: "50%", transform: "translateX(-50%)",
+            zIndex: 3, display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+          }}>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", letterSpacing: 2 }}>SCROLL</span>
+            <div style={{
+              width: 1, height: 40,
+              background: "linear-gradient(to bottom, rgba(255,255,255,0.5), transparent)",
+            }} />
+          </div>
+
+          <div style={{ position: "relative", zIndex: 2, textAlign: "center", maxWidth: 720, padding: "0 24px" }}>
+            {/* badges */}
+            <FadeIn delay={0.1}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginBottom: 24 }}>
+                {hero.badges.map((b, i) => (
+                  <span key={i} style={{
+                    padding: "6px 16px", borderRadius: 999,
+                    background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)",
+                    color: C.white, fontSize: 13, fontWeight: 600,
+                    border: "1px solid rgba(255,255,255,0.2)",
+                  }}>{b}</span>
+                ))}
+              </div>
+            </FadeIn>
+
+            {/* typewriter headline */}
+            <h1 style={{
+              fontSize: "clamp(1.8rem,5vw,3.2rem)", fontWeight: 900, color: C.white,
+              lineHeight: 1.35, marginBottom: 16, minHeight: "3em",
+              borderRight: heroDone ? "none" : `3px solid ${C.accent}`,
+              display: "inline-block", paddingRight: 4,
+              animation: heroDone ? "none" : "typeCursor 0.7s step-end infinite",
+              textShadow: "0 2px 16px rgba(0,0,0,0.3)",
+            }}>
+              {heroText}
+            </h1>
+
+            {/* salary */}
+            <FadeIn delay={0.4}>
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: 12,
+                background: "rgba(255,255,255,0.95)", borderRadius: 12,
+                padding: "12px 28px", marginBottom: 20,
+                boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+              }}>
+                <span style={{ fontSize: 13, color: C.textSub, fontWeight: 600 }}>月収</span>
+                <SalaryCountUp />
+              </div>
+            </FadeIn>
+
+            {/* subtext */}
+            <FadeIn delay={0.55}>
+              <div style={{ marginBottom: 32 }}>
+                {hero.subtext.map((line, i) => (
+                  <p key={i} style={{
+                    color: "rgba(255,255,255,0.85)", fontSize: 14, margin: "6px 0",
+                    textShadow: "0 1px 4px rgba(0,0,0,0.3)",
+                  }}>{line}</p>
+                ))}
+              </div>
+            </FadeIn>
+
+            {/* CTA */}
+            <FadeIn delay={0.7}>
+              <a href="#apply" style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                padding: "16px 40px", borderRadius: 999,
+                background: C.accent, color: C.white, textDecoration: "none",
+                fontWeight: 700, fontSize: 16,
+                boxShadow: "0 4px 24px rgba(99,102,241,0.5)",
+                transition: "transform 0.2s, box-shadow 0.2s",
               }}
-            >
-              {hero.badges.map((b, i) => (
-                <span
-                  key={i}
-                  style={{
-                    display: "inline-block",
-                    background: C.accentPale,
-                    color: C.accent,
-                    fontSize: 13,
-                    fontWeight: 700,
-                    padding: "6px 18px",
-                    borderRadius: 50,
-                    border: `1px solid ${C.accentPaleBorder}`,
-                    opacity: heroLoaded ? 1 : 0,
-                    transform: heroLoaded ? "translateY(0) scale(1)" : "translateY(10px) scale(0.9)",
-                    transition: `opacity 0.5s cubic-bezier(.34,1.56,.64,1) ${0.2 + i * 0.1}s, transform 0.5s cubic-bezier(.34,1.56,.64,1) ${0.2 + i * 0.1}s`,
-                  }}
-                >
-                  {b}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 32px rgba(99,102,241,0.6)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 24px rgba(99,102,241,0.5)"; }}
+              >
+                {hero.cta} {ArrowRight}
+              </a>
+            </FadeIn>
+          </div>
+        </section>
+
+        {/* ═══════════ SECTION 2: MARQUEE STRIP ═══════════ */}
+        <div style={{
+          background: C.accent, overflow: "hidden",
+          position: "relative", padding: "4px 0",
+        }}>
+          {/* row 1: left-to-right */}
+          <div style={{
+            height: 28, display: "flex", alignItems: "center",
+            overflow: "hidden", marginBottom: 2,
+          }}>
+            <div style={{
+              display: "flex", whiteSpace: "nowrap",
+              animation: "marqueeScroll 25s linear infinite",
+            }}>
+              {[...marquee.top, ...marquee.top, ...marquee.top, ...marquee.top].map((t, i) => (
+                <span key={`top-${i}`} style={{
+                  padding: "0 28px", fontSize: 13, fontWeight: 700,
+                  color: C.white, letterSpacing: 1,
+                }}>
+                  {t}
                 </span>
               ))}
             </div>
-
-            {/* キャッチコピー with typewriter */}
-            <h1
-              style={{
-                fontFamily: "'Yomogi', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
-                fontWeight: 400,
-                fontSize: "clamp(28px, 5vw, 52px)",
-                lineHeight: 1.5,
-                color: C.text,
-                marginBottom: 4,
-              }}
-            >
-              {heroTyped.displayed}
-              {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}
-            </h1>
-            {heroTyped.done && (
-              <h1
-                style={{
-                  fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(28px, 5vw, 52px)",
-                  lineHeight: 1.3,
-                  color: C.text,
-                  marginBottom: 24,
-                  opacity: heroLoaded ? 1 : 0,
-                  transform: heroLoaded ? "translateX(0) scale(1)" : "translateX(-30px) scale(0.97)",
-                  transition: "opacity 0.7s cubic-bezier(.34,1.56,.64,1) 0.15s, transform 0.7s cubic-bezier(.34,1.56,.64,1) 0.15s",
-                }}
-              >
-                {hero.headlineParts[1]}
-              </h1>
-            )}
-
-            {/* サブテキスト */}
+          </div>
+          {/* row 2: right-to-left (reverse) */}
+          <div style={{
+            height: 28, display: "flex", alignItems: "center",
+            overflow: "hidden",
+          }}>
             <div style={{
-              marginBottom: 32,
-              opacity: heroLoaded ? 1 : 0,
-              transform: heroLoaded ? "translateY(0)" : "translateY(16px)",
-              transition: "opacity 0.7s ease 0.55s, transform 0.7s ease 0.55s",
+              display: "flex", whiteSpace: "nowrap",
+              animation: "marqueeScroll 30s linear infinite reverse",
             }}>
-              {hero.subtext.map((t, i) => (
-                <p
-                  key={i}
-                  style={{
-                    fontSize: "clamp(14px, 2vw, 16px)",
-                    color: C.textSub,
-                    lineHeight: 1.9,
-                  }}
-                >
-                  {nl2br(t)}
-                </p>
+              {[...marquee.bottom, ...marquee.bottom, ...marquee.bottom, ...marquee.bottom].map((t, i) => (
+                <span key={`btm-${i}`} style={{
+                  padding: "0 28px", fontSize: 13, fontWeight: 600,
+                  color: "rgba(255,255,255,0.75)", letterSpacing: 1,
+                }}>
+                  {t}
+                </span>
               ))}
             </div>
-
-            {/* 月収 with gradient text and counter */}
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "baseline",
-                gap: 6,
-                marginBottom: 36,
-                opacity: heroLoaded ? 1 : 0,
-                transform: heroLoaded ? "scale(1)" : "scale(0.85)",
-                transition: "opacity 0.6s cubic-bezier(.34,1.56,.64,1) 0.65s, transform 0.7s cubic-bezier(.34,1.56,.64,1) 0.65s",
-              }}
-            >
-              <span style={{ fontSize: 15, color: C.textSub, fontWeight: 500 }}>
-                月収
-              </span>
-              <span
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(48px, 8vw, 72px)",
-                  background: `linear-gradient(135deg, ${C.text} 0%, ${C.accent} 50%, #5a6068 100%)`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  lineHeight: 1,
-                }}
-              >
-                {salaryMinCount}
-              </span>
-              <span style={{ fontSize: 20, color: C.textSub, fontWeight: 500 }}>
-                万〜
-              </span>
-              <span
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(48px, 8vw, 72px)",
-                  background: `linear-gradient(135deg, ${C.text} 0%, ${C.accent} 50%, #5a6068 100%)`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  lineHeight: 1,
-                }}
-              >
-                {salaryMaxCount}
-              </span>
-              <span style={{ fontSize: 20, color: C.textSub, fontWeight: 500 }}>
-                万円
-              </span>
-            </div>
-
-            {/* CTA */}
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 16,
-                opacity: heroLoaded ? 1 : 0,
-                transform: heroLoaded ? "translateY(0)" : "translateY(20px)",
-                transition: "opacity 0.7s ease 0.8s, transform 0.7s ease 0.8s",
-              }}
-            >
-              <a
-                href="#apply"
-                className="btn-drive cta-pulse"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  background: C.accent,
-                  color: C.white,
-                  fontSize: 16,
-                  fontWeight: 700,
-                  padding: "16px 36px",
-                  borderRadius: 50,
-                }}
-              >
-                {hero.cta}
-                <span style={{ fontSize: 20 }}>→</span>
-              </a>
-              <a
-                href={`tel:${company.phone.replace(/-/g, "")}`}
-                className="btn-drive"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  background: "transparent",
-                  color: C.text,
-                  fontSize: 16,
-                  fontWeight: 700,
-                  padding: "16px 32px",
-                  borderRadius: 50,
-                  border: `2px solid ${C.text}`,
-                }}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>
-                {company.phone}
-              </a>
-            </div>
           </div>
+        </div>
 
-          {/* Scroll indicator */}
+        {/* ═══════════ STATS STRIP ═══════════ */}
+        <div style={{
+          padding: isMobile ? "40px 24px" : "56px 60px",
+          background: C.white,
+          borderBottom: `1px solid ${C.border}`,
+        }}>
           <div style={{
-            position: "absolute",
-            bottom: 32,
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 3,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 8,
-            opacity: heroLoaded ? 0.6 : 0,
-            transition: "opacity 1s ease 1.2s",
-          }}>
-            <span style={{
-              fontSize: 11,
-              fontWeight: 600,
-              letterSpacing: 2,
-              textTransform: "uppercase",
-              color: C.textSub,
-              fontFamily: "'DM Sans', sans-serif",
-            }}>Scroll</span>
-            <div style={{
-              width: 24,
-              height: 40,
-              borderRadius: 12,
-              border: `2px solid ${C.accent}40`,
-              position: "relative",
-            }}>
-              <div style={{
-                width: 4,
-                height: 8,
-                borderRadius: 2,
-                background: C.accent,
-                position: "absolute",
-                top: 6,
-                left: "50%",
-                marginLeft: -2,
-                animation: "scrollBounce 1.8s ease-in-out infinite",
-              }} />
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            3. MARQUEE
-            ═══════════════════════════════════ */}
-        <section
-          ref={marqueeRef.ref}
-          style={{
-            background: C.accent,
-            padding: "14px 0",
-            overflow: "hidden",
-            position: "relative",
-            ...slideUp(marqueeRef.visible),
-          }}
-        >
-          {/* Gradient fade edges */}
-          <div style={{
-            position: "absolute", top: 0, left: 0, bottom: 0, width: 80,
-            background: `linear-gradient(to right, ${C.accent}, transparent)`,
-            zIndex: 2, pointerEvents: "none",
-          }} />
-          <div style={{
-            position: "absolute", top: 0, right: 0, bottom: 0, width: 80,
-            background: `linear-gradient(to left, ${C.accent}, transparent)`,
-            zIndex: 2, pointerEvents: "none",
-          }} />
-
-          {[marquee.top, marquee.bottom].map((row, ri) => (
-            <div
-              key={ri}
-              style={{
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-                marginBottom: ri === 0 ? 6 : 0,
-              }}
-            >
-              <div
-                style={{
-                  display: "inline-flex",
-                  gap: 48,
-                  animation: `marqueeScroll ${28 + ri * 6}s linear infinite`,
-                  animationDirection: ri === 1 ? "reverse" : "normal",
-                }}
-              >
-                {[...row, ...row, ...row, ...row].map((item, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      display: "inline-block",
-                      color: C.white,
-                      fontSize: 14,
-                      fontWeight: 700,
-                      paddingRight: 48,
-                      opacity: 0.95,
-                    }}
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </section>
-
-        {/* Wave: accent -> white */}
-        <WaveDivider from={C.accent} to={C.white} />
-
-        {/* ═══════════════════════════════════
-            4. REASONS
-            ═══════════════════════════════════ */}
-        <section
-          id="reasons"
-          ref={reasonsRef.ref}
-          style={{
-            background: C.white,
-            position: "relative",
-          }}
-        >
-          {/* Section background image */}
-          <div style={{
-            position: "absolute", inset: 0,
-            backgroundImage: `url(${IMG.reasons})`,
-            backgroundSize: "cover", backgroundPosition: "center",
-            opacity: 0.03, pointerEvents: "none",
-          }} />
-
-          <div style={{
-            maxWidth: 1200,
+            maxWidth: 1000,
             margin: "0 auto",
-            padding: "60px 24px 60px",
-            position: "relative",
-            zIndex: 1,
+            display: "grid",
+            gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+            gap: isMobile ? 24 : 40,
           }}>
-            <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(reasonsRef.visible) }}>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: C.textSub,
-                  letterSpacing: 3,
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                ─ Why Choose Us ─
-              </p>
-              <h2
-                className={`section-heading-underline${reasonsRef.visible ? " visible" : ""}`}
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 36px)",
-                  color: C.text,
-                }}
-              >
-                ⚑ 選ばれる<span style={{ color: C.accent }}>3つ</span>の理由
-              </h2>
-            </div>
+            {STATS.map((stat, i) => (
+              <FadeIn key={i} delay={i * 0.1}>
+                <div style={{
+                  textAlign: "center",
+                  padding: "16px 0",
+                  position: "relative",
+                }}>
+                  {/* decorative top line */}
+                  <div style={{
+                    width: 32,
+                    height: 3,
+                    background: C.accent,
+                    borderRadius: 2,
+                    margin: "0 auto 16px",
+                    opacity: 0.5,
+                  }} />
+                  <div style={{
+                    fontSize: "clamp(1.4rem,4vw,2.2rem)",
+                    fontWeight: 900,
+                    color: C.accent,
+                    marginBottom: 4,
+                    lineHeight: 1.2,
+                  }}>
+                    {stat.prefix && (
+                      <span style={{ fontSize: "0.6em", color: C.textSub }}>{stat.prefix}</span>
+                    )}
+                    <CounterNum end={stat.value} suffix="" />
+                    <span style={{ fontSize: "0.5em", color: C.textSub, marginLeft: 2 }}>{stat.suffix}</span>
+                  </div>
+                  <span style={{
+                    fontSize: 12,
+                    color: C.muted,
+                    fontWeight: 600,
+                    letterSpacing: 1,
+                  }}>
+                    {stat.label}
+                  </span>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 24,
-              }}
-            >
-              {reasons.map((r, i) => (
-                <div
-                  key={i}
-                  className="card-drive"
-                  style={{
-                    display: "flex",
-                    gap: 24,
-                    background: C.white,
-                    borderRadius: "0.75rem",
-                    padding: "36px 32px",
-                    boxShadow: shadowMain,
-                    border: `1px solid ${C.border}`,
-                    cursor: "default",
-                    ...scaleIn(reasonsRef.visible, 0.1 + i * 0.15),
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontWeight: 700,
-                      fontSize: "clamp(40px, 5vw, 56px)",
-                      color: `${C.accent}18`,
-                      lineHeight: 1,
-                      minWidth: 70,
-                      flexShrink: 0,
-                    }}
-                  >
+        {/* ═══════════ SECTION 3: REASONS ═══════════ */}
+        <section id="reasons" style={{ minHeight: "100vh", scrollSnapAlign: "start", padding: "100px 0" }}>
+          <SectionHeading icon={StarIcon} title="選ばれる理由" sub="REASONS" />
+
+          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            {reasons.map((r, i) => (
+              <FadeIn key={i} delay={i * 0.12} style={{ marginBottom: i < reasons.length - 1 ? 2 : 0 }}>
+                <div style={{
+                  position: "relative", width: "100%",
+                  minHeight: isMobile ? 320 : 400, overflow: "hidden",
+                  borderRadius: 0,
+                }}>
+                  {/* full-width image bg */}
+                  <div style={{
+                    position: "absolute", inset: 0,
+                    backgroundImage: `url(${IMG.strength(i + 1)})`,
+                    backgroundSize: "cover", backgroundPosition: "center",
+                    filter: "brightness(0.45)",
+                  }} />
+
+                  {/* large number overlay */}
+                  <div style={{
+                    position: "absolute", top: isMobile ? 16 : 24, right: isMobile ? 16 : 40,
+                    fontSize: "clamp(5rem,15vw,12rem)", fontWeight: 900, color: "rgba(255,255,255,0.08)",
+                    lineHeight: 1, userSelect: "none",
+                  }}>
                     {r.num}
                   </div>
-                  {/* 画像 */}
+
+                  {/* text overlaid on bottom with gradient */}
                   <div style={{
-                    flex: "0 0 180px",
-                    height: 140,
-                    borderRadius: "0.5rem",
-                    overflow: "hidden",
-                    flexShrink: 0,
+                    position: "absolute", bottom: 0, left: 0, right: 0,
+                    background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)",
+                    padding: isMobile ? "80px 24px 32px" : "120px 60px 48px",
                   }}>
-                    <img
-                      src={IMG.strength(i + 1)}
-                      alt={r.title}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.5s", WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)", maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.06)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                    />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 200 }}>
-                    <h3
-                      style={{
-                        fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                        fontWeight: 700,
-                        fontSize: "clamp(18px, 2.5vw, 22px)",
-                        color: C.text,
-                        marginBottom: 10,
-                      }}
-                    >
-                      ─ {r.title}
+                    <span style={{
+                      display: "inline-block", fontSize: 13, fontWeight: 700,
+                      color: C.accent, background: "rgba(99,102,241,0.15)",
+                      padding: "4px 12px", borderRadius: 4, marginBottom: 12,
+                    }}>
+                      REASON {r.num}
+                    </span>
+                    <h3 style={{
+                      fontSize: "clamp(1.3rem,3vw,1.8rem)", fontWeight: 800,
+                      color: C.white, marginBottom: 12, lineHeight: 1.4,
+                    }}>
+                      {r.title}
                     </h3>
-                    <p
-                      style={{
-                        fontSize: 15,
-                        color: C.textSub,
-                        lineHeight: 1.85,
-                      }}
-                    >
-                      {nl2br(r.text)}
+                    <p style={{
+                      color: "rgba(255,255,255,0.8)", fontSize: 14, lineHeight: 1.9,
+                      maxWidth: 600, whiteSpace: "pre-line",
+                    }}>
+                      {r.text}
                     </p>
                   </div>
                 </div>
-              ))}
-            </div>
+              </FadeIn>
+            ))}
           </div>
         </section>
 
-        {/* Wave: white -> bg */}
-        <WaveDivider from={C.white} to={C.bg} />
-
-        {/* ═══════════════════════════════════
-            5. JOBS
-            ═══════════════════════════════════ */}
-        <section
-          id="jobs"
-          ref={jobsRef.ref}
-          style={{
-            background: C.bg,
-            padding: "60px 24px 90px",
-            position: "relative",
-          }}
-        >
-          {/* Section background image */}
+        {/* ═══════════ SECTION 4: JOBS ═══════════ */}
+        <section id="jobs" style={{
+          minHeight: "100vh", scrollSnapAlign: "start",
+          display: "flex", flexDirection: isMobile ? "column" : "row",
+        }}>
+          {/* left: image */}
           <div style={{
-            position: "absolute", inset: 0,
+            flex: isMobile ? "none" : "0 0 50%",
+            minHeight: isMobile ? 300 : "100vh",
             backgroundImage: `url(${IMG.jobs})`,
             backgroundSize: "cover", backgroundPosition: "center",
-            opacity: 0.03, pointerEvents: "none",
-          }} />
+            position: "relative",
+          }}>
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(135deg, rgba(99,102,241,0.15), rgba(0,0,0,0.2))",
+            }} />
+          </div>
 
-          <div style={{ maxWidth: 860, margin: "0 auto", position: "relative", zIndex: 1 }}>
-            <div style={{ textAlign: "center", marginBottom: 48, ...slideUp(jobsRef.visible) }}>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: C.textSub,
-                  letterSpacing: 3,
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                ─ Recruit ─
-              </p>
-              <h2
-                className={`section-heading-underline${jobsRef.visible ? " visible" : ""}`}
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 36px)",
-                  color: C.text,
-                  marginBottom: 16,
-                }}
-              >
-                ☰ 求人情報
-              </h2>
-              <p style={{ fontSize: 15, color: C.textSub, lineHeight: 1.8 }}>
-                {nl2br(jobs.intro)}
-              </p>
-            </div>
+          {/* right: details */}
+          <div style={{
+            flex: 1, padding: isMobile ? "48px 24px" : "80px 60px",
+            display: "flex", flexDirection: "column", justifyContent: "center",
+            background: C.white,
+          }}>
+            <FadeIn>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, color: C.accent }}>
+                {BriefcaseIcon}
+                <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 2 }}>JOB INFO</span>
+              </div>
+              <h2 style={{ fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 800, marginBottom: 16 }}>求人情報</h2>
+              <div style={{ width: 40, height: 3, background: C.accent, borderRadius: 2, marginBottom: 24 }} />
+            </FadeIn>
 
-            <div
-              className="card-drive"
-              style={{
-                background: C.white,
-                borderRadius: "1.25rem",
-                boxShadow: shadowMain,
-                overflow: "hidden",
-                border: `1px solid ${C.border}`,
-                ...slideUp(jobsRef.visible, 0.15),
-              }}
-            >
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                }}
-              >
+            <FadeIn delay={0.1}>
+              <p style={{ color: C.textSub, fontSize: 14, lineHeight: 1.9, marginBottom: 32, whiteSpace: "pre-line" }}>
+                {jobs.intro}
+              </p>
+            </FadeIn>
+
+            {/* salary counter */}
+            <FadeIn delay={0.15}>
+              <div style={{
+                background: C.accentLight, borderRadius: 12, padding: "20px 24px",
+                marginBottom: 32, textAlign: "center",
+                border: `1px solid rgba(99,102,241,0.1)`,
+              }}>
+                <span style={{ fontSize: 13, color: C.textSub, fontWeight: 600, display: "block", marginBottom: 8 }}>月収</span>
+                <SalaryCountUp />
+              </div>
+            </FadeIn>
+
+            {/* job details table */}
+            <FadeIn delay={0.2}>
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 32 }}>
                 <tbody>
                   {jobs.rows.map((row, i) => (
-                    <tr key={i}>
-                      <th
-                        style={{
-                          textAlign: "left",
-                          padding: "16px 20px",
-                          fontSize: 14,
-                          fontWeight: 700,
-                          color: C.text,
-                          background: row.accent ? `${C.accent}10` : "transparent",
-                          borderBottom: `1px solid ${C.border}`,
-                          width: "28%",
-                          verticalAlign: "top",
-                        }}
-                      >
-                        ▪ {row.dt}
-                      </th>
-                      <td
-                        style={{
-                          padding: "16px 20px",
-                          fontSize: 14,
-                          color: row.accent ? C.text : C.textSub,
-                          fontWeight: row.accent ? 700 : 400,
-                          background: row.accent ? `${C.accent}10` : "transparent",
-                          borderBottom: `1px solid ${C.border}`,
-                          lineHeight: 1.7,
-                        }}
-                      >
-                        {nl2br(row.dd)}
-                      </td>
+                    <tr key={i} style={{ borderBottom: `1px solid ${C.border}` }}>
+                      <td style={{
+                        padding: "14px 16px", fontWeight: 700, fontSize: 13,
+                        color: C.accent, whiteSpace: "nowrap", verticalAlign: "top",
+                        width: isMobile ? 80 : 120, background: C.accentLight,
+                      }}>{row.dt}</td>
+                      <td style={{
+                        padding: "14px 16px", fontSize: 14, color: C.text,
+                        fontWeight: row.accent ? 700 : 400,
+                      }}>{row.dd}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+            </FadeIn>
 
-              {/* 応募資格 */}
-              <div style={{ padding: "24px 20px 28px" }}>
-                <h4
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 700,
-                    color: C.text,
-                    marginBottom: 12,
-                  }}
-                >
-                  応募資格
-                </h4>
-                <div
-                  style={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 8,
-                  }}
-                >
-                  {jobs.requirements.map((req, i) => (
-                    <span
-                      key={i}
-                      style={{
-                        display: "inline-block",
-                        background: C.accentPale,
-                        color: C.accent,
-                        fontSize: 13,
-                        fontWeight: 500,
-                        padding: "6px 16px",
-                        borderRadius: 50,
-                      }}
-                    >
-                      {req}
-                    </span>
-                  ))}
-                </div>
+            {/* requirements */}
+            <FadeIn delay={0.3}>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {jobs.requirements.map((r, i) => (
+                  <span key={i} style={{
+                    padding: "6px 14px", borderRadius: 6,
+                    background: C.bg, border: `1px solid ${C.border}`,
+                    fontSize: 13, color: C.textSub, fontWeight: 500,
+                  }}>{r}</span>
+                ))}
               </div>
-            </div>
+            </FadeIn>
           </div>
         </section>
 
-        {/* Wave: bg -> white */}
-        <WaveDivider from={C.bg} to={C.white} />
-
-        {/* ═══════════════════════════════════
-            6. BENEFITS
-            ═══════════════════════════════════ */}
-        <section
-          id="benefits"
-          ref={benefitsRef.ref}
-          style={{
-            background: C.white,
-            position: "relative",
-          }}
-        >
-          {/* 背景画像 */}
+        {/* ═══════════ SECTION 5: BENEFITS ═══════════ */}
+        <section id="benefits" style={{
+          minHeight: "100vh", scrollSnapAlign: "start",
+          background: C.bgDark, position: "relative",
+          padding: isMobile ? "80px 24px" : "100px 60px",
+          display: "flex", flexDirection: "column", justifyContent: "center",
+        }}>
+          {/* faded bg image */}
           <div style={{
             position: "absolute", inset: 0,
             backgroundImage: `url(${IMG.benefits})`,
             backgroundSize: "cover", backgroundPosition: "center",
-            opacity: 0.04, pointerEvents: "none",
+            opacity: 0.06,
           }} />
-          <div style={{
-            maxWidth: 1200,
-            margin: "0 auto",
-            padding: "60px 24px 88px",
-            position: "relative",
-            zIndex: 1,
-          }}>
-            <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(benefitsRef.visible) }}>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: C.textSub,
-                  letterSpacing: 3,
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                ─ Benefits ─
-              </p>
-              <h2
-                className={`section-heading-underline${benefitsRef.visible ? " visible" : ""}`}
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 36px)",
-                  color: C.text,
-                }}
-              >
-                ✓ 待遇・福利厚生
-              </h2>
-            </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1.1fr 0.85fr 1.05fr",
-                gap: 24,
-              }}
-              className="benefits-grid"
-            >
-              <style>{`
-                @media (max-width: 768px) {
-                  .benefits-grid { grid-template-columns: 1fr !important; }
-                }
-              `}</style>
+          <div style={{ position: "relative", zIndex: 2, maxWidth: 1100, margin: "0 auto", width: "100%" }}>
+            <SectionHeading icon={GiftIcon} title="待遇・福利厚生" sub="BENEFITS" light />
+
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+              gap: 20,
+            }}>
               {benefits.map((b, i) => (
-                <div
-                  key={i}
-                  className="card-drive icon-bounce"
-                  style={{
-                    background: C.white,
-                    borderRadius: "0.75rem",
-                    padding: "32px 24px",
-                    boxShadow: shadowSub,
-                    border: `1px solid ${C.border}`,
-                    ...scaleIn(benefitsRef.visible, 0.08 * i),
-                  }}
-                >
+                <FadeIn key={i} delay={i * 0.08}>
                   <div
                     style={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: "50%",
-                      background: C.accentPale,
-                      color: C.accent,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginBottom: 18,
-                      transition: "transform 0.3s cubic-bezier(.34,1.56,.64,1)",
+                      background: "rgba(255,255,255,0.06)", borderRadius: 14,
+                      padding: 28, border: "1px solid rgba(255,255,255,0.08)",
+                      backdropFilter: "blur(8px)",
+                      transition: "background 0.25s, transform 0.25s",
+                      cursor: "default", height: "100%",
                     }}
+                    onMouseEnter={e => { e.currentTarget.style.background = "rgba(99,102,241,0.12)"; e.currentTarget.style.transform = "translateY(-4px)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
                   >
-                    {benefitIcons[i]}
+                    <div style={{
+                      width: 44, height: 44, borderRadius: 10,
+                      background: "rgba(99,102,241,0.2)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: "#a78bfa", marginBottom: 16,
+                    }}>
+                      {benefitIcons[i] || GiftIcon}
+                    </div>
+                    <h3 style={{ fontSize: 16, fontWeight: 700, color: C.white, marginBottom: 10 }}>{b.title}</h3>
+                    <p style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", lineHeight: 1.8, whiteSpace: "pre-line" }}>{b.text}</p>
                   </div>
-                  <h3
-                    style={{
-                      fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                      fontWeight: 700,
-                      fontSize: 17,
-                      color: C.text,
-                      marginBottom: 8,
-                    }}
-                  >
-                    {b.title}
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      color: C.textSub,
-                      lineHeight: 1.8,
-                    }}
-                  >
-                    {nl2br(b.text)}
-                  </p>
-                </div>
+                </FadeIn>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Wave: white -> bg */}
-        <WaveDivider from={C.white} to={C.bg} />
-
-        {/* ═══════════════════════════════════
-            7. DAILY
-            ═══════════════════════════════════ */}
-        <section
-          id="daily"
-          ref={dailyRef.ref}
-          style={{
-            background: C.bg,
-            padding: "60px 24px 80px",
-            position: "relative",
-          }}
-        >
-          {/* Section background image */}
+        {/* ═══════════ SECTION 6: DAILY SCHEDULE ═══════════ */}
+        <section id="daily" style={{
+          minHeight: "100vh", scrollSnapAlign: "start",
+          padding: 0,
+        }}>
+          {/* daily-flow banner */}
           <div style={{
-            position: "absolute", inset: 0,
+            height: isMobile ? 200 : 320,
             backgroundImage: `url(${IMG.dailyFlow})`,
             backgroundSize: "cover", backgroundPosition: "center",
-            opacity: 0.03, pointerEvents: "none",
-          }} />
+            position: "relative",
+          }}>
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(250,250,248,1))",
+            }} />
+          </div>
 
-          <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
-            <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(dailyRef.visible) }}>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: C.textSub,
-                  letterSpacing: 3,
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                ─ Daily Schedule ─
+          <div style={{ maxWidth: 800, margin: "-60px auto 0", padding: "0 24px 80px", position: "relative", zIndex: 2 }}>
+            <SectionHeading icon={ClockIcon} title="1日の流れ" sub="DAILY SCHEDULE" />
+
+            <FadeIn>
+              <p style={{ textAlign: "center", color: C.textSub, fontSize: 14, marginBottom: 48, marginTop: -32, whiteSpace: "pre-line" }}>
+                {daily.intro}
               </p>
-              <h2
-                className={`section-heading-underline${dailyRef.visible ? " visible" : ""}`}
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 36px)",
-                  color: C.text,
-                  marginBottom: 16,
-                }}
-              >
-                ⏱ 1日の流れ
-              </h2>
-              <p style={{ fontSize: 15, color: C.textSub, lineHeight: 1.8, maxWidth: 600, margin: "0 auto" }}>
-                {nl2br(daily.intro)}
-              </p>
-            </div>
+            </FadeIn>
 
-            {/* 水平タイムライン with animated line */}
-            <div
-              style={{
-                position: "relative",
-                overflowX: "auto",
-                paddingBottom: 16,
-              }}
-            >
-              {/* Animated connecting line */}
-              <div
-                className="timeline-line"
-                style={{
-                  position: "absolute",
-                  top: 28,
-                  left: 40,
-                  right: 40,
-                  height: 3,
-                  background: `${C.accent}15`,
-                  borderRadius: 2,
-                  overflow: "hidden",
-                }}
-              >
-                <div style={{
-                  height: "100%",
-                  background: `linear-gradient(90deg, ${C.accent}, ${C.accent}80)`,
-                  borderRadius: 2,
-                  width: `${timelineProgress * 100}%`,
-                  transition: "width 0.05s linear",
-                }} />
-              </div>
-              <style>{`
-                @media (max-width: 768px) {
-                  .timeline-line { display: none !important; }
-                  .timeline-h { flex-direction: column !important; }
-                  .timeline-step { min-width: auto !important; flex: none !important; width: 100% !important; }
-                }
-              `}</style>
+            {/* vertical timeline */}
+            <div style={{ position: "relative", paddingLeft: 40 }}>
+              {/* connecting line */}
+              <div style={{
+                position: "absolute", left: 15, top: 8, bottom: 8,
+                width: 2, background: `linear-gradient(to bottom, ${C.accent}, #a78bfa)`,
+                borderRadius: 1,
+              }} />
 
-              <div
-                className="timeline-h"
-                style={{
-                  display: "flex",
-                  gap: 0,
-                  position: "relative",
-                  justifyContent: "space-between",
-                }}
-              >
-                {daily.steps.map((s, i) => (
-                  <div
-                    key={i}
-                    className="timeline-step"
-                    style={{
-                      flex: 1,
-                      minWidth: 150,
-                      textAlign: "center",
-                      position: "relative",
-                      ...bounceIn(dailyRef.visible, 0.25 + i * 0.2),
-                    }}
-                  >
-                    {/* ドット with pulse on appear */}
-                    <div
-                      style={{
-                        width: 16,
-                        height: 16,
-                        borderRadius: "50%",
-                        background: C.accent,
-                        border: `3px solid ${C.white}`,
-                        boxShadow: `0 0 0 3px ${C.accent}40`,
-                        margin: "0 auto 18px",
-                        position: "relative",
-                        zIndex: 2,
-                        transform: dailyRef.visible ? "scale(1)" : "scale(0)",
-                        transition: `transform 0.6s cubic-bezier(.34,1.56,.64,1) ${0.4 + i * 0.2}s`,
-                      }}
-                    />
-                    <div
-                      style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontWeight: 700,
-                        fontSize: 22,
-                        color: C.text,
-                        marginBottom: 6,
-                      }}
-                    >
+              {daily.steps.map((s, i) => (
+                <FadeIn key={i} delay={i * 0.08}>
+                  <div style={{ position: "relative", marginBottom: 36 }}>
+                    {/* dot */}
+                    <div style={{
+                      position: "absolute", left: -32, top: 4,
+                      width: 14, height: 14, borderRadius: "50%",
+                      background: C.accent, border: `3px solid ${C.bg}`,
+                      boxShadow: `0 0 0 3px rgba(99,102,241,0.2)`,
+                    }} />
+                    {/* time */}
+                    <span style={{
+                      display: "inline-block", fontSize: 13, fontWeight: 700,
+                      color: C.accent, background: C.accentLight,
+                      padding: "3px 10px", borderRadius: 4, marginBottom: 6,
+                    }}>
                       {s.time}
-                    </div>
-                    <h4
-                      style={{
-                        fontWeight: 700,
-                        fontSize: 14,
-                        color: C.text,
-                        marginBottom: 8,
-                      }}
-                    >
+                    </span>
+                    <h4 style={{ fontSize: 16, fontWeight: 700, marginBottom: 4, color: C.text }}>
                       {s.title}
                     </h4>
-                    <p
-                      style={{
-                        fontSize: 13,
-                        color: C.textSub,
-                        lineHeight: 1.7,
-                        padding: "0 8px",
-                      }}
-                    >
-                      {nl2br(s.desc)}
+                    <p style={{ fontSize: 14, color: C.textSub, lineHeight: 1.8 }}>
+                      {s.desc}
                     </p>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Inline delivery scene video */}
-            <div style={{
-              marginTop: 48,
-              borderRadius: "1rem",
-              overflow: "hidden",
-              boxShadow: shadowMain,
-              maxWidth: 700,
-              margin: "48px auto 0",
-              ...slideUp(dailyRef.visible, 0.6),
-            }}>
-              <video
-                autoPlay
-                muted
-                playsInline
-                style={{
-                  width: "100%",
-                  display: "block",
-                }}
-              >
-                <source src="/keikamotsu-new-templates/videos/delivery-scene.mp4" type="video/mp4" />
-              </video>
+                </FadeIn>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Wave: bg -> white */}
-        <WaveDivider from={C.bg} to={C.white} />
+        {/* ═══════════ MID-PAGE CTA BANNER ═══════════ */}
+        <div style={{
+          background: `linear-gradient(135deg, ${C.accent}, #8b5cf6)`,
+          padding: isMobile ? "40px 24px" : "48px 60px",
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+        }}>
+          {/* decorative circles */}
+          <div style={{
+            position: "absolute", top: -60, right: -60,
+            width: 200, height: 200, borderRadius: "50%",
+            background: "rgba(255,255,255,0.06)",
+          }} />
+          <div style={{
+            position: "absolute", bottom: -40, left: -40,
+            width: 150, height: 150, borderRadius: "50%",
+            background: "rgba(255,255,255,0.04)",
+          }} />
 
-        {/* ═══════════════════════════════════
-            8. GALLERY
-            ═══════════════════════════════════ */}
-        <section
-          id="gallery"
-          ref={galleryRef.ref}
-          style={{
-            background: C.white,
-            padding: "60px 24px 70px",
-          }}
-        >
-          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-            <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(galleryRef.visible) }}>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: C.textSub,
-                  letterSpacing: 3,
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                ─ Workplace ─
-              </p>
-              <h2
-                className={`section-heading-underline${galleryRef.visible ? " visible" : ""}`}
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 36px)",
-                  color: C.text,
-                  marginBottom: 16,
-                }}
-              >
-                {"⌂ "}{gallery.heading}
-              </h2>
-              <p style={{ fontSize: 15, color: C.textSub, lineHeight: 1.8 }}>
-                {nl2br(gallery.intro)}
-              </p>
-            </div>
-
-            {/* Stylish overlapping gallery */}
-            <div
-              className="gallery-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 0.85fr 1.15fr",
-                gridTemplateRows: "220px 200px",
-                gap: 14,
-                ...slideUp(galleryRef.visible, 0.15),
+          <FadeIn>
+            <h3 style={{
+              fontSize: "clamp(1.2rem,3vw,1.6rem)",
+              fontWeight: 800,
+              color: C.white,
+              marginBottom: 8,
+              position: "relative",
+            }}>
+              あなたも一緒に、始めてみませんか？
+            </h3>
+            <p style={{
+              fontSize: 14,
+              color: "rgba(255,255,255,0.8)",
+              marginBottom: 24,
+              position: "relative",
+            }}>
+              未経験でも、車がなくても大丈夫。まずはお気軽にご相談ください。
+            </p>
+            <div style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 12,
+              justifyContent: "center",
+              position: "relative",
+            }}>
+              <a href="#apply" style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                padding: "12px 32px", borderRadius: 999,
+                background: C.white, color: C.accent,
+                textDecoration: "none", fontWeight: 700, fontSize: 14,
+                boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+                transition: "transform 0.2s",
               }}
-            >
-              <style>{`
-                @media (max-width: 768px) {
-                  .gallery-grid {
-                    grid-template-columns: 1fr !important;
-                    grid-template-rows: auto !important;
-                  }
-                  .gallery-grid > div { transform: none !important; margin: 0 !important; }
-                }
-                .gallery-item { transition: transform 0.4s cubic-bezier(.34,1.3,.64,1), box-shadow 0.4s ease !important; }
-                .gallery-item:hover { transform: rotate(0deg) scale(1.04) !important; box-shadow: 0 12px 36px rgba(0,0,0,0.18) !important; z-index: 5 !important; }
-              `}</style>
-              {gallery.images.map((img, i) => {
-                const rotations = [-2, 1.5, -1, 2, -1.5];
-                const spans: React.CSSProperties[] = [
-                  { gridRow: "span 2", marginRight: -8 },
-                  { marginTop: 12 },
-                  { marginLeft: -6 },
-                  { marginTop: -10, marginRight: -4 },
-                  { marginLeft: -8, marginTop: 8 },
-                ];
-                return (
-                  <div
-                    key={i}
-                    className="gallery-item"
-                    style={{
-                      position: "relative",
-                      borderRadius: i === 0 ? "1.25rem" : "0.75rem",
-                      overflow: "hidden",
-                      cursor: "pointer",
-                      transform: `rotate(${rotations[i]}deg)`,
-                      boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
-                      zIndex: i === 0 ? 3 : 1,
-                      ...spans[i],
-                    }}
-                  >
+              onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
+              onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+              >
+                {SendIcon} Webから応募する
+              </a>
+              <a href={`tel:${company.phone}`} style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                padding: "12px 32px", borderRadius: 999,
+                background: "rgba(255,255,255,0.15)", color: C.white,
+                textDecoration: "none", fontWeight: 600, fontSize: 14,
+                border: "1px solid rgba(255,255,255,0.3)",
+                transition: "background 0.2s",
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.25)"}
+              onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.15)"}
+              >
+                {PhoneIcon} {company.phone}
+              </a>
+            </div>
+          </FadeIn>
+        </div>
+
+        {/* ═══════════ SECTION 7: GALLERY ═══════════ */}
+        <section id="gallery" style={{
+          minHeight: "100vh", scrollSnapAlign: "start",
+          padding: isMobile ? "80px 24px" : "100px 60px",
+          background: C.bg,
+        }}>
+          <SectionHeading icon={CameraIcon} title="職場の雰囲気" sub="GALLERY" />
+
+          <FadeIn>
+            <p style={{ textAlign: "center", color: C.textSub, fontSize: 14, marginBottom: 48, marginTop: -32 }}>
+              {gallery.intro}
+            </p>
+          </FadeIn>
+
+          {/* 3-col masonry grid */}
+          <div style={{
+            maxWidth: 1100, margin: "0 auto",
+            columnCount: isMobile ? 1 : 3,
+            columnGap: 16,
+          }}>
+            {gallery.images.map((img, i) => (
+              <FadeIn key={i} delay={i * 0.08}>
+                <div style={{
+                  breakInside: "avoid", marginBottom: 16,
+                  borderRadius: 14, overflow: "hidden",
+                  background: C.white,
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                  cursor: "default",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.12)"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.06)"; }}
+                >
+                  <div style={{ position: "relative", overflow: "hidden" }}>
                     <img
                       src={img.src}
                       alt={img.alt}
+                      loading="lazy"
                       style={{
-                        width: "100%",
-                        height: "100%",
+                        width: "100%", display: "block",
+                        height: i % 3 === 0 ? 280 : i % 3 === 1 ? 220 : 250,
                         objectFit: "cover",
-                        display: "block",
-                        transition: "transform 0.5s",
+                        transition: "transform 0.5s cubic-bezier(.22,1,.36,1)",
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.08)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
                     />
-                    {/* ホバーオーバーレイ+キャプション */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)",
-                        display: "flex",
-                        alignItems: "flex-end",
-                        padding: 16,
-                        opacity: 0,
-                        transition: "opacity 0.35s",
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                      onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
-                    >
-                      <p style={{ color: C.white, fontSize: 13, fontWeight: 500 }}>
-                        {img.caption}
-                      </p>
+                    {/* overlay on hover */}
+                    <div style={{
+                      position: "absolute", inset: 0,
+                      background: `linear-gradient(to top, rgba(99,102,241,0.3), transparent)`,
+                      opacity: 0,
+                      transition: "opacity 0.3s",
+                      pointerEvents: "none",
+                    }} />
+                    {/* category badge */}
+                    <div style={{
+                      position: "absolute", top: 12, left: 12,
+                      padding: "4px 10px",
+                      borderRadius: 6,
+                      background: "rgba(0,0,0,0.5)",
+                      backdropFilter: "blur(4px)",
+                      color: C.white,
+                      fontSize: 11,
+                      fontWeight: 600,
+                    }}>
+                      {img.alt}
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                  <div style={{ padding: "14px 16px" }}>
+                    <p style={{ fontSize: 13, color: C.textSub, margin: 0, lineHeight: 1.6 }}>{img.caption}</p>
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
           </div>
         </section>
 
-        {/* Wave: white -> bg */}
-        <WaveDivider from={C.white} to={C.bg} />
+        {/* ═══════════ SECTION 8: VOICES ═══════════ */}
+        <section id="voices" style={{
+          minHeight: "100vh", scrollSnapAlign: "start",
+          padding: isMobile ? "80px 0" : "100px 0",
+          background: C.accentLight,
+        }}>
+          <div style={{ padding: "0 24px" }}>
+            <SectionHeading icon={UsersIcon} title="先輩の声" sub="VOICES" />
+          </div>
 
-        {/* ═══════════════════════════════════
-            9. VOICES - Speech bubble design
-            ═══════════════════════════════════ */}
-        <section
-          id="voices"
-          ref={voicesRef.ref}
-          style={{
-            background: C.bg,
-            padding: "60px 24px 75px",
-            position: "relative",
-          }}
-        >
-          {/* Section background image */}
+          {/* horizontal scrollable */}
           <div style={{
-            position: "absolute", inset: 0,
-            backgroundImage: `url(${IMG.voices})`,
-            backgroundSize: "cover", backgroundPosition: "center",
-            opacity: 0.03, pointerEvents: "none",
-          }} />
+            overflowX: "auto", WebkitOverflowScrolling: "touch",
+            padding: "0 24px 24px",
+            display: "flex", gap: 20,
+            scrollSnapType: "x mandatory",
+          }}>
+            {voices.map((v, i) => (
+              <FadeIn key={i} delay={i * 0.1}>
+                <div style={{
+                  flexShrink: 0,
+                  width: isMobile ? "85vw" : 340,
+                  scrollSnapAlign: "center",
+                  background: C.white, borderRadius: 18,
+                  padding: "28px 24px",
+                  boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+                  position: "relative",
+                }}>
+                  {/* speech bubble tail */}
+                  <div style={{
+                    position: "absolute", bottom: -10, left: 32,
+                    width: 0, height: 0,
+                    borderLeft: "10px solid transparent",
+                    borderRight: "10px solid transparent",
+                    borderTop: `10px solid ${C.white}`,
+                  }} />
 
-          <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 1 }}>
-            <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(voicesRef.visible) }}>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: C.textSub,
-                  letterSpacing: 3,
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                ─ Voices ─
-              </p>
-              <h2
-                className={`section-heading-underline${voicesRef.visible ? " visible" : ""}`}
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 36px)",
-                  color: C.text,
-                }}
-              >
-                {"\u301D "}先輩ドライバーの声
-              </h2>
-            </div>
-
-            <div
-              className="voices-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1.15fr 0.85fr",
-                gap: 24,
-              }}
-            >
-              <style>{`
-                @media (max-width: 768px) {
-                  .voices-grid { grid-template-columns: 1fr !important; }
-                }
-              `}</style>
-              {voices.map((v, i) => (
-                <div
-                  key={i}
-                  style={{
-                    position: "relative",
-                    ...bounceIn(voicesRef.visible, 0.1 + i * 0.12),
-                  }}
-                >
-                  {/* Speech bubble card */}
-                  <div
-                    className="card-drive"
-                    style={{
-                      background: C.white,
-                      borderRadius: "1rem",
-                      padding: "28px 24px 24px",
-                      boxShadow: shadowSub,
-                      border: `1px solid ${C.border}`,
-                      position: "relative",
-                      marginBottom: 16,
-                    }}
-                  >
-                    {/* Large quote */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: 12,
-                        left: 18,
-                        fontFamily: "'DM Sans', serif",
-                        fontSize: 72,
-                        lineHeight: 1,
-                        color: `${C.accent}12`,
-                        fontWeight: 700,
-                        pointerEvents: "none",
-                        userSelect: "none",
-                      }}
-                    >
-                      &ldquo;
-                    </div>
-
-                    <div style={{ position: "relative", zIndex: 1 }}>
-                      <p
-                        style={{
-                          fontSize: 14,
-                          color: C.textSub,
-                          lineHeight: 1.85,
-                          marginBottom: 14,
-                          paddingTop: 4,
-                        }}
-                      >
-                        {nl2br(v.text)}
-                      </p>
-
-                      <div
-                        style={{
-                          display: "inline-block",
-                          background: C.accentPale,
-                          color: C.accent,
-                          fontSize: 13,
-                          fontWeight: 700,
-                          padding: "5px 14px",
-                          borderRadius: "0.5rem",
-                        }}
-                      >
-                        {v.highlight}
-                      </div>
-                    </div>
-
-                    {/* Speech bubble tail */}
+                  {/* header */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
                     <div style={{
-                      position: "absolute",
-                      bottom: -10,
-                      left: 32,
-                      width: 0,
-                      height: 0,
-                      borderLeft: "10px solid transparent",
-                      borderRight: "10px solid transparent",
-                      borderTop: `10px solid ${C.white}`,
-                      filter: "drop-shadow(0 2px 1px rgba(0,0,0,0.04))",
-                    }} />
-                  </div>
-
-                  {/* Person info below bubble */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 12,
-                      paddingLeft: 20,
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 44,
-                        height: 44,
-                        borderRadius: "50%",
-                        background: C.accent,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: C.white,
-                        fontWeight: 700,
-                        fontSize: 16,
-                        flexShrink: 0,
-                      }}
-                    >
+                      width: 44, height: 44, borderRadius: "50%",
+                      background: C.accent, color: C.white,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontWeight: 800, fontSize: 16,
+                    }}>
                       {v.name.charAt(0)}
                     </div>
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: 15, color: C.text }}>
-                        {v.name}
-                        <span style={{ fontWeight: 400, fontSize: 13, color: C.textSub, marginLeft: 8 }}>
-                          {v.age}
-                        </span>
-                      </div>
+                      <div style={{ fontWeight: 700, fontSize: 15 }}>{v.name}({v.age})</div>
                       <div style={{ fontSize: 12, color: C.textSub }}>{v.prev}</div>
                     </div>
                   </div>
+
+                  {/* quote */}
+                  <p style={{ fontSize: 13, color: C.textSub, lineHeight: 1.9, whiteSpace: "pre-line", marginBottom: 16 }}>
+                    {v.text}
+                  </p>
+
+                  {/* highlight */}
+                  <div style={{
+                    background: C.accentLight, borderRadius: 8,
+                    padding: "8px 14px", fontSize: 13, fontWeight: 700,
+                    color: C.accent, border: `1px solid rgba(99,102,241,0.15)`,
+                  }}>
+                    {v.highlight}
+                  </div>
                 </div>
-              ))}
-            </div>
+              </FadeIn>
+            ))}
           </div>
         </section>
 
-        {/* Wave: bg -> white */}
-        <WaveDivider from={C.bg} to={C.white} />
+        {/* ═══════════ SECTION 9: FAQ ═══════════ */}
+        <section id="faq" style={{
+          minHeight: "100vh", scrollSnapAlign: "start",
+          padding: isMobile ? "80px 24px" : "100px 60px",
+          background: C.white,
+        }}>
+          <SectionHeading icon={HelpCircleIcon} title="よくある質問" sub="FAQ" />
 
-        {/* ═══════════════════════════════════
-            10. FAQ - Smooth controlled accordion
-            ═══════════════════════════════════ */}
-        <section
-          id="faq"
-          ref={faqRef.ref}
-          style={{
-            background: C.white,
-            position: "relative",
-          }}
-        >
-          {/* Section background image */}
-          <div style={{
-            position: "absolute", inset: 0,
-            backgroundImage: `url(${IMG.faq})`,
-            backgroundSize: "cover", backgroundPosition: "center",
-            opacity: 0.03, pointerEvents: "none",
-          }} />
-
-          <div style={{
-            maxWidth: 860,
-            margin: "0 auto",
-            padding: "60px 24px 85px",
-            position: "relative",
-            zIndex: 1,
-          }}>
-            <div style={{ textAlign: "center", marginBottom: 56, ...slideUp(faqRef.visible) }}>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: C.textSub,
-                  letterSpacing: 3,
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                ─ FAQ ─
-              </p>
-              <h2
-                className={`section-heading-underline${faqRef.visible ? " visible" : ""}`}
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 36px)",
-                  color: C.text,
-                }}
-              >
-                ? よくある質問
-              </h2>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {faq.map((item, i) => {
-                const isOpen = openFaq === i;
-                return (
-                  <div
-                    key={i}
-                    className="card-drive"
-                    style={{
-                      background: C.white,
-                      borderRadius: "0.75rem",
-                      boxShadow: shadowSub,
-                      border: `1px solid ${isOpen ? C.accent : C.border}`,
-                      overflow: "hidden",
-                      ...scaleIn(faqRef.visible, 0.05 * i),
-                    }}
-                  >
+          <div style={{ maxWidth: 800, margin: "0 auto" }}>
+            {faq.map((f, i) => {
+              const isOpen = faqOpen === i;
+              return (
+                <FadeIn key={i} delay={i * 0.05}>
+                  <div style={{
+                    borderBottom: `1px solid ${C.border}`,
+                    marginBottom: 0,
+                  }}>
                     <button
-                      onClick={() => setOpenFaq(isOpen ? null : i)}
+                      onClick={() => setFaqOpen(isOpen ? null : i)}
                       style={{
-                        width: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
+                        width: "100%", textAlign: "left", background: "none", border: "none",
+                        padding: "20px 0", cursor: "pointer",
+                        display: "flex", alignItems: "center", justifyContent: "space-between",
                         gap: 16,
-                        padding: "20px 24px",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        textAlign: "left",
-                        fontFamily: "'Noto Sans JP', sans-serif",
-                        transition: "background 0.2s",
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = `${C.accent}05`)}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                     >
-                      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                        <span
-                          style={{
-                            fontFamily: "'DM Sans', sans-serif",
-                            fontWeight: 700,
-                            fontSize: 16,
-                            color: C.accent,
-                            flexShrink: 0,
-                          }}
-                        >
-                          Q.
-                        </span>
-                        <span
-                          style={{
-                            fontSize: 15,
-                            fontWeight: 600,
-                            color: C.text,
-                            lineHeight: 1.5,
-                          }}
-                        >
-                          {item.q}
-                        </span>
-                      </div>
-                      <span
-                        style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: "50%",
-                          background: isOpen ? C.accent : C.accentPale,
-                          color: isOpen ? C.white : C.accent,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: 18,
-                          fontWeight: 500,
-                          flexShrink: 0,
-                          transition: "background 0.3s, color 0.3s, transform 0.4s cubic-bezier(.34,1.56,.64,1)",
-                          transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
-                          lineHeight: 1,
-                        }}
-                      >
-                        +
+                      <span style={{
+                        display: "flex", alignItems: "center", gap: 12,
+                        fontSize: 15, fontWeight: 600, color: C.text,
+                      }}>
+                        <span style={{
+                          flexShrink: 0, width: 28, height: 28, borderRadius: "50%",
+                          background: C.accentLight, color: C.accent,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontWeight: 800, fontSize: 13,
+                        }}>Q</span>
+                        {f.q}
+                      </span>
+                      <span style={{
+                        flexShrink: 0,
+                        transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                        transition: "transform 0.3s",
+                        color: C.muted,
+                      }}>
+                        {ChevronDown}
                       </span>
                     </button>
-                    <div
-                      style={{
-                        maxHeight: isOpen ? 400 : 0,
-                        overflow: "hidden",
-                        transition: "max-height 0.5s cubic-bezier(.23,1,.32,1)",
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding: "0 24px 20px 54px",
-                          fontSize: 14,
-                          color: C.textSub,
-                          lineHeight: 1.85,
-                          opacity: isOpen ? 1 : 0,
-                          transform: isOpen ? "translateY(0)" : "translateY(-8px)",
-                          transition: "opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s",
-                        }}
-                      >
-                        {nl2br(item.a)}
+
+                    <div style={{
+                      maxHeight: isOpen ? 300 : 0,
+                      overflow: "hidden",
+                      transition: "max-height 0.35s cubic-bezier(.22,1,.36,1)",
+                    }}>
+                      <div style={{
+                        padding: "0 0 20px 40px",
+                        fontSize: 14, color: C.textSub, lineHeight: 1.9,
+                        whiteSpace: "pre-line",
+                      }}>
+                        {f.a}
                       </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+                </FadeIn>
+              );
+            })}
           </div>
         </section>
 
-        {/* Wave: white -> bg */}
-        <WaveDivider from={C.white} to={C.bg} />
+        {/* ═══════════ SECTION 10: NEWS ═══════════ */}
+        <section id="news" style={{
+          minHeight: "auto", scrollSnapAlign: "start",
+          padding: isMobile ? "80px 24px" : "100px 60px",
+          background: C.bg,
+        }}>
+          <SectionHeading icon={BellIcon} title="お知らせ" sub="NEWS" />
 
-        {/* ═══════════════════════════════════
-            11. NEWS
-            ═══════════════════════════════════ */}
-        <section
-          id="news"
-          ref={newsRef.ref}
-          style={{
-            background: C.bg,
-            padding: "60px 24px 65px",
-          }}
-        >
-          <div style={{ maxWidth: 860, margin: "0 auto" }}>
-            <div style={{ textAlign: "center", marginBottom: 48, ...slideUp(newsRef.visible) }}>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: C.textSub,
-                  letterSpacing: 3,
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                ─ News ─
-              </p>
-              <h2
-                className={`section-heading-underline${newsRef.visible ? " visible" : ""}`}
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 36px)",
-                  color: C.text,
-                }}
-              >
-                {"\u2398 "}お知らせ
-              </h2>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              {news.map((n, i) => {
-                const tagColors: Record<string, { bg: string; color: string }> = {
-                  urgent: { bg: "#fee2e2", color: "#dc2626" },
-                  new: { bg: C.accentPale, color: C.accent },
-                  default: { bg: "#f3f4f6", color: C.textSub },
-                };
-                const tc = tagColors[n.tagStyle] || tagColors.default;
-                return (
-                  <div
-                    key={i}
-                    className="card-drive"
-                    style={{
-                      background: C.white,
-                      borderRadius: "0.75rem",
-                      padding: "20px 24px",
-                      boxShadow: shadowSub,
-                      border: `1px solid ${C.border}`,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 16,
-                      flexWrap: "wrap",
-                      ...slideLeft(newsRef.visible, 0.08 * i),
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: 13,
-                        color: C.textSub,
-                        flexShrink: 0,
-                      }}
-                    >
-                      ─ {n.date}
-                    </span>
-                    <span
-                      style={{
-                        display: "inline-block",
-                        background: tc.bg,
-                        color: tc.color,
-                        fontSize: 11,
-                        fontWeight: 700,
-                        padding: "3px 12px",
-                        borderRadius: 50,
-                        flexShrink: 0,
-                      }}
-                    >
+          <div style={{ maxWidth: 800, margin: "0 auto" }}>
+            {news.map((n, i) => (
+              <FadeIn key={i} delay={i * 0.06}>
+                <div style={{
+                  display: "flex", alignItems: isMobile ? "flex-start" : "center",
+                  flexDirection: isMobile ? "column" : "row",
+                  gap: isMobile ? 8 : 16,
+                  padding: "20px 0",
+                  borderBottom: `1px solid ${C.border}`,
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+                    <span style={{ fontSize: 13, color: C.muted, fontWeight: 500, minWidth: 90 }}>{n.date}</span>
+                    <span style={{
+                      padding: "3px 10px", borderRadius: 4, fontSize: 11, fontWeight: 700,
+                      background: n.tagStyle === "urgent" ? "#fef2f2" : n.tagStyle === "new" ? C.accentLight : "#f4f4f5",
+                      color: n.tagStyle === "urgent" ? "#ef4444" : n.tagStyle === "new" ? C.accent : C.textSub,
+                      border: `1px solid ${n.tagStyle === "urgent" ? "#fecaca" : n.tagStyle === "new" ? "rgba(99,102,241,0.2)" : C.border}`,
+                    }}>
                       {n.tag}
                     </span>
-                    <span
-                      style={{
-                        fontSize: 14,
-                        color: C.text,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {n.title}
-                    </span>
                   </div>
-                );
-              })}
-            </div>
+                  <span style={{ fontSize: 14, color: C.text, fontWeight: 500 }}>{n.title}</span>
+                </div>
+              </FadeIn>
+            ))}
           </div>
         </section>
 
-        {/* Wave: bg -> accent */}
-        <WaveDivider from={C.bg} to={C.accent} />
-
-        {/* ═══════════════════════════════════
-            12. ACCESS
-            ═══════════════════════════════════ */}
-        <section
-          id="access"
-          ref={accessRef.ref}
-          style={{
-            background: C.accent,
-            padding: "60px 24px 76px",
-          }}
-        >
-          <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-            <div style={{ textAlign: "center", marginBottom: 48, ...slideUp(accessRef.visible) }}>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: `${C.white}aa`,
-                  letterSpacing: 3,
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                ─ Access ─
-              </p>
-              <h2
-                className={`section-heading-underline${accessRef.visible ? " visible" : ""}`}
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 36px)",
-                  color: C.white,
-                }}
-              >
-                {"⌖ "}{access.heading}
-              </h2>
-            </div>
-
-            <div
-              style={{
-                background: C.white,
-                borderRadius: "1.25rem",
-                overflow: "hidden",
-                boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
-                ...slideUp(accessRef.visible, 0.15),
-              }}
-            >
-              <div
-                className="access-inner"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1.1fr 0.9fr",
-                }}
-              >
-                <style>{`
-                  @media (max-width: 768px) {
-                    .access-inner { grid-template-columns: 1fr !important; }
-                  }
-                `}</style>
-                <div style={{ padding: "36px 32px" }}>
-                  <h3
-                    style={{
-                      fontWeight: 700,
-                      fontSize: 18,
-                      color: C.text,
-                      marginBottom: 20,
-                    }}
-                  >
-                    {company.name}
-                  </h3>
-                  <div style={{ fontSize: 14, color: C.textSub, lineHeight: 2.2 }}>
-                    <p>
-                      <span style={{ fontWeight: 600, color: C.text }}>住所</span>
-                      <br />
-                      〒{company.postalCode} {company.address}
-                    </p>
-                    <p style={{ marginTop: 8 }}>
-                      <span style={{ fontWeight: 600, color: C.text }}>最寄り駅</span>
-                      <br />
-                      {access.nearestStation}
-                    </p>
-                    <p style={{ marginTop: 8 }}>
-                      <span style={{ fontWeight: 600, color: C.text }}>電話番号</span>
-                      <br />
-                      {company.phone}（{company.hours}）
-                    </p>
-                    <p
-                      style={{
-                        marginTop: 16,
-                        fontSize: 13,
-                        color: C.accent,
-                        fontWeight: 500,
-                      }}
-                    >
-                      {access.mapNote}
-                    </p>
-                  </div>
-                </div>
-                <div style={{ minHeight: 300 }}>
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3273.8!2d135.63!3d34.77!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDQ2JzEyLjAiTiAxMzXCsDM3JzQ4LjAiRQ!5e0!3m2!1sja!2sjp!4v1"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      minHeight: 300,
-                      border: 0,
-                    }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="アクセスマップ"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Wave: accent -> white */}
-        <WaveDivider from={C.accent} to={C.white} />
-
-        {/* ═══════════════════════════════════
-            13. COMPANY
-            ═══════════════════════════════════ */}
-        <section
-          id="company"
-          ref={companyRef.ref}
-          style={{
-            background: C.white,
-            position: "relative",
-          }}
-        >
-          {/* Section background image */}
+        {/* ═══════════ SECTION 11: COMPANY ═══════════ */}
+        <section id="company" style={{
+          minHeight: "100vh", scrollSnapAlign: "start",
+          position: "relative",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          {/* company.webp bg */}
           <div style={{
             position: "absolute", inset: 0,
             backgroundImage: `url(${IMG.company})`,
             backgroundSize: "cover", backgroundPosition: "center",
-            opacity: 0.03, pointerEvents: "none",
+          }} />
+          {/* dark overlay */}
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "rgba(24,24,27,0.85)",
           }} />
 
-          <div style={{
-            maxWidth: 860,
-            margin: "0 auto",
-            padding: "60px 24px 72px",
-            position: "relative",
-            zIndex: 1,
-          }}>
-            <div style={{ textAlign: "center", marginBottom: 48, ...slideUp(companyRef.visible) }}>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: C.textSub,
-                  letterSpacing: 3,
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                ─ Company ─
-              </p>
-              <h2
-                className={`section-heading-underline${companyRef.visible ? " visible" : ""}`}
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 36px)",
-                  color: C.text,
-                }}
-              >
-                ⌂ 会社概要
-              </h2>
-            </div>
+          <div style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 800, padding: isMobile ? "80px 24px" : "100px 60px" }}>
+            <SectionHeading icon={BuildingIcon} title="会社概要" sub="COMPANY" light />
 
-            <div
-              className="card-drive"
-              style={{
-                background: C.white,
-                borderRadius: "1.25rem",
-                boxShadow: shadowMain,
-                overflow: "hidden",
-                border: `1px solid ${C.border}`,
-                ...slideUp(companyRef.visible, 0.12),
-              }}
-            >
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                }}
-              >
+            <FadeIn>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <tbody>
                   {companyInfo.map((row, i) => (
-                    <tr key={i}>
-                      <th
-                        style={{
-                          textAlign: "left",
-                          padding: "18px 24px",
-                          fontSize: 14,
-                          fontWeight: 700,
-                          color: C.text,
-                          background: C.bg,
-                          borderBottom: `1px solid ${C.border}`,
-                          width: "30%",
-                          verticalAlign: "top",
-                        }}
-                      >
-                        {row.dt}
-                      </th>
-                      <td
-                        style={{
-                          padding: "18px 24px",
-                          fontSize: 14,
-                          color: C.textSub,
-                          borderBottom: `1px solid ${C.border}`,
-                          lineHeight: 1.7,
-                        }}
-                      >
-                        {nl2br(row.dd)}
-                      </td>
+                    <tr key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+                      <td style={{
+                        padding: "16px 20px", fontWeight: 700, fontSize: 14,
+                        color: "#a78bfa", whiteSpace: "nowrap", verticalAlign: "top",
+                        width: isMobile ? 80 : 130,
+                      }}>{row.dt}</td>
+                      <td style={{
+                        padding: "16px 20px", fontSize: 14, color: "rgba(255,255,255,0.85)",
+                      }}>{row.dd}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
+            </FadeIn>
+
+            {/* access info */}
+            <FadeIn delay={0.15}>
+              <div style={{
+                marginTop: 40,
+                padding: "24px 20px",
+                background: "rgba(255,255,255,0.04)",
+                borderRadius: 12,
+                border: "1px solid rgba(255,255,255,0.06)",
+              }}>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  color: "rgba(255,255,255,0.6)", fontSize: 14,
+                  marginBottom: 8,
+                }}>
+                  {MapPinIcon}
+                  <span style={{ fontWeight: 600 }}>{access.nearestStation}</span>
+                </div>
+                <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, paddingLeft: 30, marginBottom: 0 }}>
+                  {access.mapNote}
+                </p>
+              </div>
+            </FadeIn>
+
+            {/* recruitment areas */}
+            <FadeIn delay={0.25}>
+              <div style={{ marginTop: 32 }}>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  color: "#a78bfa", fontSize: 13, fontWeight: 600,
+                  marginBottom: 16, letterSpacing: 1,
+                }}>
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="2" y1="12" x2="22" y2="12" />
+                    <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                  </svg>
+                  対応エリア
+                </div>
+                <div style={{
+                  display: "flex", flexWrap: "wrap", gap: 8,
+                }}>
+                  {["大阪", "東京", "兵庫", "鳥取", "島根", "沖縄"].map((area, i) => (
+                    <span key={i} style={{
+                      padding: "6px 16px",
+                      borderRadius: 6,
+                      background: "rgba(99,102,241,0.12)",
+                      color: "#a78bfa",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      border: "1px solid rgba(99,102,241,0.15)",
+                    }}>
+                      {area}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </FadeIn>
           </div>
         </section>
 
-        {/* Wave: white -> bg */}
-        <WaveDivider from={C.white} to={C.bg} />
-
-        {/* ═══════════════════════════════════
-            14. APPLY FORM
-            ═══════════════════════════════════ */}
-        <section
-          id="apply"
-          ref={applyRef.ref}
-          style={{
-            background: C.bg,
-            padding: "60px 24px 78px",
-          }}
-        >
-          <div style={{ maxWidth: 680, margin: "0 auto" }}>
-            <div style={{ textAlign: "center", marginBottom: 48, ...slideUp(applyRef.visible) }}>
-              <p
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: C.textSub,
-                  letterSpacing: 3,
-                  textTransform: "uppercase",
-                  marginBottom: 8,
-                }}
-              >
-                ─ Entry ─
-              </p>
-              <h2
-                className={`section-heading-underline${applyRef.visible ? " visible" : ""}`}
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "clamp(24px, 4vw, 36px)",
-                  color: C.text,
-                  marginBottom: 12,
-                }}
-              >
-                ✎ 応募フォーム
-              </h2>
-              <p style={{ fontSize: 15, color: C.textSub }}>
-                お気軽にお問い合わせください。担当者より折り返しご連絡いたします。
+        {/* ═══════════ SECTION 12: APPLY FORM ═══════════ */}
+        <section id="apply" style={{
+          minHeight: "100vh", scrollSnapAlign: "start",
+          display: "flex", flexDirection: isMobile ? "column" : "row",
+        }}>
+          {/* left: vehicle.webp */}
+          <div style={{
+            flex: isMobile ? "none" : "0 0 45%",
+            minHeight: isMobile ? 240 : "auto",
+            backgroundImage: `url(${IMG.vehicle})`,
+            backgroundSize: "cover", backgroundPosition: "center",
+            position: "relative",
+          }}>
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(135deg, rgba(99,102,241,0.2), rgba(0,0,0,0.3))",
+            }} />
+            <div style={{
+              position: "absolute", bottom: isMobile ? 20 : 60, left: isMobile ? 20 : 40,
+              zIndex: 2,
+            }}>
+              <h3 style={{
+                fontSize: "clamp(1.2rem,3vw,1.8rem)", fontWeight: 800, color: C.white,
+                textShadow: "0 2px 8px rgba(0,0,0,0.3)",
+              }}>
+                応募・お問い合わせ
+              </h3>
+              <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, marginTop: 8 }}>
+                まずはお気軽にご連絡ください
               </p>
             </div>
+          </div>
 
-            <div
-              style={{
-                background: C.white,
-                borderRadius: "1.25rem",
-                padding: "40px 36px",
-                boxShadow: shadowMain,
-                ...slideUp(applyRef.visible, 0.12),
-              }}
-            >
-              <form onSubmit={(e) => e.preventDefault()}>
-                {[
-                  { label: "お名前", type: "text", name: "name", required: true, placeholder: "例）山田 太郎" },
-                  { label: "電話番号", type: "tel", name: "phone", required: true, placeholder: "例）090-1234-5678" },
-                  { label: "メールアドレス", type: "email", name: "email", required: false, placeholder: "例）info@example.co.jp" },
-                  { label: "年齢", type: "text", name: "age", required: false, placeholder: "" },
-                ].map((f, i) => (
-                  <div key={i} style={{ marginBottom: 22 }}>
-                    <label
-                      style={{
-                        display: "block",
-                        fontSize: 14,
-                        fontWeight: 600,
-                        color: C.text,
-                        marginBottom: 6,
-                      }}
-                    >
-                      {f.label}
-                      {f.required && (
-                        <span style={{ color: "#dc2626", marginLeft: 4, fontSize: 12 }}>
-                          必須
-                        </span>
-                      )}
-                    </label>
-                    <input
-                      type={f.type}
-                      name={f.name}
-                      required={f.required}
-                      placeholder={f.placeholder}
-                      style={{
-                        width: "100%",
-                        padding: "12px 16px",
-                        fontSize: 15,
-                        border: `2px solid ${C.border}`,
-                        borderRadius: "0.5rem",
-                        background: C.bg,
-                        color: C.text,
-                        fontFamily: "'Noto Sans JP', sans-serif",
-                        transition: "border-color 0.3s, box-shadow 0.3s",
-                      }}
-                    />
-                  </div>
-                ))}
+          {/* right: form */}
+          <div style={{
+            flex: 1, padding: isMobile ? "48px 24px" : "60px 48px",
+            display: "flex", flexDirection: "column", justifyContent: "center",
+            background: C.white,
+          }}>
+            <FadeIn>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, color: C.accent }}>
+                {MailIcon}
+                <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 2 }}>APPLY</span>
+              </div>
+              <h2 style={{ fontSize: "clamp(1.3rem,3vw,1.8rem)", fontWeight: 800, marginBottom: 8 }}>応募フォーム</h2>
+              <div style={{ width: 40, height: 3, background: C.accent, borderRadius: 2, marginBottom: 32 }} />
+            </FadeIn>
 
-                {/* 希望エリア */}
-                <div style={{ marginBottom: 22 }}>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: 14,
-                      fontWeight: 600,
-                      color: C.text,
-                      marginBottom: 6,
-                    }}
-                  >
-                    希望エリア
+            <FadeIn delay={0.1}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 16 }}>
+                {/* name */}
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: C.text, display: "block", marginBottom: 6 }}>
+                    お名前 <span style={{ color: "#ef4444", fontSize: 11 }}>*</span>
                   </label>
-                  <select
-                    name="area"
+                  <input
+                    placeholder="例：山田 太郎"
+                    value={form.name}
+                    onChange={e => updateForm("name", e.target.value)}
                     style={{
-                      width: "100%",
-                      padding: "12px 16px",
-                      fontSize: 15,
-                      border: `2px solid ${C.border}`,
-                      borderRadius: "0.5rem",
-                      background: C.bg,
-                      color: C.text,
-                      fontFamily: "'Noto Sans JP', sans-serif",
-                      transition: "border-color 0.3s, box-shadow 0.3s",
+                      width: "100%", padding: "12px 14px", borderRadius: 8,
+                      border: `1px solid ${C.border}`, fontSize: 14,
+                      outline: "none", transition: "border-color 0.2s",
+                      boxSizing: "border-box",
                     }}
-                  >
-                    <option value="">選択してください</option>
-                    {["大阪", "東京", "兵庫", "鳥取", "島根", "沖縄", "その他"].map(
-                      (a) => (
-                        <option key={a} value={a}>
-                          {a}
-                        </option>
-                      )
-                    )}
-                  </select>
-                </div>
-
-                {/* 備考 */}
-                <div style={{ marginBottom: 28 }}>
-                  <label
-                    style={{
-                      display: "block",
-                      fontSize: 14,
-                      fontWeight: 600,
-                      color: C.text,
-                      marginBottom: 6,
-                    }}
-                  >
-                    ご質問・備考
-                  </label>
-                  <textarea
-                    name="message"
-                    rows={4}
-                    placeholder="例）応募を検討しています。詳しい話を聞きたいです。"
-                    style={{
-                      width: "100%",
-                      padding: "12px 16px",
-                      fontSize: 15,
-                      border: `2px solid ${C.border}`,
-                      borderRadius: "0.5rem",
-                      background: C.bg,
-                      color: C.text,
-                      fontFamily: "'Noto Sans JP', sans-serif",
-                      resize: "vertical",
-                      transition: "border-color 0.3s, box-shadow 0.3s",
-                    }}
+                    onFocus={e => e.currentTarget.style.borderColor = C.accent}
+                    onBlur={e => e.currentTarget.style.borderColor = C.border}
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  className="btn-drive cta-pulse"
+                {/* kana */}
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: C.text, display: "block", marginBottom: 6 }}>
+                    フリガナ <span style={{ color: "#ef4444", fontSize: 11 }}>*</span>
+                  </label>
+                  <input
+                    placeholder="例：ヤマダ タロウ"
+                    value={form.kana}
+                    onChange={e => updateForm("kana", e.target.value)}
+                    style={{
+                      width: "100%", padding: "12px 14px", borderRadius: 8,
+                      border: `1px solid ${C.border}`, fontSize: 14,
+                      outline: "none", transition: "border-color 0.2s",
+                      boxSizing: "border-box",
+                    }}
+                    onFocus={e => e.currentTarget.style.borderColor = C.accent}
+                    onBlur={e => e.currentTarget.style.borderColor = C.border}
+                  />
+                </div>
+
+                {/* phone */}
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: C.text, display: "block", marginBottom: 6 }}>
+                    電話番号 <span style={{ color: "#ef4444", fontSize: 11 }}>*</span>
+                  </label>
+                  <input
+                    placeholder="例：090-1234-5678"
+                    type="tel"
+                    value={form.phone}
+                    onChange={e => updateForm("phone", e.target.value)}
+                    style={{
+                      width: "100%", padding: "12px 14px", borderRadius: 8,
+                      border: `1px solid ${C.border}`, fontSize: 14,
+                      outline: "none", transition: "border-color 0.2s",
+                      boxSizing: "border-box",
+                    }}
+                    onFocus={e => e.currentTarget.style.borderColor = C.accent}
+                    onBlur={e => e.currentTarget.style.borderColor = C.border}
+                  />
+                </div>
+
+                {/* email */}
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: C.text, display: "block", marginBottom: 6 }}>
+                    メールアドレス
+                  </label>
+                  <input
+                    placeholder="例：yamada@example.com"
+                    type="email"
+                    value={form.email}
+                    onChange={e => updateForm("email", e.target.value)}
+                    style={{
+                      width: "100%", padding: "12px 14px", borderRadius: 8,
+                      border: `1px solid ${C.border}`, fontSize: 14,
+                      outline: "none", transition: "border-color 0.2s",
+                      boxSizing: "border-box",
+                    }}
+                    onFocus={e => e.currentTarget.style.borderColor = C.accent}
+                    onBlur={e => e.currentTarget.style.borderColor = C.border}
+                  />
+                </div>
+
+                {/* age */}
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: C.text, display: "block", marginBottom: 6 }}>
+                    年齢
+                  </label>
+                  <input
+                    placeholder="例：35"
+                    value={form.age}
+                    onChange={e => updateForm("age", e.target.value)}
+                    style={{
+                      width: "100%", padding: "12px 14px", borderRadius: 8,
+                      border: `1px solid ${C.border}`, fontSize: 14,
+                      outline: "none", transition: "border-color 0.2s",
+                      boxSizing: "border-box",
+                    }}
+                    onFocus={e => e.currentTarget.style.borderColor = C.accent}
+                    onBlur={e => e.currentTarget.style.borderColor = C.border}
+                  />
+                </div>
+
+                {/* area */}
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: C.text, display: "block", marginBottom: 6 }}>
+                    希望エリア
+                  </label>
+                  <select
+                    value={form.area}
+                    onChange={e => updateForm("area", e.target.value)}
+                    style={{
+                      width: "100%", padding: "12px 14px", borderRadius: 8,
+                      border: `1px solid ${C.border}`, fontSize: 14,
+                      outline: "none", background: C.white,
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <option value="">例：大阪</option>
+                    <option value="大阪">大阪</option>
+                    <option value="東京">東京</option>
+                    <option value="兵庫">兵庫</option>
+                    <option value="鳥取">鳥取</option>
+                    <option value="島根">島根</option>
+                    <option value="沖縄">沖縄</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* message */}
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ fontSize: 13, fontWeight: 600, color: C.text, display: "block", marginBottom: 6 }}>
+                  メッセージ・ご質問
+                </label>
+                <textarea
+                  placeholder="例：週3日から始めたいのですが可能ですか？"
+                  value={form.message}
+                  onChange={e => updateForm("message", e.target.value)}
+                  rows={4}
                   style={{
-                    width: "100%",
-                    padding: "16px 0",
-                    fontSize: 16,
-                    fontWeight: 700,
-                    color: C.white,
-                    background: C.accent,
-                    border: "none",
-                    borderRadius: 50,
-                    cursor: "pointer",
-                    fontFamily: "'Noto Sans JP', sans-serif",
+                    width: "100%", padding: "12px 14px", borderRadius: 8,
+                    border: `1px solid ${C.border}`, fontSize: 14,
+                    outline: "none", resize: "vertical",
+                    fontFamily: "inherit", lineHeight: 1.7,
+                    boxSizing: "border-box",
                   }}
-                >
-                  送信する
-                </button>
-              </form>
-            </div>
+                  onFocus={e => e.currentTarget.style.borderColor = C.accent}
+                  onBlur={e => e.currentTarget.style.borderColor = C.border}
+                />
+              </div>
+
+              {/* submit */}
+              <button style={{
+                width: "100%", padding: "16px 0", borderRadius: 10,
+                background: C.accent, color: C.white, border: "none",
+                fontWeight: 700, fontSize: 16, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                boxShadow: "0 4px 16px rgba(99,102,241,0.35)",
+                transition: "transform 0.2s, box-shadow 0.2s",
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(99,102,241,0.5)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 16px rgba(99,102,241,0.35)"; }}
+              >
+                {SendIcon} 応募する
+              </button>
+
+              {/* phone info */}
+              <div style={{
+                textAlign: "center", marginTop: 20, fontSize: 13, color: C.textSub,
+              }}>
+                お電話でもお気軽にどうぞ
+                <a href={`tel:${company.phone}`} style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                  color: C.accent, textDecoration: "none", fontWeight: 700,
+                  fontSize: 18, marginTop: 6,
+                }}>
+                  {PhoneIcon} {company.phone}
+                </a>
+                <span style={{ fontSize: 12, color: C.muted }}>{company.hours}</span>
+              </div>
+            </FadeIn>
+
+            {/* truck animation */}
+            <TruckAnimation />
           </div>
         </section>
 
-        {/* ── Truck animation ── */}
-        <div className="r02-truck-container" style={{ background: C.bg, overflow: "hidden", position: "relative" }}>
-          {/* Faint cityscape */}
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, opacity: 0.06, lineHeight: 0 }}>
-            <svg className="r02-truck-cityscape" viewBox="0 0 800 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%" }}>
-              <path d="M0,58 L60,58 L60,40 L55,40 L55,35 L50,30 L45,35 L45,40 L40,40 L40,58 L80,58 L80,28 L85,28 L85,22 L90,22 L90,28 L100,28 L100,58 L120,58 L125,45 L130,58 L140,58 L140,20 L145,20 L145,15 L150,15 L150,20 L160,20 L160,58 L200,58 L200,30 L210,30 L210,25 L220,25 L220,30 L230,30 L230,58 L250,58 L255,48 L260,52 L265,46 L270,58 L290,58 L290,35 L295,35 L295,12 L300,12 L305,12 L305,35 L310,35 L310,58 L340,58 L340,42 L350,42 L350,38 L355,34 L360,38 L360,42 L370,42 L370,58 L400,58 L400,22 L405,22 L410,18 L415,22 L420,22 L420,58 L440,58 L445,50 L450,45 L455,50 L460,58 L480,58 L480,30 L490,30 L490,58 L510,58 L510,15 L515,15 L515,10 L520,7 L525,10 L525,15 L530,15 L530,58 L560,58 L560,38 L565,38 L570,32 L575,38 L580,38 L580,58 L600,58 L600,45 L610,45 L610,40 L620,40 L620,45 L630,45 L630,58 L650,58 L650,25 L660,20 L670,25 L670,58 L700,58 L700,48 L705,48 L705,42 L710,38 L715,35 L720,38 L720,42 L730,42 L730,48 L735,48 L735,58 L760,58 L760,30 L770,30 L770,58 L800,58" stroke={C.textSub} strokeWidth="1" />
-            </svg>
-          </div>
-          {/* Road line */}
-          <div className="r02-truck-road" style={{ position: "absolute", left: 0, right: 0, height: 2, background: `linear-gradient(to right, transparent, ${C.accent}30, transparent)` }} />
-          {/* Truck SVG */}
-          <div className="r02-truck-vehicle" style={{ position: "absolute" }}>
-            <svg className="r02-truck-svg" viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="0" y="4" width="36" height="24" rx="3" fill={C.accent} opacity="0.4" />
-              <rect x="36" y="12" width="22" height="16" rx="2" fill={C.accent} opacity="0.6" />
-              <circle cx="14" cy="30" r="5" fill={C.textSub} opacity="0.4" />
-              <circle cx="14" cy="30" r="2.5" fill={C.bg} />
-              <circle cx="50" cy="30" r="5" fill={C.textSub} opacity="0.4" />
-              <circle cx="50" cy="30" r="2.5" fill={C.bg} />
-              <rect x="40" y="16" width="8" height="6" rx="1" fill={`${C.accent}30`} />
-            </svg>
-          </div>
-        </div>
-
-        {/* Wave: bg -> accent */}
-        <WaveDivider from={C.bg} to={C.accent} />
-
-        {/* ═══════════════════════════════════
-            15. CTA SECTION
-            ═══════════════════════════════════ */}
-        <section
-          ref={ctaRef.ref}
-          style={{
-            background: C.accent,
-            padding: "80px 24px 100px",
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
-          {/* 背景画像 */}
+        {/* ═══════════ SECTION 13: CTA ═══════════ */}
+        <section style={{
+          minHeight: "100vh", scrollSnapAlign: "start",
+          position: "relative",
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          {/* delivery.webp bg */}
           <div style={{
             position: "absolute", inset: 0,
             backgroundImage: `url(${IMG.delivery})`,
             backgroundSize: "cover", backgroundPosition: "center",
-            opacity: 0.1,
           }} />
-          <div
-            style={{
-              maxWidth: 800,
-              margin: "0 auto",
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "rgba(24,24,27,0.5)",
+          }} />
+
+          <FadeIn>
+            <div style={{
+              position: "relative", zIndex: 2,
+              maxWidth: 600, margin: "0 auto", padding: isMobile ? "48px 24px" : "56px 48px",
+              background: "rgba(255,255,255,0.12)",
+              backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)",
+              borderRadius: 20,
+              border: "1px solid rgba(255,255,255,0.18)",
               textAlign: "center",
-              position: "relative",
-              zIndex: 1,
-              ...slideUp(ctaRef.visible),
-            }}
-          >
-            <h2
-              style={{
-                fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                fontWeight: 700,
-                fontSize: "clamp(22px, 3.5vw, 32px)",
-                color: C.white,
-                marginBottom: 16,
-                lineHeight: 1.5,
-              }}
-            >
-              {nl2br(cta.heading)}
-            </h2>
-            <p
-              style={{
-                fontSize: 15,
-                color: `${C.white}cc`,
-                lineHeight: 1.85,
-                marginBottom: 36,
-                maxWidth: 600,
-                margin: "0 auto 36px",
-              }}
-            >
-              {nl2br(cta.subtext)}
-            </p>
-
-            <a
-              href={`tel:${cta.phone.replace(/-/g, "")}`}
-              className="btn-drive"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 12,
-                background: C.white,
-                color: C.accent,
-                fontFamily: "'DM Sans', sans-serif",
-                fontWeight: 700,
-                fontSize: "clamp(24px, 4vw, 36px)",
-                padding: "18px 44px",
-                borderRadius: 50,
-                boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-                marginBottom: 20,
-              }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 28, height: 28 }}><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>
-              {cta.phone}
-            </a>
-            <p style={{ fontSize: 13, color: `${C.white}99` }}>
-              {company.hours}
-            </p>
-
-            <div style={{ marginTop: 28 }}>
-              <a
-                href="#apply"
-                className="btn-drive"
-                style={{
-                  display: "inline-block",
-                  background: "transparent",
-                  color: C.white,
-                  fontSize: 15,
-                  fontWeight: 700,
-                  padding: "14px 40px",
-                  borderRadius: 50,
-                  border: `2px solid ${C.white}`,
-                }}
-              >
-                {cta.webLabel}
-              </a>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* ═══════════════════════════════════
-          16. FOOTER
-          ═══════════════════════════════════ */}
-      <footer
-        style={{
-          background: C.dark,
-          color: `${C.white}cc`,
-          padding: "60px 24px 32px",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        {/* Footer background image */}
-        <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: `url(${IMG.footerBg})`,
-          backgroundSize: "cover", backgroundPosition: "center",
-          opacity: 0.05, pointerEvents: "none",
-        }} />
-
-        <div
-          className="footer-cols"
-          style={{
-            maxWidth: 1200,
-            margin: "0 auto",
-            display: "grid",
-            gridTemplateColumns: "1.5fr 1.05fr 0.95fr",
-            gap: 48,
-            marginBottom: 48,
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-          <style>{`
-            @media (max-width: 768px) {
-              .footer-cols { grid-template-columns: 1fr !important; gap: 32px !important; }
-            }
-          `}</style>
-
-          {/* Col 1: ブランド */}
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <div
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: "0.5rem",
-                  background: C.accent,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: C.white,
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontWeight: 700,
-                  fontSize: 13,
-                }}
-              >
-                GL
-              </div>
-              <span
-                style={{
-                  fontFamily: "'DM Sans', 'Noto Sans JP', sans-serif",
-                  fontWeight: 700,
-                  fontSize: 15,
-                  color: C.white,
-                }}
-              >
-                {company.nameEn}
-              </span>
-            </div>
-            <p
-              style={{
-                fontFamily: "'Zen Kurenaido', 'Yomogi', sans-serif",
-                fontSize: 14,
-                lineHeight: 1.8,
-                color: `${C.white}88`,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {footerData.catchphrase}
-            </p>
-          </div>
-
-          {/* Col 2: リンク */}
-          <div>
-            <h4
-              style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: C.white,
-                marginBottom: 16,
-                textTransform: "uppercase",
-                letterSpacing: 1,
-              }}
-            >
-              Pages
-            </h4>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {navLinks.slice(0, 6).map((l) => (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  style={{
-                    fontSize: 13,
-                    color: `${C.white}88`,
-                    transition: "color 0.2s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = C.white)}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = `${C.white}88`)}
-                >
-                  {l.label}
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Col 3: お問い合わせ */}
-          <div>
-            <h4
-              style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: C.white,
-                marginBottom: 16,
-                textTransform: "uppercase",
-                letterSpacing: 1,
-              }}
-            >
-              Contact
-            </h4>
-            <div style={{ fontSize: 13, color: `${C.white}88`, lineHeight: 2 }}>
-              <p>{company.name}</p>
-              <p>〒{company.postalCode}</p>
-              <p>{company.address}</p>
-              <p style={{ marginTop: 8 }}>
-                <a
-                  href={`tel:${company.phone.replace(/-/g, "")}`}
-                  style={{
-                    color: C.white,
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontWeight: 700,
-                    fontSize: 16,
-                  }}
-                >
-                  {company.phone}
-                </a>
+            }}>
+              <h2 style={{
+                fontSize: "clamp(1.4rem,4vw,2rem)", fontWeight: 800,
+                color: C.white, lineHeight: 1.6, marginBottom: 20,
+                whiteSpace: "pre-line",
+              }}>
+                {cta.heading}
+              </h2>
+              <p style={{
+                color: "rgba(255,255,255,0.8)", fontSize: 14, lineHeight: 1.9,
+                marginBottom: 32, whiteSpace: "pre-line",
+              }}>
+                {cta.subtext}
               </p>
-              <p style={{ fontSize: 12 }}>{company.hours}</p>
-            </div>
-          </div>
-        </div>
 
-        {/* コピーライト */}
-        <div
-          style={{
-            borderTop: `1px solid ${C.white}15`,
-            paddingTop: 24,
-            textAlign: "center",
-            fontSize: 12,
-            color: `${C.white}55`,
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
-            {/* 一筆書きシティスケープ */}
-            <div style={{ width: "100%", maxWidth: 800, margin: "0 auto 20px", opacity: 0.15, lineHeight: 0 }}>
-              <svg viewBox="0 0 800 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "auto" }}>
-                <path d="M0,58 L60,58 L60,40 L55,40 L55,35 L50,30 L45,35 L45,40 L40,40 L40,58 L80,58 L80,28 L85,28 L85,22 L90,22 L90,28 L100,28 L100,58 L120,58 L125,45 L130,58 L140,58 L140,20 L145,20 L145,15 L150,15 L150,20 L160,20 L160,58 L200,58 L200,30 L210,30 L210,25 L220,25 L220,30 L230,30 L230,58 L250,58 L255,48 L260,52 L265,46 L270,58 L290,58 L290,35 L295,35 L295,12 L300,12 L305,12 L305,35 L310,35 L310,58 L340,58 L340,42 L350,42 L350,38 L355,34 L360,38 L360,42 L370,42 L370,58 L400,58 L400,22 L405,22 L410,18 L415,22 L420,22 L420,58 L440,58 L445,50 L450,45 L455,50 L460,58 L480,58 L480,30 L490,30 L490,58 L510,58 L510,15 L515,15 L515,10 L520,7 L525,10 L525,15 L530,15 L530,58 L560,58 L560,38 L565,38 L570,32 L575,38 L580,38 L580,58 L600,58 L600,45 L610,45 L610,40 L620,40 L620,45 L630,45 L630,58 L650,58 L650,25 L660,20 L670,25 L670,58 L700,58 L700,48 L705,48 L705,42 L710,38 L715,35 L720,38 L720,42 L730,42 L730,48 L735,48 L735,58 L760,58 L760,30 L770,30 L770,58 L800,58"
-                  stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14, alignItems: "center" }}>
+                <a href="#apply" style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  padding: "14px 40px", borderRadius: 999,
+                  background: C.accent, color: C.white, textDecoration: "none",
+                  fontWeight: 700, fontSize: 15,
+                  boxShadow: "0 4px 20px rgba(99,102,241,0.5)",
+                  transition: "transform 0.2s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
+                onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+                >
+                  {MailIcon} {cta.webLabel}
+                </a>
+
+                <a href={`tel:${cta.phone}`} style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  padding: "12px 32px", borderRadius: 999,
+                  background: "rgba(255,255,255,0.15)", color: C.white,
+                  textDecoration: "none", fontWeight: 600, fontSize: 15,
+                  border: "1px solid rgba(255,255,255,0.25)",
+                  transition: "background 0.2s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.25)"}
+                onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.15)"}
+                >
+                  {PhoneIcon} {cta.phone}
+                </a>
+              </div>
             </div>
-          &copy; {new Date().getFullYear()} {company.name} All rights reserved.
-        </div>
-      </footer>
+          </FadeIn>
+        </section>
+
+        {/* ═══════════ SECTION 14: FOOTER ═══════════ */}
+        <footer style={{
+          position: "relative", overflow: "hidden",
+          scrollSnapAlign: "end",
+        }}>
+          {/* footer-bg.webp */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${IMG.footerBg})`,
+            backgroundSize: "cover", backgroundPosition: "center",
+          }} />
+          {/* dark overlay */}
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "rgba(24,24,27,0.92)",
+          }} />
+
+          <div style={{ position: "relative", zIndex: 2, padding: isMobile ? "60px 24px 0" : "80px 60px 0" }}>
+            {/* decorative accent line */}
+            <div style={{
+              width: 60,
+              height: 3,
+              background: `linear-gradient(to right, ${C.accent}, #a78bfa)`,
+              borderRadius: 2,
+              margin: "0 auto 40px",
+            }} />
+
+            {/* catchphrase in Zen Kurenaido */}
+            <div style={{ textAlign: "center", marginBottom: 48 }}>
+              <p style={{
+                fontFamily: "'Zen Kurenaido', sans-serif",
+                fontSize: "clamp(1rem,2.5vw,1.4rem)",
+                color: "rgba(255,255,255,0.7)",
+                letterSpacing: 2,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}>
+                {footerData.catchphrase}
+              </p>
+              {/* subtle subline */}
+              <p style={{
+                fontSize: 12,
+                color: "rgba(255,255,255,0.3)",
+                letterSpacing: 3,
+                marginTop: 12,
+                textTransform: "uppercase",
+              }}>
+                {company.nameEn}
+              </p>
+            </div>
+
+            {/* footer grid: 3 columns on desktop */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr",
+              gap: isMobile ? 32 : 48,
+              marginBottom: 48,
+              textAlign: isMobile ? "center" : "left",
+            }}>
+              {/* col 1: company info */}
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  color: "rgba(255,255,255,0.35)",
+                  fontWeight: 700,
+                  letterSpacing: 2,
+                  marginBottom: 16,
+                  textTransform: "uppercase",
+                }}>
+                  Company
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: C.white, marginBottom: 12 }}>
+                  {company.name}
+                </div>
+                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 2 }}>
+                  <p style={{ margin: "2px 0", display: "flex", alignItems: isMobile ? "center" : "flex-start", gap: 6, justifyContent: isMobile ? "center" : "flex-start" }}>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24" style={{ flexShrink: 0, marginTop: 2 }}>
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" />
+                    </svg>
+                    {company.address}
+                  </p>
+                  <p style={{ margin: "2px 0", display: "flex", alignItems: "center", gap: 6, justifyContent: isMobile ? "center" : "flex-start" }}>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+                    </svg>
+                    {company.phone}
+                  </p>
+                  <p style={{ margin: "2px 0", display: "flex", alignItems: "center", gap: 6, justifyContent: isMobile ? "center" : "flex-start" }}>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                      <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    {company.hours}
+                  </p>
+                </div>
+              </div>
+
+              {/* col 2: site links */}
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  color: "rgba(255,255,255,0.35)",
+                  fontWeight: 700,
+                  letterSpacing: 2,
+                  marginBottom: 16,
+                  textTransform: "uppercase",
+                }}>
+                  Navigation
+                </div>
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "4px 16px",
+                }}>
+                  {navLinks.map((link, i) => (
+                    <a key={i} href={link.href} style={{
+                      fontSize: 13,
+                      color: "rgba(255,255,255,0.5)",
+                      textDecoration: "none",
+                      padding: "5px 0",
+                      transition: "color 0.2s",
+                      display: "block",
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.color = C.white}
+                    onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.5)"}
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* col 3: quick apply CTA */}
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  color: "rgba(255,255,255,0.35)",
+                  fontWeight: 700,
+                  letterSpacing: 2,
+                  marginBottom: 16,
+                  textTransform: "uppercase",
+                }}>
+                  Contact
+                </div>
+                <p style={{
+                  fontSize: 13,
+                  color: "rgba(255,255,255,0.5)",
+                  marginBottom: 20,
+                  lineHeight: 1.8,
+                }}>
+                  お気軽にお問い合わせください。
+                  <br />
+                  電話・Webどちらからでもご応募いただけます。
+                </p>
+                <div style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                  alignItems: isMobile ? "center" : "flex-start",
+                }}>
+                  <a href="#apply" style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "10px 24px",
+                    borderRadius: 8,
+                    background: C.accent,
+                    color: C.white,
+                    textDecoration: "none",
+                    fontWeight: 600,
+                    fontSize: 13,
+                    transition: "opacity 0.2s",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
+                  onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+                  >
+                    {MailIcon}
+                    <span>Webから応募</span>
+                  </a>
+                  <a href={`tel:${company.phone}`} style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    padding: "10px 24px",
+                    borderRadius: 8,
+                    background: "rgba(255,255,255,0.08)",
+                    color: "rgba(255,255,255,0.7)",
+                    textDecoration: "none",
+                    fontWeight: 600,
+                    fontSize: 13,
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    transition: "background 0.2s",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.15)"}
+                  onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
+                  >
+                    {PhoneIcon}
+                    <span>電話で問い合わせ</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* divider */}
+            <div style={{
+              height: 1,
+              background: "rgba(255,255,255,0.06)",
+              marginBottom: 0,
+            }} />
+          </div>
+
+          {/* cityscape SVG */}
+          <div style={{ position: "relative", zIndex: 2 }}>
+            <CityscapeSVG />
+          </div>
+
+          {/* copyright bar */}
+          <div style={{
+            position: "relative", zIndex: 2,
+            background: "rgba(0,0,0,0.3)",
+            padding: "14px 24px",
+            textAlign: "center",
+            fontSize: 11, color: "rgba(255,255,255,0.35)",
+          }}>
+            &copy; {new Date().getFullYear()} {company.name} All rights reserved.
+          </div>
+        </footer>
+
+      </div>
     </>
   );
 }
