@@ -264,6 +264,78 @@ function CounterNum({ value, suffix }: { value: string; suffix: string }) {
   );
 }
 
+/* ───────────────────── HISTORY HORIZONTAL SCROLL ───────────────────── */
+function HistoryHScroll({ items, mobile }: { items: typeof history; mobile: boolean }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const section = document.getElementById("history");
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const sectionH = section.offsetHeight - window.innerHeight;
+      const scrolled = -rect.top;
+      const p = Math.max(0, Math.min(1, scrolled / sectionH));
+      setProgress(p);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const totalW = items.length * (mobile ? 280 : 320) + 80;
+  const viewW = typeof window !== "undefined" ? window.innerWidth - (mobile ? 0 : SIDEBAR_W) : 1000;
+  const maxTranslate = Math.max(0, totalW - viewW);
+  const translateX = -progress * maxTranslate;
+
+  return (
+    <div style={{ overflow: "hidden", height: "calc(100vh - 120px)", display: "flex", alignItems: "center" }}>
+      <div
+        ref={containerRef}
+        style={{
+          display: "flex",
+          gap: 20,
+          padding: mobile ? "0 16px" : "0 60px",
+          transform: `translateX(${translateX}px)`,
+          transition: "transform 0.1s linear",
+          willChange: "transform",
+        }}
+      >
+        {items.map((h, i) => (
+          <div
+            key={i}
+            style={{
+              minWidth: mobile ? 260 : 300,
+              borderRadius: 16,
+              overflow: "hidden",
+              background: C.white,
+              boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+              flexShrink: 0,
+              opacity: progress > 0 ? 1 : 0,
+              transform: progress > 0 ? "translateY(0)" : "translateY(30px)",
+              transition: `opacity 0.5s ${i * 0.1}s, transform 0.5s ${i * 0.1}s`,
+            }}
+          >
+            <div style={{ height: 160, position: "relative", overflow: "hidden" }}>
+              <img
+                src={`${IMG}/history-${2021 + i}.webp`}
+                alt={h.year}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+              <div style={{ position: "absolute", bottom: 12, left: 16, fontSize: 32, fontWeight: 800, color: C.white, textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
+                {h.year}
+              </div>
+            </div>
+            <div style={{ padding: "16px 20px" }}>
+              <p style={{ fontSize: 14, lineHeight: 1.7, color: C.text }}>{h.event}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ───────────────────── SIDEBAR NAV ───────────────────── */
 function Sidebar({
   activeSection,
@@ -549,12 +621,12 @@ export default function CP05() {
         @keyframes scrollArrow { 0%,100% { transform: translateY(0); opacity:1; } 50% { transform: translateY(12px); opacity:0.3; } }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         @keyframes truckDrive { 0% { transform: translateX(-200px); } 100% { transform: translateX(calc(100vw)); } }
-        @keyframes underlineGrow { 0% { width: 0; } 100% { width: 100%; } }
+        @keyframes underlineGrow { 0% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
         @keyframes fadeInUp { 0% { opacity:0; transform:translateY(24px); } 100% { opacity:1; transform:translateY(0); } }
+        @keyframes handwrite { 0% { width: 0; opacity: 0; } 10% { opacity: 1; } 100% { width: 100%; opacity: 1; } }
         .bento-card:hover { transform: scale(1.02); }
-        .history-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
-        .history-scroll::-webkit-scrollbar { height: 6px; }
-        .history-scroll::-webkit-scrollbar-thumb { background: ${C.accent}; border-radius: 3px; }
+        .cp05-h-ul { position: relative; display: inline-flex; align-items: center; gap: 12px; padding-bottom: 8px; }
+        .cp05-h-ul::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: ${C.accent}; transform: scaleX(0); transform-origin: left; animation: underlineGrow 0.8s ease 0.3s forwards; }
         .news-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-4px); }
         input:focus, textarea:focus { outline: none; border-color: ${C.accent} !important; box-shadow: 0 0 0 3px ${C.accentLight}; }
       `}</style>
@@ -698,9 +770,11 @@ export default function CP05() {
                 fontSize: mobile ? 24 : 36,
                 fontWeight: 700,
                 marginBottom: 48,
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
                 gap: 12,
+                position: "relative" as const,
+                paddingBottom: 8,
               }}
             >
               {Icons.truck(28, C.accent)}
@@ -1002,9 +1076,11 @@ export default function CP05() {
                 fontSize: mobile ? 24 : 36,
                 fontWeight: 700,
                 marginBottom: 48,
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
                 gap: 12,
+                position: "relative" as const,
+                paddingBottom: 8,
               }}
             >
               {Icons.building(28, C.accent)}
@@ -1050,99 +1126,23 @@ export default function CP05() {
           </FadeIn>
         </section>
 
-        {/* ──── HISTORY (Horizontal scrollable cards) ──── */}
+        {/* ──── HISTORY (Sticky horizontal scroll) ──── */}
         <section
           id="history"
           style={{
-            padding: mobile ? "64px 0 64px 16px" : "100px 0 100px 60px",
             background: C.bgSub,
+            height: `${(history.length + 1) * 100}vh`,
+            position: "relative",
           }}
         >
-          <FadeIn>
-            <h2
-              style={{
-                fontSize: mobile ? 24 : 36,
-                fontWeight: 700,
-                marginBottom: 48,
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                paddingRight: mobile ? 16 : 60,
-              }}
-            >
-              {Icons.clock(28, C.accent)}
-              <span>
-                <span style={{ color: C.accent }}>沿</span>革
-              </span>
-            </h2>
-          </FadeIn>
-
-          <div
-            ref={historyScrollRef}
-            className="history-scroll"
-            style={{
-              display: "flex",
-              gap: 20,
-              paddingBottom: 16,
-              paddingRight: 60,
-            }}
-          >
-            {history.map((h, i) => (
-              <FadeIn
-                key={i}
-                delay={i * 0.1}
-                style={{
-                  minWidth: mobile ? 260 : 300,
-                  borderRadius: 16,
-                  overflow: "hidden",
-                  background: C.white,
-                  boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
-                  flexShrink: 0,
-                }}
-              >
-                <div
-                  style={{
-                    height: 160,
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                >
-                  <img
-                    src={`${IMG}/history-${2021 + i}.webp`}
-                    alt={h.year}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: 12,
-                      left: 16,
-                      fontSize: 32,
-                      fontWeight: 800,
-                      color: C.white,
-                      textShadow: "0 2px 8px rgba(0,0,0,0.5)",
-                    }}
-                  >
-                    {h.year}
-                  </div>
-                </div>
-                <div style={{ padding: "16px 20px" }}>
-                  <p
-                    style={{
-                      fontSize: 14,
-                      lineHeight: 1.7,
-                      color: C.text,
-                    }}
-                  >
-                    {h.event}
-                  </p>
-                </div>
-              </FadeIn>
-            ))}
+          <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
+            <div style={{ padding: mobile ? "40px 16px 20px" : "60px 60px 20px" }}>
+              <h2 className="cp05-heading-underline visible" style={{ fontSize: mobile ? 24 : 36, fontWeight: 700, display: "flex", alignItems: "center", gap: 12 }}>
+                {Icons.clock(28, C.accent)}
+                <span><span style={{ color: C.accent }}>沿</span>革</span>
+              </h2>
+            </div>
+            <HistoryHScroll items={history} mobile={mobile} />
           </div>
         </section>
 
@@ -1369,9 +1369,11 @@ export default function CP05() {
                 fontSize: mobile ? 24 : 36,
                 fontWeight: 700,
                 marginBottom: 48,
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
                 gap: 12,
+                position: "relative" as const,
+                paddingBottom: 8,
               }}
             >
               {Icons.newspaper(28, C.accent)}
@@ -1531,23 +1533,31 @@ export default function CP05() {
               </div>
               <h2
                 style={{
-                  fontSize: mobile ? 24 : 40,
-                  fontWeight: 800,
-                  lineHeight: 1.4,
+                  fontFamily: "'Zen Kurenaido', 'Yomogi', sans-serif",
+                  fontSize: mobile ? 24 : 42,
+                  fontWeight: 700,
+                  lineHeight: 1.5,
                   position: "relative",
                   display: "inline-block",
+                  paddingBottom: 8,
+                  overflow: "hidden",
                 }}
               >
-                {recruit.heading}
+                <span style={{ display: "inline-block", animation: "handwrite 1.5s ease-out forwards", whiteSpace: "nowrap", overflow: "hidden" }}>
+                  {recruit.heading}
+                </span>
                 <span
                   style={{
                     position: "absolute",
-                    bottom: -4,
+                    bottom: 0,
                     left: 0,
+                    width: "100%",
                     height: 3,
                     background: C.white,
                     borderRadius: 2,
-                    animation: "underlineGrow 1.5s ease-out forwards",
+                    transformOrigin: "left",
+                    animation: "underlineGrow 1.2s ease-out 0.5s forwards",
+                    transform: "scaleX(0)",
                   }}
                 />
               </h2>
@@ -1597,9 +1607,11 @@ export default function CP05() {
                 fontSize: mobile ? 24 : 36,
                 fontWeight: 700,
                 marginBottom: 48,
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
                 gap: 12,
+                position: "relative" as const,
+                paddingBottom: 8,
               }}
             >
               {Icons.mapPin(28, C.accent)}
@@ -1674,37 +1686,18 @@ export default function CP05() {
                   minHeight: 280,
                   borderRadius: 12,
                   overflow: "hidden",
-                  background: C.bgSub,
                   border: `1px solid ${C.border}`,
-                  position: "relative",
                 }}
               >
-                <img
-                  src={`${IMG}/company.webp`}
-                  alt="Map"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3272.5!2d135.6281!3d34.7667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDQ2JzAwLjAiTiAxMzXCsDM3JzQxLjAiRQ!5e0!3m2!1sja!2sjp!4v1"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0, minHeight: 280, display: "block" }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
                 />
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    background: "rgba(255,255,255,0.7)",
-                  }}
-                >
-                  <div style={{ textAlign: "center", color: C.textSub }}>
-                    {Icons.mapPin(32, C.accent)}
-                    <div style={{ fontSize: 13, marginTop: 8 }}>
-                      Google Map
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </FadeIn>
@@ -1724,9 +1717,11 @@ export default function CP05() {
                 fontSize: mobile ? 24 : 36,
                 fontWeight: 700,
                 marginBottom: 48,
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
                 gap: 12,
+                position: "relative" as const,
+                paddingBottom: 8,
               }}
             >
               {Icons.mail(28, C.accent)}
@@ -1960,6 +1955,13 @@ export default function CP05() {
             }}
           >
             {footer.catchphrase}
+          </div>
+          {/* 一筆書きシティスケープ */}
+          <div style={{ width: "100%", maxWidth: 800, margin: "16px auto 20px", opacity: 0.15, lineHeight: 0 }}>
+            <svg viewBox="0 0 800 40" fill="none" style={{ width: "100%", height: 40 }}>
+              <path d="M0,38 L40,38 L40,22 L35,18 L30,14 L25,18 L20,22 L20,38 L80,38 L80,10 L90,10 L90,38 L120,38 L120,6 L130,2 L140,6 L140,38 L180,38 L180,16 L190,12 L200,16 L200,38 L240,38 L250,20 L255,8 L260,8 L265,20 L265,38 L320,38 L320,26 L310,22 L320,26 L320,38 L370,38 L370,12 L365,8 L370,12 L370,38 L420,38 L420,18 L430,18 L430,38 L470,38 L470,6 L465,2 L470,6 L470,38 L520,38 L520,24 L515,20 L520,24 L520,38 L570,38 L570,30 L565,26 L570,30 L570,38 L620,38 L620,14 L615,10 L620,14 L620,38 L680,38 L680,32 L670,26 L680,32 L680,38 L730,38 L730,18 L730,38 L760,38 L760,28 L760,38 L800,38" stroke="rgba(255,255,255,0.8)" strokeWidth="1" />
+              <path d="M390,38 L395,38 L395,30 L400,28 L405,30 L410,28 L415,30 L415,38 L420,38" stroke="rgba(255,255,255,0.8)" strokeWidth="1" fill="none" />
+            </svg>
           </div>
           <div style={{ fontSize: 12, color: C.accent, marginBottom: 8 }}>
             {company.name}
