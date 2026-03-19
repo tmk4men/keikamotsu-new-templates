@@ -171,6 +171,39 @@ function ClipReveal({ children, delay = 0, direction = "left", style = {} }: {
 }
 
 /* ═══════════════════════════════════════════
+   CounterNum - 数値カウントアップ
+   ═══════════════════════════════════════════ */
+function CounterNum({ target, style }: { target: number; style?: React.CSSProperties }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const counted = useRef(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !counted.current) {
+          counted.current = true;
+          const duration = 1800;
+          const startTime = performance.now();
+          const tick = (now: number) => {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = String(Math.round(eased * target));
+            if (progress < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [target]);
+  return <span ref={ref} style={style}>0</span>;
+}
+
+/* ═══════════════════════════════════════════
    Section Divider - editorial line with number
    ═══════════════════════════════════════════ */
 function SectionDivider({ number }: { number: string }) {
@@ -456,14 +489,17 @@ export default function R04Flow() {
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
         @keyframes truckDrive {
-          from { transform: translateX(-60px); }
-          to { transform: translateX(calc(100vw + 60px)); }
+          0% { left: -60px; }
+          100% { left: calc(100% + 60px); }
         }
 
         @keyframes underlineReveal {
           from { transform: scaleX(0); }
           to { transform: scaleX(1); }
         }
+
+        @keyframes r04marqueeLeft { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        @keyframes r04marqueeRight { 0%{transform:translateX(-50%)} 100%{transform:translateX(0)} }
 
         /* Nav animated underline */
         .flow-nav-link {
@@ -781,6 +817,30 @@ export default function R04Flow() {
           </div>
         </section>
 
+        {/* ── Marquee ── */}
+        <div style={{ background: C.bg, overflow: "hidden", padding: "20px 0" }}>
+          {[
+            ["迅速配達", "未経験歓迎", "車両無料貸出", "月収40万〜100万円", "週払いOK", "入社祝い金5万円"],
+            ["大阪・東京・兵庫", "20〜60代活躍", "リース料ゼロ", "AT限定OK", "スマホ完結", "集荷なし"],
+          ].map((row, ri) => (
+            <div key={ri} style={{ overflow: "hidden", whiteSpace: "nowrap", marginBottom: ri === 0 ? 10 : 0 }}>
+              <div style={{
+                display: "inline-flex", gap: 48,
+                animation: `${ri === 0 ? "r04marqueeLeft" : "r04marqueeRight"} ${28 + ri * 6}s linear infinite`,
+              }}>
+                {[...row, ...row, ...row, ...row].map((t, ti) => (
+                  <span key={ti} style={{
+                    fontFamily: F.accent, fontSize: "12px", letterSpacing: "0.15em",
+                    color: C.mutedLight, textTransform: "uppercase", fontWeight: 300,
+                  }}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* ════════════════════════════════════════
            LEAD
            ════════════════════════════════════════ */}
@@ -815,7 +875,7 @@ export default function R04Flow() {
                 頑張り次第でどんどん稼げる。<br />
                 配達車無料貸出、リース料・加盟料ゼロ。<br />
                 普通免許（AT可）だけで、<br />
-                月収40万〜100万円が目指せます。
+                月収<CounterNum target={40} style={{ display: "inline-block" }} />万〜<CounterNum target={100} style={{ display: "inline-block" }} />万円が目指せます。
               </p>
             </FadeIn>
           </div>
@@ -1483,90 +1543,53 @@ export default function R04Flow() {
               </h2>
             </FadeIn>
 
-            <div style={{ marginTop: isMobile ? "48px" : "80px" }}>
+            <div style={{ marginTop: isMobile ? "48px" : "80px", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "32px" }}>
               {voices.map((v, i) => (
                 <FadeIn key={v.name} delay={i * 0.12}>
                   <div style={{
-                    padding: isMobile ? "40px 0" : "64px 0",
-                    borderBottom: i < voices.length - 1 ? `1px solid ${C.border}` : "none",
-                    display: isMobile ? "block" : "flex",
-                    gap: "60px",
-                    flexDirection: i % 2 === 0 ? "row" : "row-reverse",
+                    background: "#f8f8f6",
+                    borderRadius: i % 2 === 0 ? "16px 16px 16px 4px" : "16px 16px 4px 16px",
+                    padding: "32px",
+                    position: "relative",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+                    marginBottom: "24px",
                   }}>
-                    {/* Quote (magazine pull-quote style) */}
-                    <div style={{ flex: 1, position: "relative" }}>
-                      {/* Large decorative quotation marks using Playfair Display */}
-                      <span style={{
-                        fontFamily: F.editorial,
-                        fontSize: isMobile ? "100px" : "160px",
-                        lineHeight: 1,
-                        color: "rgba(0,0,0,0.04)",
-                        display: "block",
-                        position: "absolute",
-                        top: isMobile ? "-30px" : "-50px",
-                        left: isMobile ? "-8px" : "-20px",
-                        userSelect: "none",
-                        pointerEvents: "none",
-                        fontStyle: "italic",
-                      }}>
-                        &#x201C;
-                      </span>
-                      <div style={{ position: "relative", zIndex: 1 }}>
-                        <p style={{
-                          fontFamily: F.editorial,
-                          fontSize: isMobile ? "20px" : "26px",
-                          fontWeight: 600,
-                          fontStyle: "italic",
-                          color: C.text,
-                          lineHeight: 1.5,
-                          letterSpacing: "0.01em",
-                          marginBottom: "24px",
-                          paddingLeft: isMobile ? "8px" : "20px",
-                          borderLeft: `3px solid ${C.border}`,
-                        }}>
-                          {v.highlight}
-                        </p>
-                      </div>
-                      <p style={{
-                        fontSize: "13px", color: C.muted, lineHeight: 1.9,
-                        paddingLeft: isMobile ? "8px" : "20px",
-                      }}>
-                        {typeof v.text === 'string' && v.text.includes('\n')
-                          ? v.text.split('\n').map((line, li) => <span key={li}>{line}{li < v.text.split('\n').length - 1 && <br />}</span>)
-                          : v.text}
-                      </p>
-                    </div>
-
-                    {/* Profile */}
-                    <div style={{
-                      flex: isMobile ? undefined : "0 0 200px",
-                      marginTop: isMobile ? "24px" : "40px",
-                      textAlign: i % 2 === 0 ? "right" : "left",
+                    {/* Highlight quote */}
+                    <p style={{
+                      fontSize: isMobile ? "16px" : "18px",
+                      fontWeight: 600,
+                      color: C.text,
+                      lineHeight: 1.6,
+                      marginBottom: 16,
                     }}>
-                      {/* Decorative voice number */}
-                      <span style={{
-                        fontFamily: F.accent,
-                        fontSize: "48px",
-                        fontWeight: 300,
-                        color: "rgba(0,0,0,0.04)",
-                        display: "block",
-                        lineHeight: 1,
-                        marginBottom: "-10px",
-                      }}>
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <p style={{
-                        fontFamily: F.heading, fontSize: "16px", fontWeight: 600,
-                        color: C.text, letterSpacing: "0.04em",
-                      }}>
-                        {v.name}
-                      </p>
-                      <p style={{
-                        fontSize: "12px", color: C.muted, marginTop: "4px",
-                      }}>
-                        {v.age}｜{v.prev}
-                      </p>
+                      {v.highlight}
+                    </p>
+                    {/* Full text */}
+                    <p style={{ fontSize: 13, color: C.muted, lineHeight: 1.9 }}>
+                      {typeof v.text === 'string' && v.text.includes('\n')
+                        ? v.text.split('\n').map((line, li) => <span key={li}>{line}{li < v.text.split('\n').length - 1 && <br />}</span>)
+                        : v.text}
+                    </p>
+                    {/* Profile inside bubble */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+                      <div style={{ width: 44, height: 44, borderRadius: "50%", background: C.accent + "20", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontSize: 18 }}>👤</span>
+                      </div>
+                      <div>
+                        <p style={{ fontWeight: 600, fontSize: 14, color: C.text }}>{v.name}</p>
+                        <p style={{ fontSize: 12, color: C.muted }}>{v.age} / {v.prev}</p>
+                      </div>
                     </div>
+                    {/* Triangle tail */}
+                    <div style={{
+                      position: "absolute",
+                      bottom: -10,
+                      ...(i % 2 === 0 ? { left: 32 } : { right: 32 }),
+                      width: 0, height: 0,
+                      borderLeft: "10px solid transparent",
+                      borderRight: "10px solid transparent",
+                      borderTop: "10px solid #f8f8f6",
+                    }} />
                   </div>
                 </FadeIn>
               ))}
@@ -2007,12 +2030,12 @@ export default function R04Flow() {
             )}
 
             {/* トラックアニメーション */}
-            <div style={{ position: "relative", height: 60, overflow: "hidden", marginTop: 20, opacity: 0.1 }}>
-              <svg viewBox="0 0 800 60" fill="none" style={{ position: "absolute", bottom: 0, width: "100%", height: 60 }}>
+            <div style={{ position: "relative", height: isMobile ? 40 : 60, overflow: "hidden", marginTop: isMobile ? 12 : 20, opacity: 0.1 }}>
+              <svg viewBox="0 0 800 60" fill="none" style={{ position: "absolute", bottom: 0, width: "100%", height: isMobile ? 40 : 60 }}>
                 <path d="M0,58 L60,58 L60,40 L55,35 L50,30 L45,35 L40,40 L40,58 L100,58 L100,28 L110,28 L110,58 L160,58 L160,20 L150,15 L160,20 L160,58 L230,58 L230,30 L220,25 L230,30 L230,58 L310,58 L310,35 L300,12 L310,35 L310,58 L420,58 L420,22 L410,18 L420,22 L420,58 L530,58 L530,15 L520,7 L530,15 L530,58 L630,58 L630,45 L620,40 L630,45 L630,58 L770,58 L770,30 L770,58 L800,58" stroke="currentColor" strokeWidth="1" fill="none" />
               </svg>
-              <div style={{ position: "absolute", bottom: 4, animation: "truckDrive 20s linear infinite" }}>
-                <svg width="40" height="24" viewBox="0 0 48 28" fill="currentColor" opacity="0.7">
+              <div style={{ position: "absolute", bottom: isMobile ? 2 : 4, animation: `truckDrive ${isMobile ? 12 : 20}s linear infinite` }}>
+                <svg width={isMobile ? 30 : 40} height={isMobile ? 18 : 24} viewBox="0 0 48 28" fill="currentColor" opacity="0.7">
                   <rect x="0" y="4" width="28" height="18" rx="2" />
                   <rect x="28" y="10" width="16" height="12" rx="1" />
                   <circle cx="10" cy="24" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
@@ -2046,8 +2069,10 @@ export default function R04Flow() {
                 fontFamily: F.heading, fontSize: isMobile ? "22px" : "36px",
                 fontWeight: 700, lineHeight: 1.3, letterSpacing: "0.06em",
                 color: "#fff",
+                position: "relative", display: "inline-block", paddingBottom: 8,
               }}>
                 ちょっと話を<br />聞いてみたい。
+                <span style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 2, background: "linear-gradient(to right, rgba(255,255,255,0.7), transparent)", transformOrigin: "left", transform: "scaleX(0)", animation: "underlineReveal 0.8s ease 0.5s forwards" }} />
               </h2>
             </FadeIn>
             <FadeIn delay={0.2}>

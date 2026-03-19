@@ -138,8 +138,8 @@ const KEYFRAMES = `
   to { width: 100%; }
 }
 @keyframes cp01-truckDrive {
-  from { transform: translateX(-100px); }
-  to { transform: translateX(calc(100% + 100px)); }
+  0% { left: -100px; }
+  100% { left: calc(100% + 100px); }
 }
 `;
 
@@ -1540,7 +1540,7 @@ export default function CP01Page() {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundAttachment: "fixed",
-          filter: "grayscale(100%) brightness(0.15)",
+          filter: "grayscale(100%) brightness(0.4)",
         }}
       />
       <div
@@ -1674,9 +1674,9 @@ export default function CP01Page() {
           ))}
         </div>
         {/* Truck animation */}
-        <div style={{ position: "relative", height: 60, marginTop: 32, overflow: "hidden", opacity: 0.12 }}>
+        <div style={{ position: "relative", height: isMobile ? 40 : 60, marginTop: isMobile ? 16 : 32, overflow: "hidden", opacity: 0.12 }}>
           {/* Cityscape silhouette background */}
-          <svg viewBox="0 0 1200 60" preserveAspectRatio="none" style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 40 }}>
+          <svg viewBox="0 0 1200 60" preserveAspectRatio="none" style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: isMobile ? 28 : 40 }}>
             <rect x="50" y="20" width="30" height="40" fill={C.text} />
             <rect x="90" y="10" width="40" height="50" fill={C.text} />
             <rect x="140" y="25" width="25" height="35" fill={C.text} />
@@ -1701,8 +1701,8 @@ export default function CP01Page() {
             <polygon points="770,10 782,0 794,10" fill={C.text} />
           </svg>
           {/* Truck SVG */}
-          <div style={{ position: "absolute", bottom: 4, left: 0, width: "100%", height: 36, overflow: "hidden" }}>
-            <svg viewBox="0 0 80 32" style={{ width: 80, height: 32, animation: "cp01-truckDrive 15s linear infinite" }}>
+          <div style={{ position: "absolute", bottom: isMobile ? 2 : 4, animation: `cp01-truckDrive ${isMobile ? 10 : 15}s linear infinite` }}>
+            <svg viewBox="0 0 80 32" style={{ width: isMobile ? 56 : 80, height: isMobile ? 22 : 32 }}>
               <rect x="0" y="4" width="50" height="24" rx="3" fill={C.gold} />
               <rect x="50" y="10" width="22" height="18" rx="2" fill={C.goldLight} />
               <rect x="54" y="13" width="14" height="9" rx="1" fill={C.bg1} opacity="0.5" />

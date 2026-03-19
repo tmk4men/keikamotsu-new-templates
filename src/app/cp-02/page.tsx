@@ -103,8 +103,8 @@ const KEYFRAMES = `
   to { width: 100%; }
 }
 @keyframes cp02-truckDrive {
-  from { transform: translateX(-100px); }
-  to { transform: translateX(calc(100% + 100px)); }
+  0% { left: -100px; }
+  100% { left: calc(100% + 100px); }
 }
 `;
 
@@ -1674,9 +1674,9 @@ export default function CP02Page() {
         ))}
       </div>
       {/* Truck animation */}
-      <div style={{ position: "relative", height: 60, marginTop: 32, overflow: "hidden", opacity: 0.12 }}>
+      <div style={{ position: "relative", height: isMobile ? 40 : 60, marginTop: isMobile ? 16 : 32, overflow: "hidden", opacity: 0.12 }}>
         {/* Cityscape silhouette background */}
-        <svg viewBox="0 0 1200 60" preserveAspectRatio="none" style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 40 }}>
+        <svg viewBox="0 0 1200 60" preserveAspectRatio="none" style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: isMobile ? 28 : 40 }}>
           <rect x="50" y="20" width="30" height="40" fill={C.textSub} />
           <rect x="90" y="10" width="40" height="50" fill={C.textSub} />
           <rect x="140" y="25" width="25" height="35" fill={C.textSub} />
@@ -1701,8 +1701,8 @@ export default function CP02Page() {
           <polygon points="770,10 782,0 794,10" fill={C.textSub} />
         </svg>
         {/* Truck SVG */}
-        <div style={{ position: "absolute", bottom: 4, left: 0, width: "100%", height: 36, overflow: "hidden" }}>
-          <svg viewBox="0 0 80 32" style={{ width: 80, height: 32, animation: "cp02-truckDrive 15s linear infinite" }}>
+        <div style={{ position: "absolute", bottom: isMobile ? 2 : 4, animation: `cp02-truckDrive ${isMobile ? 10 : 15}s linear infinite` }}>
+          <svg viewBox="0 0 80 32" style={{ width: isMobile ? 56 : 80, height: isMobile ? 22 : 32 }}>
             <rect x="0" y="4" width="50" height="24" rx="3" fill={C.accent} />
             <rect x="50" y="10" width="22" height="18" rx="2" fill={C.accentLight} />
             <rect x="54" y="13" width="14" height="9" rx="1" fill={C.white} opacity="0.5" />

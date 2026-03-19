@@ -107,8 +107,8 @@ const keyframesCSS = `
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
   @keyframes truckDrive {
-    from { transform: translateX(-60px); }
-    to { transform: translateX(calc(100vw + 60px)); }
+    0% { left: -60px; }
+    100% { left: calc(100% + 60px); }
   }
 
   @keyframes underlineReveal {
@@ -127,6 +127,18 @@ const keyframesCSS = `
   @media (min-width: 769px) {
     .show-sp { display: none !important; }
   }
+  .r03-truck-container { height: 60px; margin-top: 20px; }
+  .r03-truck-cityscape { height: 60px; }
+  .r03-truck-vehicle { bottom: 4px; animation: truckDrive 20s linear infinite; }
+  .r03-truck-svg { width: 40px; height: 24px; }
+
+  @media (max-width: 768px) {
+    .r03-truck-container { height: 40px; margin-top: 12px; }
+    .r03-truck-cityscape { height: 40px; }
+    .r03-truck-vehicle { bottom: 2px; animation: truckDrive 12s linear infinite; }
+    .r03-truck-svg { width: 30px; height: 18px; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -1244,50 +1256,52 @@ export default function R03TrustPage() {
           <FadeIn delay={0.15} direction="scale">
             <div style={{
               display: "grid",
-              gridTemplateColumns: "1.2fr 0.8fr 1fr",
-              gridTemplateRows: "240px 200px",
-              gap: 12,
+              gridTemplateColumns: "1fr 0.85fr 1.15fr",
+              gridTemplateRows: "220px 200px",
+              gap: 0,
               position: "relative",
             }}>
               {gallery.images.map((img, idx) => {
                 const gridStyles: Record<number, React.CSSProperties> = {
-                  0: { gridColumn: "1 / 2", gridRow: "1 / 3", aspectRatio: undefined },
-                  1: { gridColumn: "2 / 3", gridRow: "1 / 2" },
-                  2: { gridColumn: "3 / 4", gridRow: "1 / 2" },
-                  3: { gridColumn: "2 / 4", gridRow: "2 / 3" },
-                  4: { gridColumn: "1 / 2", gridRow: "2 / 3", display: "none" },
+                  0: { gridColumn: "1 / 2", gridRow: "1 / 3", borderRadius: "1.25rem", transform: "rotate(-2deg)", marginRight: -8, zIndex: 3 },
+                  1: { gridColumn: "2 / 3", gridRow: "1 / 2", borderRadius: "0.75rem", transform: "rotate(1.5deg)", marginLeft: -6, marginBottom: -10, zIndex: 2 },
+                  2: { gridColumn: "3 / 4", gridRow: "1 / 2", borderRadius: "0.75rem", transform: "rotate(-1deg)", marginLeft: -4, zIndex: 1 },
+                  3: { gridColumn: "2 / 4", gridRow: "2 / 3", borderRadius: "0.75rem", transform: "rotate(0.8deg)", marginTop: -10, marginLeft: -6, zIndex: 2 },
+                  4: { display: "none" },
                 };
                 return (
                   <div
                     key={img.src}
                     style={{
-                      overflow: "hidden", borderRadius: 8,
+                      overflow: "hidden",
                       position: "relative", cursor: "pointer",
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-                      transition: "box-shadow 0.4s ease",
+                      boxShadow: "0 6px 24px rgba(0,0,0,0.15)",
+                      transition: "transform 0.4s ease, box-shadow 0.4s ease",
                       ...gridStyles[idx],
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.15)";
+                      e.currentTarget.style.boxShadow = "0 12px 36px rgba(0,0,0,0.22)";
+                      e.currentTarget.style.transform = (gridStyles[idx]?.transform || "") + " scale(1.04)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.08)";
+                      e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,0,0,0.15)";
+                      e.currentTarget.style.transform = gridStyles[idx]?.transform as string || "";
                     }}
                   >
                     <img
                       src={img.src} alt={img.alt}
                       style={{
                         width: "100%", height: "100%", objectFit: "cover",
-                        filter: "grayscale(30%) brightness(0.95)",
+                        filter: "grayscale(20%) brightness(0.95)",
                         transition: "transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.6s ease",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "scale(1.1)";
+                        e.currentTarget.style.transform = "scale(1.08)";
                         e.currentTarget.style.filter = "grayscale(0%) brightness(1)";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.filter = "grayscale(30%) brightness(0.95)";
+                        e.currentTarget.style.filter = "grayscale(20%) brightness(0.95)";
                       }}
                     />
                     <div style={{
@@ -1643,12 +1657,12 @@ export default function R03TrustPage() {
           </FadeIn>
 
           {/* トラックアニメーション */}
-          <div style={{ position: "relative", height: 60, overflow: "hidden", marginTop: 20, opacity: 0.1 }}>
-            <svg viewBox="0 0 800 60" fill="none" style={{ position: "absolute", bottom: 0, width: "100%", height: 60 }}>
+          <div className="r03-truck-container" style={{ position: "relative", overflow: "hidden", opacity: 0.1 }}>
+            <svg className="r03-truck-cityscape" viewBox="0 0 800 60" fill="none" style={{ position: "absolute", bottom: 0, width: "100%" }}>
               <path d="M0,58 L60,58 L60,40 L55,35 L50,30 L45,35 L40,40 L40,58 L100,58 L100,28 L110,28 L110,58 L160,58 L160,20 L150,15 L160,20 L160,58 L230,58 L230,30 L220,25 L230,30 L230,58 L310,58 L310,35 L300,12 L310,35 L310,58 L420,58 L420,22 L410,18 L420,22 L420,58 L530,58 L530,15 L520,7 L530,15 L530,58 L630,58 L630,45 L620,40 L630,45 L630,58 L770,58 L770,30 L770,58 L800,58" stroke="currentColor" strokeWidth="1" fill="none" />
             </svg>
-            <div style={{ position: "absolute", bottom: 4, animation: "truckDrive 20s linear infinite" }}>
-              <svg width="40" height="24" viewBox="0 0 48 28" fill="currentColor" opacity="0.7">
+            <div className="r03-truck-vehicle" style={{ position: "absolute" }}>
+              <svg className="r03-truck-svg" viewBox="0 0 48 28" fill="currentColor" opacity="0.7">
                 <rect x="0" y="4" width="28" height="18" rx="2" />
                 <rect x="28" y="10" width="16" height="12" rx="1" />
                 <circle cx="10" cy="24" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
@@ -1677,10 +1691,12 @@ export default function R03TrustPage() {
               fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
               lineHeight: 1.7, marginBottom: 20,
               textShadow: "0 2px 12px rgba(0,0,0,0.3)",
+              position: "relative", display: "inline-block", paddingBottom: 8,
             }}>
               {cta.heading.includes("\n")
                 ? cta.heading.split("\n").map((line, li) => <span key={li}>{line}{li < cta.heading.split("\n").length - 1 && <br />}</span>)
                 : cta.heading}
+              <span style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 2, background: "linear-gradient(to right, rgba(255,255,255,0.7), transparent)", transformOrigin: "left", transform: "scaleX(0)", animation: "underlineReveal 0.8s ease 0.5s forwards" }} />
             </p>
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.65)", lineHeight: 2, maxWidth: 560, margin: "0 auto 40px", whiteSpace: "pre-line" }}>
               {cta.subtext}

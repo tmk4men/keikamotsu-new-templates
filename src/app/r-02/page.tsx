@@ -401,6 +401,20 @@ export default function R02Page() {
           animation: iconBounce 0.5s ease;
         }
 
+        .r02-truck-container { height: 80px; }
+        .r02-truck-cityscape { height: 60px; }
+        .r02-truck-road { bottom: 12px; }
+        .r02-truck-vehicle { bottom: 14px; animation: truckDrive 12s linear infinite; }
+        .r02-truck-svg { width: 64px; height: 36px; }
+
+        @media (max-width: 768px) {
+          .r02-truck-container { height: 50px; }
+          .r02-truck-cityscape { height: 40px; }
+          .r02-truck-road { bottom: 6px; }
+          .r02-truck-vehicle { bottom: 8px; animation: truckDrive 8s linear infinite; }
+          .r02-truck-svg { width: 48px; height: 27px; }
+        }
+
         @media (prefers-reduced-motion: reduce) {
           *, *::before, *::after {
             animation-duration: 0.01ms !important;
@@ -2610,18 +2624,18 @@ export default function R02Page() {
         </section>
 
         {/* ── Truck animation ── */}
-        <div style={{ background: C.bg, overflow: "hidden", position: "relative", height: 80 }}>
+        <div className="r02-truck-container" style={{ background: C.bg, overflow: "hidden", position: "relative" }}>
           {/* Faint cityscape */}
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, opacity: 0.06, lineHeight: 0 }}>
-            <svg viewBox="0 0 800 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: 60 }}>
+            <svg className="r02-truck-cityscape" viewBox="0 0 800 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%" }}>
               <path d="M0,58 L60,58 L60,40 L55,40 L55,35 L50,30 L45,35 L45,40 L40,40 L40,58 L80,58 L80,28 L85,28 L85,22 L90,22 L90,28 L100,28 L100,58 L120,58 L125,45 L130,58 L140,58 L140,20 L145,20 L145,15 L150,15 L150,20 L160,20 L160,58 L200,58 L200,30 L210,30 L210,25 L220,25 L220,30 L230,30 L230,58 L250,58 L255,48 L260,52 L265,46 L270,58 L290,58 L290,35 L295,35 L295,12 L300,12 L305,12 L305,35 L310,35 L310,58 L340,58 L340,42 L350,42 L350,38 L355,34 L360,38 L360,42 L370,42 L370,58 L400,58 L400,22 L405,22 L410,18 L415,22 L420,22 L420,58 L440,58 L445,50 L450,45 L455,50 L460,58 L480,58 L480,30 L490,30 L490,58 L510,58 L510,15 L515,15 L515,10 L520,7 L525,10 L525,15 L530,15 L530,58 L560,58 L560,38 L565,38 L570,32 L575,38 L580,38 L580,58 L600,58 L600,45 L610,45 L610,40 L620,40 L620,45 L630,45 L630,58 L650,58 L650,25 L660,20 L670,25 L670,58 L700,58 L700,48 L705,48 L705,42 L710,38 L715,35 L720,38 L720,42 L730,42 L730,48 L735,48 L735,58 L760,58 L760,30 L770,30 L770,58 L800,58" stroke={C.textSub} strokeWidth="1" />
             </svg>
           </div>
           {/* Road line */}
-          <div style={{ position: "absolute", bottom: 12, left: 0, right: 0, height: 2, background: `linear-gradient(to right, transparent, ${C.accent}30, transparent)` }} />
+          <div className="r02-truck-road" style={{ position: "absolute", left: 0, right: 0, height: 2, background: `linear-gradient(to right, transparent, ${C.accent}30, transparent)` }} />
           {/* Truck SVG */}
-          <div style={{ position: "absolute", bottom: 14, animation: "truckDrive 12s linear infinite" }}>
-            <svg width="64" height="36" viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div className="r02-truck-vehicle" style={{ position: "absolute" }}>
+            <svg className="r02-truck-svg" viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="0" y="4" width="36" height="24" rx="3" fill={C.accent} opacity="0.4" />
               <rect x="36" y="12" width="22" height="16" rx="2" fill={C.accent} opacity="0.6" />
               <circle cx="14" cy="30" r="5" fill={C.textSub} opacity="0.4" />
