@@ -66,7 +66,7 @@ export const navLinks = [
 ];
 
 export const hero = {
-  headline: "物流で未来を変えていく。",
+  headline: "物流で\n未来を変えていく。",
   subtext: [
     "大手運輸会社の委託配送と通販サイト荷物配送を軽自動車でメイン展開。",
     "高い技術力と経験で、安全かつ迅速な配送を実現します。",

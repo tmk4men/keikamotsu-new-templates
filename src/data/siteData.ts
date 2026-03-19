@@ -45,7 +45,7 @@ export const navLinks = [
 ];
 
 export const hero = {
-  headlineParts: ["物流で未来を変えていく。", "あなたの力が、社会をつなぐ。"],
+  headlineParts: ["物流で\n未来を変えていく。", "あなたの力が、\n社会をつなぐ。"],
   subtext: [
     "学歴・経験いっさい不問。頑張り次第でどんどん稼げます。",
     "配達車無料貸出、リース料・加盟料ゼロ。",
