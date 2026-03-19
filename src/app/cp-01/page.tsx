@@ -21,26 +21,28 @@ import {
 } from "@/data/corporateSiteData";
 
 /* ───────────────────────────────────────────
-   色定数（NOIR - dark x gold）
+   色定数（BRIGHT - light x warm gold）
    ─────────────────────────────────────────── */
 const C = {
-  bg1: "#0a0a0a",
-  bg2: "#111111",
-  bg3: "#181818",
-  text: "#e5e5e5",
-  white: "#ffffff",
-  gold: "#c8a960",
-  goldLight: "#d4bb7a",
-  goldDark: "#a88b3d",
-  accent: "#32373c",
-  accentLight: "#555555",
-  cta: "#c8a960",
-  ctaHover: "#d4bb7a",
-  muted: "#888888",
-  label: "#999999",
-  border: "#2a2a2a",
-  borderLight: "#333333",
-  decorLine: "#c8a960",
+  bg1: "#ffffff",
+  bg2: "#fafaf8",
+  bg3: "#f0efe9",
+  text: "#1e3a5f",
+  white: "#1e3a5f",
+  gold: "#b8942e",
+  goldLight: "#d4ad3a",
+  goldDark: "#96791f",
+  accent: "#e8e6de",
+  accentLight: "#d0cec6",
+  cta: "#b8942e",
+  ctaHover: "#d4ad3a",
+  muted: "#6b7b8d",
+  label: "#7a8a9a",
+  border: "#e0ddd4",
+  borderLight: "#d5d2c9",
+  decorLine: "#b8942e",
+  navy: "#1e3a5f",
+  navyLight: "#2a4d73",
 };
 
 /* ───────────────────────────────────────────
@@ -78,8 +80,8 @@ const KEYFRAMES = `
   100% { background-position: 200% center; }
 }
 @keyframes cp01-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(200,169,96,0.4); }
-  50% { box-shadow: 0 0 0 12px rgba(200,169,96,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(184,148,46,0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(184,148,46,0); }
 }
 @keyframes cp01-shine {
   0% { left: -100%; }
@@ -110,8 +112,8 @@ const KEYFRAMES = `
   to { opacity: 1; transform: scale(1); }
 }
 @keyframes cp01-borderGlow {
-  0%, 100% { border-color: #2a2a2a; }
-  50% { border-color: #c8a960; }
+  0%, 100% { border-color: #e0ddd4; }
+  50% { border-color: #b8942e; }
 }
 @keyframes cp01-ripple {
   0% { transform: scale(0); opacity: 0.5; }
@@ -267,12 +269,14 @@ function SectionHeading({
   align = "left",
   visible = true,
   icon,
+  onDark = false,
 }: {
   en: string;
   ja: string;
   align?: "left" | "center";
   visible?: boolean;
   icon?: string;
+  onDark?: boolean;
 }) {
   return (
     <div style={{ marginBottom: 48, textAlign: align }}>
@@ -296,7 +300,7 @@ function SectionHeading({
           fontFamily: "'Noto Sans JP', sans-serif",
           fontSize: "1.75rem",
           fontWeight: 700,
-          color: C.white,
+          color: onDark ? "#ffffff" : C.white,
           lineHeight: 1.2,
           letterSpacing: "0.05em",
           animation: visible ? "cp01-headingReveal 0.8s ease forwards" : "none",
@@ -398,10 +402,11 @@ export default function CP01Page() {
         left: 0,
         right: 0,
         zIndex: 1000,
-        background: scrolled ? "rgba(10,10,10,0.95)" : "transparent",
+        background: scrolled ? "rgba(255,255,255,0.97)" : "transparent",
         backdropFilter: scrolled ? "blur(12px)" : "none",
         borderBottom: scrolled ? `1px solid ${C.border}` : "1px solid transparent",
-        transition: "background-color 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease",
+        boxShadow: scrolled ? "0 2px 12px rgba(0,0,0,0.06)" : "none",
+        transition: "background-color 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s ease, box-shadow 0.4s ease",
       }}
     >
       <div
@@ -431,10 +436,11 @@ export default function CP01Page() {
               style={{
                 fontFamily: "'Oswald', sans-serif",
                 fontSize: "0.7rem",
-                color: C.text,
+                color: scrolled ? C.text : "#ffffff",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
                 fontWeight: 300,
+                transition: "color 0.4s ease",
               }}
             >
               Green Logistics
@@ -453,7 +459,7 @@ export default function CP01Page() {
                   textDecoration: "none",
                   fontFamily: "'Noto Sans JP', sans-serif",
                   fontSize: "0.78rem",
-                  color: C.text,
+                  color: scrolled ? C.text : "#ffffff",
                   letterSpacing: "0.05em",
                   transition: "color 0.3s",
                   position: "relative",
@@ -465,7 +471,7 @@ export default function CP01Page() {
                   if (underline) underline.style.width = "100%";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = C.text;
+                  e.currentTarget.style.color = scrolled ? C.text : "#ffffff";
                   const underline = e.currentTarget.querySelector(".nav-underline") as HTMLElement;
                   if (underline) underline.style.width = "0%";
                 }}
@@ -493,7 +499,7 @@ export default function CP01Page() {
                 fontSize: "0.9rem",
                 color: C.gold,
                 letterSpacing: "0.08em",
-                borderLeft: `1px solid ${C.border}`,
+                borderLeft: `1px solid ${scrolled ? C.border : "rgba(255,255,255,0.3)"}`,
                 paddingLeft: 24,
                 marginLeft: 4,
               }}
@@ -556,7 +562,7 @@ export default function CP01Page() {
       {isMobile && menuOpen && (
         <nav
           style={{
-            background: "rgba(10,10,10,0.98)",
+            background: "rgba(255,255,255,0.98)",
             backdropFilter: "blur(16px)",
             padding: "24px 20px 32px",
             display: "flex",
@@ -637,7 +643,7 @@ export default function CP01Page() {
         style={{
           position: "absolute",
           inset: 0,
-          background: "linear-gradient(135deg, rgba(10,10,10,0.92) 0%, rgba(10,10,10,0.6) 50%, rgba(10,10,10,0.85) 100%)",
+          background: "linear-gradient(135deg, rgba(30,58,95,0.82) 0%, rgba(30,58,95,0.45) 50%, rgba(30,58,95,0.72) 100%)",
         }}
       />
 
@@ -664,7 +670,7 @@ export default function CP01Page() {
           right: "8%",
           width: 120,
           height: 120,
-          border: `1px solid rgba(200,169,96,0.15)`,
+          border: `1px solid rgba(184,148,46,0.2)`,
           transform: "rotate(45deg)",
           animation: "cp01-float1 8s ease-in-out infinite",
           pointerEvents: "none",
@@ -677,7 +683,7 @@ export default function CP01Page() {
           right: "15%",
           width: 80,
           height: 80,
-          border: `1px solid rgba(200,169,96,0.1)`,
+          border: `1px solid rgba(184,148,46,0.12)`,
           borderRadius: "50%",
           animation: "cp01-float2 6s ease-in-out infinite",
           pointerEvents: "none",
@@ -690,7 +696,7 @@ export default function CP01Page() {
           left: "5%",
           width: 60,
           height: 60,
-          border: `1px solid rgba(200,169,96,0.08)`,
+          border: `1px solid rgba(0,0,0,0.06)`,
           animation: "cp01-float3 10s ease-in-out infinite",
           pointerEvents: "none",
         }}
@@ -706,7 +712,7 @@ export default function CP01Page() {
           fontFamily: "'Oswald', sans-serif",
           fontSize: isMobile ? "12vw" : "10vw",
           fontWeight: 900,
-          color: "rgba(200,169,96,0.04)",
+          color: "rgba(184,148,46,0.06)",
           whiteSpace: "nowrap",
           letterSpacing: "0.05em",
           pointerEvents: "none",
@@ -725,7 +731,7 @@ export default function CP01Page() {
               fontFamily: "'Zen Kurenaido', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
               fontSize: isMobile ? "2rem" : "3.2rem",
               fontWeight: 400,
-              color: C.white,
+              color: "#ffffff",
               lineHeight: 1.3,
               letterSpacing: "0.08em",
               marginBottom: 28,
@@ -740,7 +746,7 @@ export default function CP01Page() {
               style={{
                 fontFamily: "'Noto Sans JP', sans-serif",
                 fontSize: isMobile ? "0.85rem" : "0.95rem",
-                color: C.text,
+                color: "rgba(255,255,255,0.9)",
                 lineHeight: 1.8,
                 letterSpacing: "0.05em",
                 marginBottom: 6,
@@ -760,7 +766,7 @@ export default function CP01Page() {
                 display: "inline-block",
                 padding: "16px 48px",
                 background: `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`,
-                color: C.bg1,
+                color: "#ffffff",
                 fontFamily: "'Noto Sans JP', sans-serif",
                 fontSize: "0.9rem",
                 fontWeight: 700,
@@ -776,7 +782,7 @@ export default function CP01Page() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.05)";
-                e.currentTarget.style.boxShadow = `0 8px 32px rgba(200,169,96,0.4)`;
+                e.currentTarget.style.boxShadow = `0 8px 32px rgba(184,148,46,0.4)`;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "scale(1)";
@@ -880,18 +886,19 @@ export default function CP01Page() {
           <div
             style={{
               ...scaleIn(svcRef.visible, 0.1),
-              background: C.bg2,
+              background: "#ffffff",
               border: `1px solid ${C.border}`,
               borderRadius: "1rem",
               overflow: "hidden",
               display: "flex",
               flexDirection: "column",
               minHeight: isMobile ? "auto" : 420,
+              boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
               transition: "border-color 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = C.gold;
-              e.currentTarget.style.boxShadow = `0 4px 24px rgba(200,169,96,0.1)`;
+              e.currentTarget.style.boxShadow = `0 4px 24px rgba(0,0,0,0.08)`;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.borderColor = C.border;
@@ -906,11 +913,11 @@ export default function CP01Page() {
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
-                  filter: "brightness(0.7) contrast(1.1)",
+                  filter: "brightness(0.9) contrast(1.05)",
                   transition: "transform 0.6s ease",
                 }}
               />
-              <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom, transparent 50%, ${C.bg2})` }} />
+              <div style={{ position: "absolute", inset: 0, background: `linear-gradient(to bottom, transparent 50%, #ffffff)` }} />
             </div>
             <div style={{ padding: isMobile ? 28 : 40, flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <span
@@ -964,16 +971,17 @@ export default function CP01Page() {
                 key={s.num}
                 style={{
                   ...fadeStyle(svcRef.visible, 0.2 + i * 0.12),
-                  background: C.bg2,
+                  background: "#ffffff",
                   border: `1px solid ${C.border}`,
                   borderRadius: "0.625rem",
                   overflow: "hidden",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                   transition: "border-color 0.4s ease, transform 0.3s ease, box-shadow 0.4s ease",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = C.gold;
                   e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = `0 4px 16px rgba(200,169,96,0.08)`;
+                  e.currentTarget.style.boxShadow = `0 4px 16px rgba(0,0,0,0.06)`;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = C.border;
@@ -986,7 +994,7 @@ export default function CP01Page() {
                     <img
                       src={serviceImages[i + 1] || serviceImages[0]}
                       alt={s.title}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.6)" }}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", filter: "brightness(0.85)" }}
                     />
                   </div>
                   <div style={{ padding: isMobile ? "16px 20px" : "20px 24px", flex: 1 }}>
@@ -1058,7 +1066,7 @@ export default function CP01Page() {
       {/* Diagonal SVG divider top */}
       <div style={{ position: "absolute", top: -1, left: 0, right: 0, lineHeight: 0 }}>
         <svg viewBox="0 0 1440 40" preserveAspectRatio="none" style={{ width: "100%", height: 40, display: "block" }}>
-          <path d="M0,40 L1440,0 L1440,40 Z" fill={C.bg1} />
+          <path d="M0,40 L1440,0 L1440,40 Z" fill="#ffffff" />
         </svg>
       </div>
       <DotGrid opacity={0.04} />
@@ -1087,16 +1095,16 @@ export default function CP01Page() {
                 borderRadius: "0.75rem",
                 overflow: "hidden",
                 border: `1px solid ${C.border}`,
-                boxShadow: "8px 8px 0 rgba(139,90,43,0.35)",
+                boxShadow: "6px 6px 0 rgba(184,148,46,0.18)",
                 transition: "border-color 0.4s ease, box-shadow 0.4s ease",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = C.gold;
-                e.currentTarget.style.boxShadow = `8px 8px 0 rgba(139,90,43,0.35), 0 4px 24px rgba(200,169,96,0.08)`;
+                e.currentTarget.style.boxShadow = `6px 6px 0 rgba(184,148,46,0.18), 0 4px 24px rgba(0,0,0,0.06)`;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = C.border;
-                e.currentTarget.style.boxShadow = "8px 8px 0 rgba(139,90,43,0.35)";
+                e.currentTarget.style.boxShadow = "6px 6px 0 rgba(184,148,46,0.18)";
               }}
             >
               {/* Image side */}
@@ -1116,7 +1124,7 @@ export default function CP01Page() {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    filter: "grayscale(30%) brightness(0.7)",
+                    filter: "grayscale(10%) brightness(0.95)",
                     transition: "transform 0.6s ease, filter 0.6s ease",
                   }}
                 />
@@ -1125,8 +1133,8 @@ export default function CP01Page() {
                     position: "absolute",
                     inset: 0,
                     background: i % 2 === 0
-                      ? `linear-gradient(90deg, transparent 50%, ${C.bg2})`
-                      : `linear-gradient(270deg, transparent 50%, ${C.bg2})`,
+                      ? `linear-gradient(90deg, transparent 50%, #ffffff)`
+                      : `linear-gradient(270deg, transparent 50%, #ffffff)`,
                   }}
                 />
               </div>
@@ -1138,7 +1146,7 @@ export default function CP01Page() {
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
-                  background: C.bg2,
+                  background: "#ffffff",
                 }}
               >
                 <span
@@ -1239,13 +1247,13 @@ export default function CP01Page() {
                 overflow: "hidden",
                 borderRadius: "0.625rem",
                 border: `2px solid ${C.gold}`,
-                boxShadow: `0 8px 32px rgba(200,169,96,0.15)`,
+                boxShadow: `0 8px 32px rgba(184,148,46,0.2)`,
               }}
             >
               <img
                 src="/keikamotsu-new-templates/images/ceo-portrait.webp"
                 alt={`${ceoMessage.name} ${ceoMessage.title}`}
-                style={{ width: "100%", display: "block", filter: "grayscale(20%)" }}
+                style={{ width: "100%", display: "block", filter: "grayscale(10%)" }}
               />
             </div>
             <div
@@ -1333,7 +1341,7 @@ export default function CP01Page() {
                 padding: isMobile ? "16px 0" : "20px 0",
                 transition: "background-color 0.3s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(200,169,96,0.03)")}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(184,148,46,0.04)")}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
             >
               <dt
@@ -1438,7 +1446,7 @@ export default function CP01Page() {
                     height: 14,
                     borderRadius: "50%",
                     background: C.gold,
-                    border: `3px solid ${C.bg1}`,
+                    border: `3px solid #ffffff`,
                     boxShadow: `0 0 0 2px ${C.gold}`,
                   }}
                 />
@@ -1498,7 +1506,7 @@ export default function CP01Page() {
                         width: "100%",
                         height: "100%",
                         objectFit: "cover",
-                        filter: "grayscale(30%) brightness(0.7)",
+                        filter: "grayscale(10%) brightness(0.9)",
                         maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
                         WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
                       }}
@@ -1533,14 +1541,14 @@ export default function CP01Page() {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundAttachment: "fixed",
-          filter: "grayscale(100%) brightness(0.4)",
+          filter: "grayscale(100%) brightness(0.3)",
         }}
       />
       <div
         style={{
           position: "absolute",
           inset: 0,
-          background: "rgba(10,10,10,0.55)",
+          background: "rgba(30,58,95,0.8)",
         }}
       />
       {/* Gold gradient line top */}
@@ -1556,7 +1564,7 @@ export default function CP01Page() {
       />
       <div style={{ ...wrap(isMobile), maxWidth: 960, position: "relative", zIndex: 1 }}>
         <div style={fadeStyle(numRef.visible)}>
-          <SectionHeading en="Numbers" ja="実績" align="center" visible={numRef.visible} icon={sectionIcons.numbers} />
+          <SectionHeading en="Numbers" ja="実績" align="center" visible={numRef.visible} icon={sectionIcons.numbers} onDark />
         </div>
         <div
           style={{
@@ -1611,17 +1619,18 @@ export default function CP01Page() {
               key={i}
               style={{
                 ...scaleIn(prtRef.visible, 0.08 + i * 0.06),
-                background: C.bg2,
+                background: "#ffffff",
                 border: `1px solid ${C.border}`,
                 borderRadius: "0.625rem",
                 padding: isMobile ? "24px 16px" : "32px 24px",
                 textAlign: "center",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                 transition: "border-color 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = C.gold;
                 e.currentTarget.style.transform = "translateY(-4px)";
-                e.currentTarget.style.boxShadow = `0 8px 24px rgba(200,169,96,0.1)`;
+                e.currentTarget.style.boxShadow = `0 8px 24px rgba(0,0,0,0.08)`;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = C.border;
@@ -1698,7 +1707,7 @@ export default function CP01Page() {
             <svg viewBox="0 0 80 32" style={{ width: isMobile ? 56 : 80, height: isMobile ? 22 : 32 }}>
               <rect x="0" y="4" width="50" height="24" rx="3" fill={C.gold} />
               <rect x="50" y="10" width="22" height="18" rx="2" fill={C.goldLight} />
-              <rect x="54" y="13" width="14" height="9" rx="1" fill={C.bg1} opacity="0.5" />
+              <rect x="54" y="13" width="14" height="9" rx="1" fill="#1e3a5f" opacity="0.5" />
               <circle cx="14" cy="28" r="5" fill={C.text} />
               <circle cx="14" cy="28" r="2.5" fill={C.muted} />
               <circle cx="60" cy="28" r="5" fill={C.text} />
@@ -1717,7 +1726,7 @@ export default function CP01Page() {
       ref={newsRef.ref}
       style={{ background: C.bg2, padding: isMobile ? "80px 0 60px" : "76px 0 64px", position: "relative" }}
     >
-      <WaveDivider color={C.bg1} flip />
+      <WaveDivider color="#ffffff" flip />
       <div style={{ ...wrap(isMobile), maxWidth: 1100, position: "relative", zIndex: 2 }}>
         <div style={fadeStyle(newsRef.visible)}>
           <SectionHeading en="News" ja="お知らせ" visible={newsRef.visible} icon={sectionIcons.news} />
@@ -1727,7 +1736,7 @@ export default function CP01Page() {
             const tagColors: Record<string, string> = {
               press: C.gold,
               new: C.goldDark,
-              default: "#3a3a3a",
+              default: "#6b7b8d",
             };
             return (
               <a
@@ -1743,7 +1752,7 @@ export default function CP01Page() {
                   transition: "background-color 0.3s, padding-left 0.3s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "rgba(200,169,96,0.04)";
+                  e.currentTarget.style.backgroundColor = "rgba(184,148,46,0.06)";
                   e.currentTarget.style.paddingLeft = "12px";
                 }}
                 onMouseLeave={(e) => {
@@ -1769,7 +1778,7 @@ export default function CP01Page() {
                     display: "inline-block",
                     fontSize: "0.68rem",
                     fontFamily: "'Noto Sans JP', sans-serif",
-                    color: C.bg1,
+                    color: "#ffffff",
                     background: tagColors[n.tagStyle] || tagColors.default,
                     padding: "3px 12px",
                     borderRadius: "0.375rem",
@@ -1828,14 +1837,14 @@ export default function CP01Page() {
               backgroundImage: "url(/keikamotsu-new-templates/images/delivery.webp)",
               backgroundSize: "cover",
               backgroundPosition: "center",
-              filter: "grayscale(40%) brightness(0.2)",
+              filter: "grayscale(20%) brightness(0.3)",
             }}
           />
           <div
             style={{
               position: "absolute",
               inset: 0,
-              background: "rgba(10,10,10,0.75)",
+              background: "rgba(30,58,95,0.8)",
             }}
           />
           <div
@@ -1875,7 +1884,7 @@ export default function CP01Page() {
                 fontFamily: "'Noto Sans JP', sans-serif",
                 fontSize: isMobile ? "1.3rem" : "1.6rem",
                 fontWeight: 700,
-                color: C.white,
+                color: "#ffffff",
                 lineHeight: 1.3,
                 letterSpacing: "0.05em",
                 marginBottom: 20,
@@ -1901,7 +1910,7 @@ export default function CP01Page() {
               style={{
                 fontFamily: "'Noto Sans JP', sans-serif",
                 fontSize: "0.88rem",
-                color: C.text,
+                color: "rgba(255,255,255,0.9)",
                 lineHeight: 1.9,
                 letterSpacing: "0.05em",
                 marginBottom: 32,
@@ -1921,7 +1930,7 @@ export default function CP01Page() {
                 display: "inline-block",
                 padding: "14px 44px",
                 background: `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`,
-                color: C.bg1,
+                color: "#ffffff",
                 fontFamily: "'Noto Sans JP', sans-serif",
                 fontSize: "0.88rem",
                 fontWeight: 700,
@@ -1934,7 +1943,7 @@ export default function CP01Page() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "scale(1.05)";
-                e.currentTarget.style.boxShadow = `0 6px 24px rgba(200,169,96,0.3)`;
+                e.currentTarget.style.boxShadow = `0 6px 24px rgba(184,148,46,0.3)`;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "scale(1)";
@@ -1994,7 +2003,7 @@ export default function CP01Page() {
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3272.5!2d135.6281!3d34.7667!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzTCsDQ2JzAwLjAiTiAxMzXCsDM3JzQxLjAiRQ!5e0!3m2!1sja!2sjp!4v1"
               width="100%"
               height={isMobile ? "260" : "320"}
-              style={{ border: 0, display: "block", filter: "grayscale(30%) contrast(1.1)" }}
+              style={{ border: 0, display: "block", filter: "grayscale(10%) contrast(1.05)" }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
@@ -2152,7 +2161,7 @@ export default function CP01Page() {
                     <span
                       style={{
                         fontSize: "0.65rem",
-                        color: C.bg1,
+                        color: "#ffffff",
                         background: C.gold,
                         padding: "1px 8px",
                         borderRadius: 3,
@@ -2173,10 +2182,10 @@ export default function CP01Page() {
                     style={{
                       width: "100%",
                       padding: "14px 16px",
-                      background: C.bg2,
+                      background: "#ffffff",
                       border: `1px solid ${C.border}`,
                       borderRadius: "0.375rem",
-                      color: C.white,
+                      color: C.navy,
                       fontFamily: "'Noto Sans JP', sans-serif",
                       fontSize: "0.88rem",
                       lineHeight: 1.7,
@@ -2187,7 +2196,7 @@ export default function CP01Page() {
                     }}
                     onFocus={(e) => {
                       e.currentTarget.style.borderColor = C.gold;
-                      e.currentTarget.style.boxShadow = `0 0 0 2px rgba(200,169,96,0.15)`;
+                      e.currentTarget.style.boxShadow = `0 0 0 2px rgba(184,148,46,0.15)`;
                     }}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor = C.border;
@@ -2203,10 +2212,10 @@ export default function CP01Page() {
                     style={{
                       width: "100%",
                       padding: "14px 16px",
-                      background: C.bg2,
+                      background: "#ffffff",
                       border: `1px solid ${C.border}`,
                       borderRadius: "0.375rem",
-                      color: C.white,
+                      color: C.navy,
                       fontFamily: "'Noto Sans JP', sans-serif",
                       fontSize: "0.88rem",
                       outline: "none",
@@ -2215,7 +2224,7 @@ export default function CP01Page() {
                     }}
                     onFocus={(e) => {
                       e.currentTarget.style.borderColor = C.gold;
-                      e.currentTarget.style.boxShadow = `0 0 0 2px rgba(200,169,96,0.15)`;
+                      e.currentTarget.style.boxShadow = `0 0 0 2px rgba(184,148,46,0.15)`;
                     }}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor = C.border;
@@ -2232,7 +2241,7 @@ export default function CP01Page() {
                 style={{
                   padding: "16px 64px",
                   background: `linear-gradient(135deg, ${C.gold}, ${C.goldDark})`,
-                  color: C.bg1,
+                  color: "#ffffff",
                   fontFamily: "'Noto Sans JP', sans-serif",
                   fontSize: "0.9rem",
                   fontWeight: 700,
@@ -2246,7 +2255,7 @@ export default function CP01Page() {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "scale(1.05)";
-                  e.currentTarget.style.boxShadow = `0 6px 24px rgba(200,169,96,0.3)`;
+                  e.currentTarget.style.boxShadow = `0 6px 24px rgba(184,148,46,0.3)`;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "scale(1)";
@@ -2292,10 +2301,10 @@ export default function CP01Page() {
           backgroundImage: "url(/keikamotsu-new-templates/images/footer-bg.webp)",
           backgroundSize: "cover",
           backgroundPosition: "center",
-          filter: "grayscale(100%) brightness(0.08)",
+          filter: "grayscale(100%) brightness(0.15)",
         }}
       />
-      <div style={{ position: "absolute", inset: 0, background: "rgba(5,5,5,0.92)" }} />
+      <div style={{ position: "absolute", inset: 0, background: "rgba(30,58,95,0.92)" }} />
       <div style={{ ...wrap(isMobile), position: "relative", zIndex: 2 }}>
         <p
           style={{
@@ -2329,7 +2338,7 @@ export default function CP01Page() {
                 textDecoration: "none",
                 fontFamily: "'Noto Sans JP', sans-serif",
                 fontSize: "0.75rem",
-                color: C.muted,
+                color: "rgba(255,255,255,0.6)",
                 letterSpacing: "0.04em",
                 transition: "color 0.3s",
                 position: "relative",
@@ -2339,7 +2348,7 @@ export default function CP01Page() {
                 e.currentTarget.style.color = C.gold;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = C.muted;
+                e.currentTarget.style.color = "rgba(255,255,255,0.6)";
               }}
             >
               <><span style={{marginRight:4,fontSize:"0.85em"}}>{l.icon}</span>{l.label}</>
@@ -2358,7 +2367,7 @@ export default function CP01Page() {
             style={{
               fontFamily: "'Noto Sans JP', sans-serif",
               fontSize: "0.72rem",
-              color: C.muted,
+              color: "rgba(255,255,255,0.7)",
               letterSpacing: "0.04em",
               marginBottom: isMobile ? 8 : 0,
             }}
@@ -2376,7 +2385,7 @@ export default function CP01Page() {
             style={{
               fontFamily: "'Oswald', sans-serif",
               fontSize: "0.68rem",
-              color: "#555",
+              color: "rgba(255,255,255,0.4)",
               letterSpacing: "0.1em",
             }}
           >
@@ -2471,7 +2480,7 @@ function NumberCard({
         style={{
           fontFamily: "'Noto Sans JP', sans-serif",
           fontSize: "0.78rem",
-          color: C.text,
+          color: "rgba(255,255,255,0.9)",
           marginTop: 10,
           letterSpacing: "0.06em",
         }}

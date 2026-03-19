@@ -22,18 +22,19 @@ import {
 } from "@/data/siteData";
 
 /* ────────────────────────────────────────
-   BOLD (R-01) — 黒背景×大型写真 採用HP（無彩色）
+   BRIGHT (R-01) — 明るく親しみやすい物流会社採用HP
    ──────────────────────────────────────── */
 
-const ACCENT = "#32373c";
-const ACCENT_HOVER = "#3e444a";
-const ACCENT_LIGHT = "#555555";
-const BG_DARK = "#0a0a0a";
-const BG_CARD = "#111111";
-const BG_ALT = "#181818";
-const TEXT_W = "#ffffff";
-const TEXT_G = "#cccccc";
-const CTA_BG = "#32373c";
+const ACCENT = "#2563eb";
+const ACCENT_HOVER = "#1d4ed8";
+const ACCENT_LIGHT = "#3b82f6";
+const BG_DARK = "#ffffff";
+const BG_CARD = "#f8f9fb";
+const BG_ALT = "#f0f4f8";
+const TEXT_W = "#1a2b3c";
+const TEXT_G = "#6b7280";
+const CTA_BG = "#2563eb";
+const NAVY = "#1a2b3c";
 const BP = 768;
 
 /* ─── 画像パス ─── */
@@ -152,7 +153,7 @@ function TriangleDivider({ fromColor, toColor }: { fromColor: string; toColor: s
 }
 
 /* ─── セクションタイトル ─── */
-function SectionTitle({ label, title, num }: { label: string; title: string; num?: string }) {
+function SectionTitle({ label, title, num, onDark }: { label: string; title: string; num?: string; onDark?: boolean }) {
   return (
     <FadeIn>
       <div style={{ position: "relative" }}>
@@ -164,7 +165,7 @@ function SectionTitle({ label, title, num }: { label: string; title: string; num
               left: 0,
               fontSize: 110,
               fontWeight: 900,
-              color: "rgba(255,255,255,0.03)",
+              color: onDark ? "rgba(255,255,255,0.05)" : "rgba(26,43,60,0.04)",
               fontFamily: "'Oswald',sans-serif",
               lineHeight: 1,
               pointerEvents: "none",
@@ -180,7 +181,7 @@ function SectionTitle({ label, title, num }: { label: string; title: string; num
             fontWeight: 700,
             fontSize: "12px",
             letterSpacing: "0.2em",
-            color: TEXT_G,
+            color: onDark ? "rgba(255,255,255,0.6)" : TEXT_G,
             textTransform: "uppercase",
             display: "block",
             marginBottom: "6px",
@@ -197,10 +198,10 @@ function SectionTitle({ label, title, num }: { label: string; title: string; num
             fontSize: "28px",
             lineHeight: 1.2,
             letterSpacing: "0.05em",
-            color: TEXT_W,
+            color: onDark ? "#ffffff" : TEXT_W,
             position: "relative",
             zIndex: 1,
-            textShadow: "0 2px 12px rgba(0,0,0,0.3)",
+            textShadow: "none",
           }}
         >
           {title}
@@ -310,12 +311,12 @@ export default function R01Page() {
         a { color:inherit; text-decoration:none; }
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes shimmer { 0%{left:-100%} 100%{left:200%} }
-        @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(50,55,60,0.4)} 50%{box-shadow:0 0 0 12px rgba(50,55,60,0)} }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(37,99,235,0.4)} 50%{box-shadow:0 0 0 12px rgba(37,99,235,0)} }
         @keyframes float1 { 0%,100%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-20px) rotate(2deg)} }
         @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px) rotate(-1.5deg)} }
         @keyframes grainShift { 0%,100%{transform:translate(0,0)} 25%{transform:translate(-2%,-2%)} 50%{transform:translate(2%,1%)} 75%{transform:translate(-1%,2%)} }
         @keyframes scrollChevron { 0%,100%{opacity:0.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(10px)} }
-        @keyframes neonGlow { 0%,100%{box-shadow:0 0 8px rgba(85,85,85,0.3), inset 0 0 8px rgba(85,85,85,0.05)} 50%{box-shadow:0 0 20px rgba(85,85,85,0.5), inset 0 0 12px rgba(85,85,85,0.1)} }
+        @keyframes neonGlow { 0%,100%{box-shadow:0 0 8px rgba(59,130,246,0.3), inset 0 0 8px rgba(59,130,246,0.05)} 50%{box-shadow:0 0 20px rgba(59,130,246,0.5), inset 0 0 12px rgba(59,130,246,0.1)} }
         @keyframes heroFade { 0%{opacity:0;transform:translateY(12px)} 100%{opacity:1;transform:translateY(0)} }
         @keyframes counterPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
         @keyframes marqueeLeft { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
@@ -323,7 +324,7 @@ export default function R01Page() {
         @keyframes navUnderline { from{transform:scaleX(0)} to{transform:scaleX(1)} }
         @keyframes truckDrive { from{transform:translateX(-80px)} to{transform:translateX(calc(100vw + 80px))} }
         .nav-link { position:relative; }
-        .nav-link::after { content:''; position:absolute; bottom:-2px; left:0; width:100%; height:1px; background:${TEXT_W}; transform:scaleX(0); transform-origin:left; transition:transform 0.3s ease; }
+        .nav-link::after { content:''; position:absolute; bottom:-2px; left:0; width:100%; height:1px; background:${ACCENT}; transform:scaleX(0); transform-origin:left; transition:transform 0.3s ease; }
         .nav-link:hover::after { transform:scaleX(1); }
       `}</style>
 
@@ -335,9 +336,9 @@ export default function R01Page() {
           left: 0,
           width: "100%",
           zIndex: 1000,
-          background: scrolled ? "rgba(10,10,10,0.95)" : "transparent",
+          background: scrolled ? "rgba(255,255,255,0.95)" : "transparent",
           backdropFilter: scrolled ? "blur(12px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.08)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(0,0,0,0.08)" : "none",
           transition: "background 0.35s ease, border-bottom 0.35s ease, backdrop-filter 0.35s ease",
           padding: isMobile ? "12px 16px" : "14px 48px",
           display: "flex",
@@ -352,7 +353,8 @@ export default function R01Page() {
             fontWeight: 800,
             fontSize: isMobile ? "20px" : "24px",
             letterSpacing: "0.08em",
-            color: TEXT_W,
+            color: scrolled ? TEXT_W : "#ffffff",
+            transition: "color 0.35s ease",
           }}
         >
           {company.nameEn}
@@ -368,11 +370,11 @@ export default function R01Page() {
                 style={{
                   fontSize: "13px",
                   letterSpacing: "0.05em",
-                  color: TEXT_G,
+                  color: scrolled ? TEXT_G : "rgba(255,255,255,0.85)",
                   transition: "color 0.2s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = TEXT_W)}
-                onMouseLeave={(e) => (e.currentTarget.style.color = TEXT_G)}
+                onMouseEnter={(e) => (e.currentTarget.style.color = scrolled ? TEXT_W : "#ffffff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = scrolled ? TEXT_G : "rgba(255,255,255,0.85)")}
               >
                 {l.label}
               </a>
@@ -381,7 +383,7 @@ export default function R01Page() {
               href={`tel:${company.phone}`}
               style={{
                 background: CTA_BG,
-                color: TEXT_W,
+                color: "#ffffff",
                 padding: "8px 22px",
                 borderRadius: "4px",
                 fontWeight: 700,
@@ -407,7 +409,7 @@ export default function R01Page() {
               style={{
                 width: "24px",
                 height: "2px",
-                background: TEXT_W,
+                background: scrolled ? TEXT_W : "#ffffff",
                 marginBottom: "6px",
                 transition: "transform 0.3s",
                 transform: menuOpen ? "rotate(45deg) translate(4px,5px)" : "none",
@@ -417,7 +419,7 @@ export default function R01Page() {
               style={{
                 width: "24px",
                 height: "2px",
-                background: TEXT_W,
+                background: scrolled ? TEXT_W : "#ffffff",
                 marginBottom: "6px",
                 transition: "opacity 0.3s",
                 opacity: menuOpen ? 0 : 1,
@@ -427,7 +429,7 @@ export default function R01Page() {
               style={{
                 width: "24px",
                 height: "2px",
-                background: TEXT_W,
+                background: scrolled ? TEXT_W : "#ffffff",
                 transition: "transform 0.3s",
                 transform: menuOpen ? "rotate(-45deg) translate(4px,-5px)" : "none",
               }}
@@ -443,7 +445,7 @@ export default function R01Page() {
               top: "56px",
               left: 0,
               width: "100%",
-              background: "rgba(10,10,10,0.98)",
+              background: "rgba(255,255,255,0.98)",
               backdropFilter: "blur(16px)",
               padding: "24px 20px 32px",
               display: "flex",
@@ -477,7 +479,7 @@ export default function R01Page() {
               href={`tel:${company.phone}`}
               style={{
                 background: CTA_BG,
-                color: TEXT_W,
+                color: "#ffffff",
                 padding: "12px",
                 borderRadius: "4px",
                 textAlign: "center",
@@ -516,7 +518,7 @@ export default function R01Page() {
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(to bottom, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.85) 100%)",
+            background: "linear-gradient(to bottom, rgba(10,10,10,0.35) 0%, rgba(10,10,10,0.6) 100%)",
           }}
         />
 
@@ -611,7 +613,7 @@ export default function R01Page() {
             transform: "translate(-50%, -50%)",
             fontSize: isMobile ? "80px" : "220px",
             fontWeight: 900,
-            color: "rgba(255,255,255,0.02)",
+            color: "rgba(255,255,255,0.05)",
             fontFamily: "'Oswald',sans-serif",
             letterSpacing: "0.15em",
             whiteSpace: "nowrap",
@@ -646,7 +648,7 @@ export default function R01Page() {
               fontSize: isMobile ? "30px" : "54px",
               lineHeight: 1.3,
               letterSpacing: "0.08em",
-              color: TEXT_W,
+              color: "#ffffff",
               marginBottom: "8px",
             }}
           >
@@ -663,7 +665,7 @@ export default function R01Page() {
                 fontSize: isMobile ? "28px" : "52px",
                 lineHeight: 1.1,
                 letterSpacing: "0.05em",
-                color: TEXT_W,
+                color: "#ffffff",
                 animation: "heroFade 0.9s 0.1s both",
                 marginBottom: "0",
               }}
@@ -679,7 +681,7 @@ export default function R01Page() {
                 key={i}
                 style={{
                   fontSize: isMobile ? "13px" : "15px",
-                  color: TEXT_G,
+                  color: "rgba(255,255,255,0.85)",
                   letterSpacing: "0.05em",
                   lineHeight: 1.8,
                 }}
@@ -695,7 +697,7 @@ export default function R01Page() {
               style={{
                 fontFamily: "'Oswald','Noto Sans JP',sans-serif",
                 fontWeight: 800,
-                color: TEXT_W,
+                color: "#ffffff",
                 fontSize: isMobile ? "18px" : "22px",
                 letterSpacing: "0.04em",
               }}
@@ -707,7 +709,7 @@ export default function R01Page() {
               style={{
                 fontFamily: "'Oswald',sans-serif",
                 fontWeight: 800,
-                color: TEXT_W,
+                color: "#ffffff",
                 fontSize: isMobile ? "64px" : "96px",
                 lineHeight: 1,
               }}
@@ -716,7 +718,7 @@ export default function R01Page() {
               style={{
                 fontFamily: "'Oswald','Noto Sans JP',sans-serif",
                 fontWeight: 800,
-                color: TEXT_W,
+                color: "#ffffff",
                 fontSize: isMobile ? "18px" : "22px",
               }}
             >
@@ -727,7 +729,7 @@ export default function R01Page() {
               style={{
                 fontFamily: "'Oswald',sans-serif",
                 fontWeight: 800,
-                color: TEXT_W,
+                color: "#ffffff",
                 fontSize: isMobile ? "64px" : "96px",
                 lineHeight: 1,
               }}
@@ -736,7 +738,7 @@ export default function R01Page() {
               style={{
                 fontFamily: "'Oswald','Noto Sans JP',sans-serif",
                 fontWeight: 800,
-                color: TEXT_W,
+                color: "#ffffff",
                 fontSize: isMobile ? "18px" : "22px",
               }}
             >
@@ -757,14 +759,15 @@ export default function R01Page() {
               <span
                 key={b}
                 style={{
-                  background: ACCENT,
-                  border: `1px solid ${ACCENT_LIGHT}`,
-                  color: TEXT_W,
+                  background: "rgba(255,255,255,0.2)",
+                  border: "1px solid rgba(255,255,255,0.4)",
+                  color: "#ffffff",
                   padding: "6px 16px",
                   borderRadius: "2px",
                   fontSize: "13px",
                   fontWeight: 700,
                   letterSpacing: "0.05em",
+                  backdropFilter: "blur(4px)",
                   animation: `heroFade 0.6s ${1.4 + i * 0.15}s both`,
                 }}
               >
@@ -787,7 +790,7 @@ export default function R01Page() {
               href={`tel:${company.phone}`}
               style={{
                 background: CTA_BG,
-                color: TEXT_W,
+                color: "#ffffff",
                 padding: isMobile ? "14px 28px" : "16px 40px",
                 borderRadius: "4px",
                 fontWeight: 800,
@@ -826,8 +829,8 @@ export default function R01Page() {
             <a
               href="#apply"
               style={{
-                border: `2px solid ${TEXT_W}`,
-                color: TEXT_W,
+                border: "2px solid #ffffff",
+                color: "#ffffff",
                 padding: isMobile ? "14px 28px" : "16px 40px",
                 borderRadius: "4px",
                 fontWeight: 700,
@@ -836,13 +839,13 @@ export default function R01Page() {
                 transition: "background 0.25s, color 0.25s, transform 0.25s",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = TEXT_W;
-                e.currentTarget.style.color = BG_DARK;
+                e.currentTarget.style.background = "#ffffff";
+                e.currentTarget.style.color = NAVY;
                 e.currentTarget.style.transform = "translateY(-2px)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.color = TEXT_W;
+                e.currentTarget.style.color = "#ffffff";
                 e.currentTarget.style.transform = "translateY(0)";
               }}
             >
@@ -892,11 +895,11 @@ export default function R01Page() {
       {/* ===== MARQUEE ===== */}
       <section
         style={{
-          background: ACCENT,
+          background: "#eef2ff",
           padding: "20px 0",
           overflow: "hidden",
           borderTop: `3px solid ${ACCENT_LIGHT}`,
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid rgba(0,0,0,0.06)",
           position: "relative",
         }}
       >
@@ -908,7 +911,7 @@ export default function R01Page() {
             left: 0,
             width: 100,
             height: "100%",
-            background: `linear-gradient(to right, ${ACCENT}, transparent)`,
+            background: "linear-gradient(to right, #eef2ff, transparent)",
             zIndex: 2,
             pointerEvents: "none",
           }}
@@ -920,7 +923,7 @@ export default function R01Page() {
             right: 0,
             width: 100,
             height: "100%",
-            background: `linear-gradient(to left, ${ACCENT}, transparent)`,
+            background: "linear-gradient(to left, #eef2ff, transparent)",
             zIndex: 2,
             pointerEvents: "none",
           }}
@@ -942,7 +945,7 @@ export default function R01Page() {
                     fontWeight: 800,
                     fontSize: isMobile ? "15px" : "20px",
                     letterSpacing: "0.06em",
-                    color: TEXT_W,
+                    color: ACCENT,
                     paddingRight: "48px",
                   }}
                 >
@@ -955,7 +958,7 @@ export default function R01Page() {
       </section>
 
       {/* ── Marquee -> Reasons divider ── */}
-      <TriangleDivider fromColor={ACCENT} toColor={BG_DARK} />
+      <TriangleDivider fromColor={"#eef2ff"} toColor={BG_DARK} />
 
       {/* ===== REASONS ===== */}
       <section
@@ -987,21 +990,25 @@ export default function R01Page() {
                   display: "flex",
                   flexDirection: isMobile ? "column" : "row",
                   gap: isMobile ? "16px" : "28px",
-                  background: BG_CARD,
+                  background: "#ffffff",
                   borderRadius: "6px",
                   padding: isMobile ? "28px 20px" : "36px 32px",
                   borderTop: `4px solid ${ACCENT_LIGHT}`,
+                  border: "1px solid rgba(0,0,0,0.06)",
+                  borderTopWidth: "4px",
+                  borderTopColor: ACCENT_LIGHT,
                   position: "relative",
                   alignItems: "stretch",
                   transition: "box-shadow 0.4s ease, transform 0.3s ease",
                   cursor: "default",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = "0 0 24px rgba(85,85,85,0.2)";
+                  e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.1)";
                   e.currentTarget.style.transform = "translateY(-3px)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
                   e.currentTarget.style.transform = "translateY(0)";
                 }}
               >
@@ -1028,7 +1035,7 @@ export default function R01Page() {
                       fontFamily: "'Oswald',sans-serif",
                       fontWeight: 800,
                       fontSize: isMobile ? "56px" : "72px",
-                      color: "rgba(255,255,255,0.06)",
+                      color: "rgba(26,43,60,0.05)",
                       position: "absolute",
                       top: "-8px",
                       right: "0",
@@ -1120,7 +1127,7 @@ export default function R01Page() {
                     key={i}
                     style={{
                       display: "flex",
-                      borderBottom: "1px solid rgba(255,255,255,0.08)",
+                      borderBottom: "1px solid rgba(0,0,0,0.08)",
                       padding: "16px 0",
                       flexDirection: isMobile ? "column" : "row",
                       gap: isMobile ? "4px" : "0",
@@ -1158,19 +1165,20 @@ export default function R01Page() {
             <FadeIn delay={0.3} direction="scale">
               <div
                 style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.12)",
+                  background: "#ffffff",
+                  border: "1px solid rgba(0,0,0,0.08)",
                   borderRadius: "8px",
                   padding: isMobile ? "32px 24px" : "44px 32px",
                   textAlign: "center",
                   marginTop: isMobile ? "32px" : "0",
                   transition: "box-shadow 0.4s",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = "0 0 30px rgba(85,85,85,0.2)";
+                  e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.1)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
                 }}
               >
                 <p style={{ fontSize: "14px", color: TEXT_G, letterSpacing: "0.05em", marginBottom: "8px" }}>
@@ -1208,7 +1216,7 @@ export default function R01Page() {
                       style={{
                         fontSize: "11px",
                         color: TEXT_G,
-                        background: "rgba(255,255,255,0.06)",
+                        background: "rgba(37,99,235,0.06)",
                         padding: "4px 12px",
                         borderRadius: "20px",
                         letterSpacing: "0.04em",
@@ -1281,7 +1289,7 @@ export default function R01Page() {
               <FadeIn key={i} delay={i * 0.1} direction={i % 2 === 0 ? "up" : "scale"}>
                 <div
                   style={{
-                    background: BG_CARD,
+                    background: "#ffffff",
                     padding: isMobile ? "28px 22px" : "36px 30px",
                     borderRadius: "6px",
                     borderLeft: `3px solid ${ACCENT_LIGHT}`,
@@ -1289,15 +1297,18 @@ export default function R01Page() {
                     transition: "transform 0.3s, box-shadow 0.4s",
                     cursor: "default",
                     height: "100%",
+                    border: "1px solid rgba(0,0,0,0.06)",
+                    borderLeftWidth: "3px",
+                    borderLeftColor: ACCENT_LIGHT,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-4px)";
-                    e.currentTarget.style.boxShadow =
-                      "0 0 24px rgba(85,85,85,0.25), inset 0 0 12px rgba(85,85,85,0.05)";
+                    e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.1)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "none";
+                    e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
                   }}
                 >
                   <div style={{ color: ACCENT_LIGHT, marginBottom: "14px" }}>{benefitIcons[i]}</div>
@@ -1374,7 +1385,7 @@ export default function R01Page() {
                 top: "8px",
                 bottom: "8px",
                 width: "2px",
-                background: `linear-gradient(to bottom, ${ACCENT_LIGHT}, rgba(85,85,85,0.15))`,
+                background: `linear-gradient(to bottom, ${ACCENT_LIGHT}, rgba(59,130,246,0.15))`,
               }}
             />
 
@@ -1535,7 +1546,7 @@ export default function R01Page() {
                       borderRadius: "6px",
                       overflow: "hidden",
                       aspectRatio: "16/9",
-                      background: "#1a1a1a",
+                      background: "#e5e7eb",
                     }}
                   >
                     <img
@@ -1572,9 +1583,9 @@ export default function R01Page() {
                     left: 16,
                     top: "50%",
                     transform: "translateY(-50%)",
-                    background: "rgba(10,10,10,0.7)",
+                    background: "rgba(255,255,255,0.85)",
                     border: `1px solid ${ACCENT_LIGHT}`,
-                    color: TEXT_W,
+                    color: NAVY,
                     width: 44,
                     height: 44,
                     borderRadius: "50%",
@@ -1585,9 +1596,10 @@ export default function R01Page() {
                     justifyContent: "center",
                     transition: "background 0.2s",
                     zIndex: 3,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(50,55,60,0.9)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(10,10,10,0.7)")}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#ffffff")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.85)")}
                 >
                   &#8249;
                 </button>
@@ -1598,9 +1610,9 @@ export default function R01Page() {
                     right: 16,
                     top: "50%",
                     transform: "translateY(-50%)",
-                    background: "rgba(10,10,10,0.7)",
+                    background: "rgba(255,255,255,0.85)",
                     border: `1px solid ${ACCENT_LIGHT}`,
-                    color: TEXT_W,
+                    color: NAVY,
                     width: 44,
                     height: 44,
                     borderRadius: "50%",
@@ -1611,9 +1623,10 @@ export default function R01Page() {
                     justifyContent: "center",
                     transition: "background 0.2s",
                     zIndex: 3,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(50,55,60,0.9)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(10,10,10,0.7)")}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#ffffff")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.85)")}
                 >
                   &#8250;
                 </button>
@@ -1632,7 +1645,7 @@ export default function R01Page() {
                     borderRadius: "4px",
                     border: "none",
                     cursor: "pointer",
-                    background: i === galleryIdx ? TEXT_W : "rgba(255,255,255,0.25)",
+                    background: i === galleryIdx ? ACCENT : "rgba(0,0,0,0.15)",
                     transition: "width 0.3s, background 0.3s",
                   }}
                 />
@@ -1689,21 +1702,22 @@ export default function R01Page() {
                   {/* Speech bubble */}
                   <div
                     style={{
-                      background: BG_DARK,
+                      background: "#ffffff",
                       padding: isMobile ? "28px 22px" : "40px 36px",
                       borderRadius: i % 2 === 0 ? "16px 16px 16px 4px" : "16px 16px 4px 16px",
                       position: "relative",
                       transition: "box-shadow 0.4s, transform 0.3s",
                       cursor: "default",
                       marginBottom: "20px",
+                      border: "1px solid rgba(0,0,0,0.06)",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow =
-                        "0 0 20px rgba(85,85,85,0.2), inset 0 0 8px rgba(85,85,85,0.05)";
+                      e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.1)";
                       e.currentTarget.style.transform = "translateY(-3px)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = "none";
+                      e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.04)";
                       e.currentTarget.style.transform = "translateY(0)";
                     }}
                   >
@@ -1712,7 +1726,7 @@ export default function R01Page() {
                         fontFamily: "'Oswald',sans-serif",
                         fontWeight: 800,
                         fontSize: "48px",
-                        color: "rgba(255,255,255,0.08)",
+                        color: "rgba(37,99,235,0.1)",
                         position: "absolute",
                         top: "12px",
                         left: "20px",
@@ -1738,12 +1752,12 @@ export default function R01Page() {
                       style={{
                         display: "inline-block",
                         background: ACCENT,
-                        border: "1px solid rgba(255,255,255,0.15)",
+                        border: "none",
                         padding: "4px 14px",
                         borderRadius: "2px",
                         fontSize: "13px",
                         fontWeight: 700,
-                        color: TEXT_W,
+                        color: "#ffffff",
                         letterSpacing: "0.04em",
                       }}
                     >
@@ -1758,7 +1772,7 @@ export default function R01Page() {
                       height: 0,
                       borderLeft: "10px solid transparent",
                       borderRight: "10px solid transparent",
-                      borderTop: `10px solid ${BG_DARK}`,
+                      borderTop: "10px solid #ffffff",
                     }} />
                   </div>
                   {/* Person info below bubble */}
@@ -1813,11 +1827,12 @@ export default function R01Page() {
                 <FadeIn key={i} delay={i * 0.06}>
                   <div
                     style={{
-                      background: BG_CARD,
+                      background: "#ffffff",
                       borderRadius: "6px",
                       overflow: "hidden",
                       transition: "box-shadow 0.3s",
-                      boxShadow: isOpen ? "0 0 16px rgba(85,85,85,0.15)" : "none",
+                      boxShadow: isOpen ? "0 4px 16px rgba(0,0,0,0.08)" : "0 1px 4px rgba(0,0,0,0.04)",
+                      border: "1px solid rgba(0,0,0,0.06)",
                     }}
                   >
                     <button
@@ -1929,10 +1944,10 @@ export default function R01Page() {
                     flexDirection: isMobile ? "column" : "row",
                     gap: isMobile ? "6px" : "20px",
                     padding: "18px 0",
-                    borderBottom: "1px solid rgba(255,255,255,0.06)",
+                    borderBottom: "1px solid rgba(0,0,0,0.06)",
                     transition: "background 0.2s",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(37,99,235,0.03)")}
                   onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                 >
                   <span
@@ -1956,13 +1971,13 @@ export default function R01Page() {
                       flexShrink: 0,
                       background:
                         n.tagStyle === "urgent"
-                          ? "rgba(220,50,50,0.2)"
+                          ? "rgba(220,50,50,0.1)"
                           : n.tagStyle === "new"
-                          ? "rgba(255,255,255,0.1)"
-                          : "rgba(255,255,255,0.06)",
-                      color: n.tagStyle === "urgent" ? "#e55" : TEXT_G,
+                          ? "rgba(37,99,235,0.08)"
+                          : "rgba(0,0,0,0.04)",
+                      color: n.tagStyle === "urgent" ? "#dc2626" : n.tagStyle === "new" ? ACCENT : TEXT_G,
                       border: `1px solid ${
-                        n.tagStyle === "urgent" ? "rgba(220,50,50,0.4)" : "rgba(255,255,255,0.1)"
+                        n.tagStyle === "urgent" ? "rgba(220,50,50,0.3)" : "rgba(0,0,0,0.08)"
                       }`,
                     }}
                   >
@@ -2017,7 +2032,7 @@ export default function R01Page() {
               <p
                 style={{
                   fontSize: "12px",
-                  color: "rgba(255,255,255,0.4)",
+                  color: "rgba(0,0,0,0.4)",
                   letterSpacing: "0.05em",
                   marginBottom: "24px",
                 }}
@@ -2032,7 +2047,7 @@ export default function R01Page() {
                   style={{
                     border: 0,
                     display: "block",
-                    filter: "invert(0.9) hue-rotate(180deg) brightness(0.95) contrast(1.1)",
+                    filter: "none",
                   }}
                   allowFullScreen
                   loading="lazy"
@@ -2045,7 +2060,7 @@ export default function R01Page() {
       </section>
 
       {/* ── Access -> Company divider ── */}
-      <TriangleDivider fromColor={BG_DARK} toColor={BG_CARD} />
+      <TriangleDivider fromColor={BG_DARK} toColor={NAVY} />
 
       {/* ===== COMPANY ===== */}
       <section
@@ -2057,9 +2072,9 @@ export default function R01Page() {
         }}
       >
         {/* Dark overlay */}
-        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.75)" }} />
-        <div style={{ maxWidth: "860px", margin: "0 auto", position: "relative", zIndex: 1 }}>
-          <SectionTitle label="COMPANY" title="⌂ 会社概要" num="10" />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(26,43,60,0.85)" }} />
+        <div style={{ maxWidth: "860px", margin: "0 auto", position: "relative", zIndex: 1, color: "#ffffff" }}>
+          <SectionTitle label="COMPANY" title="⌂ 会社概要" num="10" onDark />
           <FadeIn delay={0.15}>
             <dl style={{ marginTop: "36px" }}>
               {companyInfo.map((row, i) => (
@@ -2067,7 +2082,7 @@ export default function R01Page() {
                   key={i}
                   style={{
                     display: "flex",
-                    borderBottom: "1px solid rgba(255,255,255,0.06)",
+                    borderBottom: "1px solid rgba(255,255,255,0.12)",
                     padding: "16px 0",
                     flexDirection: isMobile ? "column" : "row",
                     gap: isMobile ? "4px" : "0",
@@ -2079,7 +2094,7 @@ export default function R01Page() {
                       flexShrink: 0,
                       fontWeight: 700,
                       fontSize: "13px",
-                      color: TEXT_W,
+                      color: "#ffffff",
                       letterSpacing: "0.05em",
                     }}
                   >
@@ -2089,7 +2104,7 @@ export default function R01Page() {
                     style={{
                       fontSize: "14px",
                       lineHeight: 1.7,
-                      color: TEXT_G,
+                      color: "rgba(255,255,255,0.75)",
                       letterSpacing: "0.05em",
                     }}
                   >
@@ -2103,7 +2118,7 @@ export default function R01Page() {
       </section>
 
       {/* ── Company -> Apply divider ── */}
-      <TriangleDivider fromColor={BG_CARD} toColor={BG_DARK} />
+      <TriangleDivider fromColor={NAVY} toColor={BG_DARK} />
 
       {/* ===== APPLY FORM ===== */}
       <section
@@ -2152,8 +2167,8 @@ export default function R01Page() {
                     style={{
                       width: "100%",
                       padding: "14px 16px",
-                      background: BG_CARD,
-                      border: "1px solid rgba(255,255,255,0.12)",
+                      background: "#ffffff",
+                      border: "1px solid rgba(0,0,0,0.12)",
                       borderRadius: "4px",
                       color: TEXT_W,
                       fontSize: "14px",
@@ -2163,10 +2178,10 @@ export default function R01Page() {
                     }}
                     onFocus={(e) => {
                       e.currentTarget.style.borderColor = ACCENT_LIGHT;
-                      e.currentTarget.style.boxShadow = `0 0 12px rgba(85,85,85,0.25)`;
+                      e.currentTarget.style.boxShadow = `0 0 12px rgba(37,99,235,0.15)`;
                     }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                      e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)";
                       e.currentTarget.style.boxShadow = "none";
                     }}
                   />
@@ -2193,8 +2208,8 @@ export default function R01Page() {
                     width: "100%",
                     padding: "14px 16px",
                     resize: "vertical",
-                    background: BG_CARD,
-                    border: "1px solid rgba(255,255,255,0.12)",
+                    background: "#ffffff",
+                    border: "1px solid rgba(0,0,0,0.12)",
                     borderRadius: "4px",
                     color: TEXT_W,
                     fontSize: "14px",
@@ -2204,10 +2219,10 @@ export default function R01Page() {
                   }}
                   onFocus={(e) => {
                     e.currentTarget.style.borderColor = ACCENT_LIGHT;
-                    e.currentTarget.style.boxShadow = `0 0 12px rgba(85,85,85,0.25)`;
+                    e.currentTarget.style.boxShadow = `0 0 12px rgba(37,99,235,0.15)`;
                   }}
                   onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                    e.currentTarget.style.borderColor = "rgba(0,0,0,0.12)";
                     e.currentTarget.style.boxShadow = "none";
                   }}
                 />
@@ -2216,7 +2231,7 @@ export default function R01Page() {
                 type="submit"
                 style={{
                   background: CTA_BG,
-                  color: TEXT_W,
+                  color: "#ffffff",
                   padding: "16px",
                   border: "none",
                   borderRadius: "4px",
@@ -2259,7 +2274,7 @@ export default function R01Page() {
       </section>
 
       {/* ── Truck animation ── */}
-      <div style={{ background: BG_DARK, overflow: "hidden", position: "relative", height: isMobile ? 50 : 80 }}>
+      <div style={{ background: BG_DARK, overflow: "hidden", position: "relative", height: isMobile ? 50 : 80, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
         {/* Faint cityscape */}
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, opacity: 0.08, lineHeight: 0 }}>
           <svg viewBox="0 0 800 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: isMobile ? 40 : 60 }}>
@@ -2267,7 +2282,7 @@ export default function R01Page() {
           </svg>
         </div>
         {/* Road line */}
-        <div style={{ position: "absolute", bottom: isMobile ? 6 : 12, left: 0, right: 0, height: 2, background: `linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent)` }} />
+        <div style={{ position: "absolute", bottom: isMobile ? 6 : 12, left: 0, right: 0, height: 2, background: `linear-gradient(to right, transparent, rgba(0,0,0,0.1), transparent)` }} />
         {/* Truck SVG */}
         <div style={{ position: "absolute", left: 0, bottom: isMobile ? 8 : 14, animation: `truckDrive ${isMobile ? 8 : 12}s linear infinite` }}>
           <svg width={isMobile ? 48 : 64} height={isMobile ? 27 : 36} viewBox="0 0 64 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2277,19 +2292,19 @@ export default function R01Page() {
             <circle cx="14" cy="30" r="2.5" fill={BG_DARK} />
             <circle cx="50" cy="30" r="5" fill={TEXT_G} opacity="0.5" />
             <circle cx="50" cy="30" r="2.5" fill={BG_DARK} />
-            <rect x="40" y="16" width="8" height="6" rx="1" fill="rgba(255,255,255,0.2)" />
+            <rect x="40" y="16" width="8" height="6" rx="1" fill="rgba(255,255,255,0.6)" />
           </svg>
         </div>
       </div>
 
       {/* ── Apply -> CTA divider ── */}
-      <TriangleDivider fromColor={BG_DARK} toColor={BG_ALT} />
+      <TriangleDivider fromColor={BG_DARK} toColor={NAVY} />
 
       {/* ===== CTA SECTION ===== */}
       <section
         style={{
           padding: isMobile ? "80px 20px 88px" : "110px 48px 120px",
-          background: BG_ALT,
+          background: NAVY,
           textAlign: "center",
           position: "relative",
           overflow: "hidden",
@@ -2329,7 +2344,7 @@ export default function R01Page() {
                 fontSize: isMobile ? "20px" : "28px",
                 lineHeight: 1.4,
                 letterSpacing: "0.05em",
-                color: TEXT_W,
+                color: "#ffffff",
                 marginBottom: "20px",
                 position: "relative",
                 display: "inline-block",
@@ -2337,13 +2352,13 @@ export default function R01Page() {
               }}
             >
               {nl2br(cta.heading)}
-              <span style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 2, background: `linear-gradient(to right, ${ACCENT}, transparent)`, transformOrigin: "left", animation: "navUnderline 0.8s ease 0.5s forwards", transform: "scaleX(0)" }} />
+              <span style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 2, background: `linear-gradient(to right, ${ACCENT_LIGHT}, transparent)`, transformOrigin: "left", animation: "navUnderline 0.8s ease 0.5s forwards", transform: "scaleX(0)" }} />
             </h2>
             <p
               style={{
                 fontSize: "14px",
                 lineHeight: 1.85,
-                color: TEXT_G,
+                color: "rgba(255,255,255,0.75)",
                 letterSpacing: "0.05em",
                 marginBottom: "32px",
               }}
@@ -2357,7 +2372,7 @@ export default function R01Page() {
                 fontFamily: "'Oswald',sans-serif",
                 fontWeight: 800,
                 fontSize: isMobile ? "36px" : "52px",
-                color: TEXT_W,
+                color: "#ffffff",
                 letterSpacing: "0.04em",
                 marginBottom: "8px",
                 transition: "text-shadow 0.3s",
@@ -2372,7 +2387,7 @@ export default function R01Page() {
             <p
               style={{
                 fontSize: "12px",
-                color: TEXT_G,
+                color: "rgba(255,255,255,0.6)",
                 letterSpacing: "0.05em",
                 marginBottom: "28px",
               }}
@@ -2383,8 +2398,8 @@ export default function R01Page() {
               href="#apply"
               style={{
                 display: "inline-block",
-                background: CTA_BG,
-                color: TEXT_W,
+                background: "#ffffff",
+                color: NAVY,
                 padding: isMobile ? "14px 36px" : "16px 52px",
                 borderRadius: "4px",
                 fontWeight: 800,
@@ -2397,13 +2412,13 @@ export default function R01Page() {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-3px) scale(1.02)";
-                e.currentTarget.style.boxShadow = "0 8px 28px rgba(0,0,0,0.5)";
-                e.currentTarget.style.background = ACCENT_HOVER;
+                e.currentTarget.style.boxShadow = "0 8px 28px rgba(0,0,0,0.3)";
+                e.currentTarget.style.background = "rgba(255,255,255,0.9)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0) scale(1)";
                 e.currentTarget.style.boxShadow = "none";
-                e.currentTarget.style.background = CTA_BG;
+                e.currentTarget.style.background = "#ffffff";
               }}
             >
               <span
@@ -2413,7 +2428,7 @@ export default function R01Page() {
                   left: "-100%",
                   width: "50%",
                   height: "100%",
-                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent)",
+                  background: "linear-gradient(90deg, transparent, rgba(37,99,235,0.08), transparent)",
                   animation: "shimmer 3s ease-in-out infinite 1s",
                 }}
               />
@@ -2424,12 +2439,12 @@ export default function R01Page() {
       </section>
 
       {/* ── CTA -> Footer divider ── */}
-      <TriangleDivider fromColor={BG_ALT} toColor={BG_DARK} />
+      <TriangleDivider fromColor={NAVY} toColor={NAVY} />
 
       {/* ===== FOOTER ===== */}
       <footer
         style={{
-          background: BG_DARK,
+          background: NAVY,
           padding: isMobile ? "48px 20px 28px" : "60px 48px 32px",
           borderTop: "none",
           position: "relative",
@@ -2466,7 +2481,7 @@ export default function R01Page() {
                 fontFamily: "'Zen Kurenaido', 'Yomogi', sans-serif",
                 fontWeight: 800,
                 fontSize: isMobile ? "12px" : "18px",
-                color: "rgba(255,255,255,0.35)",
+                color: "rgba(255,255,255,0.4)",
                 letterSpacing: "0.05em",
                 marginBottom: "28px",
                 lineHeight: 1.5,
@@ -2491,12 +2506,12 @@ export default function R01Page() {
                   className="nav-link"
                   style={{
                     fontSize: "12px",
-                    color: TEXT_G,
+                    color: "rgba(255,255,255,0.6)",
                     letterSpacing: "0.05em",
                     transition: "color 0.2s",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = TEXT_W)}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = TEXT_G)}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.6)")}
                 >
                   {l.label}
                 </a>
