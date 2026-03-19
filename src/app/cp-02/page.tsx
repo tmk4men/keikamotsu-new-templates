@@ -780,6 +780,8 @@ export default function CP02Page() {
                     borderRight: heroTypeDone ? "none" : `3px solid ${C.accent}`,
                     animation: heroTypeDone ? "none" : "cp02-blinkCaret 0.8s step-end infinite",
                     display: "inline-block",
+                    textAlign: "center",
+                    whiteSpace: "pre-line",
                   }}
                 >
                   {heroTyped}

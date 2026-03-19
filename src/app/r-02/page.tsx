@@ -711,6 +711,7 @@ export default function R02Page() {
               display: "inline-block", paddingRight: 4,
               animation: heroDone ? "none" : "typeCursor 0.7s step-end infinite",
               textShadow: "0 2px 16px rgba(0,0,0,0.3)",
+              textAlign: "center", whiteSpace: "pre-line",
             }}>
               {heroText}
             </h1>

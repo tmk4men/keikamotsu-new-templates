@@ -727,6 +727,8 @@ export default function R03TrustPage() {
               marginBottom: 24,
               letterSpacing: 3,
               textShadow: "0 2px 20px rgba(0,0,0,0.3)",
+              textAlign: "center",
+              whiteSpace: "pre-line",
             }}
           >
             <span style={{ display: "block" }}>

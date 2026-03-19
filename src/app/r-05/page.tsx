@@ -613,6 +613,8 @@ export default function R05Page() {
                 color: C.text,
                 margin: "0 0 24px",
                 letterSpacing: "-0.02em",
+                textAlign: "center",
+                whiteSpace: "pre-line",
               }}
             >
               {typedHero}

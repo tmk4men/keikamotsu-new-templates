@@ -666,6 +666,8 @@ export default function CP04Page() {
             lineHeight: 1.4,
             margin: "0 0 24px",
             letterSpacing: "0.06em",
+            textAlign: "center",
+            whiteSpace: "pre-line",
           }}
         >
           {heroTyped.displayed}

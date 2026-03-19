@@ -833,6 +833,8 @@ function HeroSection({ isMobile }: { isMobile: boolean }) {
             letterSpacing: "0.1em",
             color: "#fff",
             margin: 0,
+            textAlign: "center",
+            whiteSpace: "pre-line",
           }}
         >
           {heroTyped.displayed}

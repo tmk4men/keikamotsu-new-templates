@@ -1779,6 +1779,8 @@ export default function CorporatePage01() {
                 letterSpacing: "0.08em",
                 lineHeight: 1.3,
                 minHeight: "1.3em",
+                textAlign: "center",
+                whiteSpace: "pre-line",
               }}
             >
               {headlineText}

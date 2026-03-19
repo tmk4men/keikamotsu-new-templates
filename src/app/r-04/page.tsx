@@ -775,6 +775,7 @@ export default function R04Flow() {
                 fontSize: isMobile ? "28px" : "54px",
                 fontWeight: 400, color: "#fff", lineHeight: 1.4,
                 letterSpacing: "0.1em",
+                textAlign: "center", whiteSpace: "pre-line",
               }}>
                 {heroTyped.displayed}
                 {!heroTyped.done && <span style={{ animation: "blink 1s step-end infinite" }}>|</span>}

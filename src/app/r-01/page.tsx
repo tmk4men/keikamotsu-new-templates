@@ -959,6 +959,8 @@ export default function R01Page() {
                   lineHeight: 1.3,
                   marginBottom: 8,
                   textShadow: "0 2px 20px rgba(0,0,0,0.3)",
+                  textAlign: "center",
+                  whiteSpace: "pre-line",
                 }}
               >
                 {heroTyped}

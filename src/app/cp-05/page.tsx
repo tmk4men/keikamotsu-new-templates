@@ -713,6 +713,8 @@ export default function CP05() {
                 textShadow: "0 2px 24px rgba(0,0,0,0.5)",
                 lineHeight: 1.3,
                 letterSpacing: 2,
+                textAlign: "center",
+                whiteSpace: "pre-line",
               }}
             >
               {heroText}
