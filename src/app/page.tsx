@@ -8,6 +8,7 @@ const templates = [
       { id: "cp-02", name: "SLATE", desc: "白基調×スチールブルー。堅実で清潔感のある企業像", tone: "アクセント系" },
       { id: "cp-03", name: "MONO", desc: "グレースケール。洗練されたエディトリアルスタイル", tone: "モノトーン系" },
       { id: "cp-04", name: "EDGE", desc: "スプリットレイアウト。斜めカットのモダンデザイン", tone: "モダン系" },
+      { id: "cp-05", name: "CLEAN", desc: "ホワイト×ミントグリーン。余白で魅せるミニマルデザイン", tone: "クリーン系" },
     ],
   },
   {
@@ -17,6 +18,7 @@ const templates = [
       { id: "r-02", name: "DRIVE", desc: "明るい差し色×動的レイアウト。若手ドライバー訴求", tone: "アクセント系" },
       { id: "r-03", name: "TRUST", desc: "モノトーン×人物写真。誠実さと安心感を伝える", tone: "モノトーン系" },
       { id: "r-04", name: "FLOW", desc: "横スクロール×マガジン風。読み物として惹き込む", tone: "マガジン系" },
+      { id: "r-05", name: "FRESH", desc: "ホワイト×コーラル。明るく親しみやすい採用HP", tone: "クリーン系" },
     ],
   },
 ];
@@ -41,7 +43,7 @@ export default function Home() {
           軽貨物HP テンプレート集
         </h1>
         <p style={{ marginTop: "0.75rem", color: "#888", fontSize: "0.9375rem", lineHeight: 1.7 }}>
-          コーポレートHP 4種 + 採用特化HP 4種。<br />
+          コーポレートHP 5種 + 採用特化HP 5種。<br />
           それぞれ異なるレイアウト・トンマナで設計。
         </p>
       </header>
