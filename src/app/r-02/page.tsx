@@ -2816,6 +2816,7 @@ export default function R02Page() {
             </div>
             <p
               style={{
+                fontFamily: "'Zen Kurenaido', 'Yomogi', sans-serif",
                 fontSize: 14,
                 lineHeight: 1.8,
                 color: `${C.white}88`,

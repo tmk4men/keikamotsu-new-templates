@@ -1983,7 +1983,7 @@ export default function CP04Page() {
           <div style={{ textAlign: "center", marginBottom: 48 }}>
             <p
               style={{
-                ...zenKaku,
+                fontFamily: "'Zen Kurenaido', 'Yomogi', sans-serif",
                 fontWeight: 900,
                 fontSize: isMobile ? 16 : 28,
                 color: LIGHT,

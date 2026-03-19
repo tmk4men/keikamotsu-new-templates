@@ -2587,7 +2587,7 @@ export default function CP05Page() {
         <div style={{ textAlign: "center", marginBottom: 32 }}>
           <p
             style={{
-              ...body,
+              fontFamily: "'Zen Kurenaido', 'Yomogi', sans-serif",
               fontWeight: 700,
               fontSize: isMobile ? 18 : 26,
               color: C.white,

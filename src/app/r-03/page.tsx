@@ -1756,7 +1756,7 @@ export default function R03TrustPage() {
         </p>
         <p style={{
           fontSize: 12, color: "rgba(255,255,255,0.35)",
-          fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
+          fontFamily: "'Zen Kurenaido', 'Yomogi', sans-serif",
           marginBottom: 12, letterSpacing: 2, minHeight: "1.5em", whiteSpace: "nowrap",
         }}>
           {footerTyped.displayed}

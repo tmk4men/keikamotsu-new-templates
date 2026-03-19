@@ -2299,7 +2299,7 @@ export default function CP01Page() {
       <div style={{ ...wrap(isMobile), position: "relative", zIndex: 2 }}>
         <p
           style={{
-            fontFamily: "'Noto Sans JP', sans-serif",
+            fontFamily: "'Zen Kurenaido', 'Yomogi', sans-serif",
             fontSize: isMobile ? "0.85rem" : "1.3rem",
             fontWeight: 700,
             background: `linear-gradient(135deg, ${C.gold}, ${C.goldLight})`,

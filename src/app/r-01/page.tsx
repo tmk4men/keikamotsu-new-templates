@@ -2463,7 +2463,7 @@ export default function R01Page() {
           <div style={{ maxWidth: "1200px", margin: "0 auto", position: "relative", zIndex: 1 }}>
             <p
               style={{
-                fontFamily: "'Oswald','Noto Sans JP',sans-serif",
+                fontFamily: "'Zen Kurenaido', 'Yomogi', sans-serif",
                 fontWeight: 800,
                 fontSize: isMobile ? "12px" : "18px",
                 color: "rgba(255,255,255,0.35)",

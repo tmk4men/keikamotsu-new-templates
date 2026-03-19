@@ -2291,11 +2291,11 @@ export default function R05Page() {
                   </div>
                   <p
                     style={{
+                      fontFamily: "'Zen Kurenaido', 'Yomogi', sans-serif",
                       fontSize: 13,
                       color: "rgba(255,255,255,0.5)",
                       margin: 0,
                       whiteSpace: "nowrap",
-                      fontStyle: "italic",
                     }}
                   >
                     {footer.catchphrase}
