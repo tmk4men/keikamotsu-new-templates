@@ -820,7 +820,7 @@ export default function R04Flow() {
             <div key={ri} style={{ overflow: "hidden", whiteSpace: "nowrap", marginBottom: ri === 0 ? 10 : 0 }}>
               <div style={{
                 display: "inline-flex", gap: 64, paddingRight: 64,
-                animation: `${ri === 0 ? "r04marqueeLeft" : "r04marqueeRight"} ${28 + ri * 6}s linear infinite`,
+                animation: `${ri === 0 ? "r04marqueeLeft" : "r04marqueeRight"} ${50 + ri * 10}s linear infinite`,
                 width: "max-content",
               }}>
                 {[...row, ...row, ...row, ...row, ...row, ...row].map((t, ti) => (
@@ -851,7 +851,7 @@ export default function R04Flow() {
             backgroundImage: `url(/keikamotsu-new-templates/images/delivery.webp)`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            opacity: 0.06,
+            opacity: 0.15,
           }} />
           <SectionNumber number="01" align="left" />
           <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
@@ -929,38 +929,54 @@ export default function R04Flow() {
                     gap: "48px",
                     flexDirection: i % 2 === 0 ? "row" : "row-reverse",
                   }}>
-                    {/* Image */}
+                    {/* Image with depth offset rectangle */}
                     <div style={{
                       flex: isMobile ? undefined : "0 0 38%",
                       marginBottom: isMobile ? "20px" : 0,
-                      overflow: "hidden",
                       position: "relative",
+                      paddingBottom: isMobile ? "12px" : "16px",
+                      paddingRight: i % 2 === 0 ? (isMobile ? "12px" : "16px") : 0,
+                      paddingLeft: i % 2 !== 0 ? (isMobile ? "12px" : "16px") : 0,
                     }}>
-                      <img
-                        src={`/keikamotsu-new-templates/images/strength-${r.num}.webp`}
-                        alt={r.title}
-                        className="flow-img-hover"
-                        style={{
-                          width: "100%",
-                          height: isMobile ? "200px" : "100%",
-                          objectFit: "cover",
-                          display: "block",
-                          filter: "grayscale(15%)",
-                        }}
-                      />
-                      {/* Editorial caption */}
-                      <p style={{
+                      {/* Background offset rectangle for depth */}
+                      <div style={{
                         position: "absolute",
-                        bottom: "8px",
-                        left: "12px",
-                        fontFamily: F.accent,
-                        fontSize: "10px",
-                        color: "rgba(255,255,255,0.5)",
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                      }}>
-                        Fig. {r.num}
-                      </p>
+                        top: isMobile ? "12px" : "16px",
+                        bottom: 0,
+                        left: i % 2 !== 0 ? 0 : undefined,
+                        right: i % 2 === 0 ? 0 : undefined,
+                        width: "100%",
+                        background: i === 0 ? "rgba(50,55,60,0.08)" : i === 1 ? "rgba(50,55,60,0.06)" : "rgba(50,55,60,0.07)",
+                        transform: `rotate(${i % 2 === 0 ? "1" : "-1"}deg)`,
+                      }} />
+                      {/* Image */}
+                      <div style={{ position: "relative", overflow: "hidden", zIndex: 1 }}>
+                        <img
+                          src={`/keikamotsu-new-templates/images/strength-${r.num}.webp`}
+                          alt={r.title}
+                          className="flow-img-hover"
+                          style={{
+                            width: "100%",
+                            height: isMobile ? "200px" : "100%",
+                            objectFit: "cover",
+                            display: "block",
+                            filter: "grayscale(15%)",
+                          }}
+                        />
+                        {/* Editorial caption */}
+                        <p style={{
+                          position: "absolute",
+                          bottom: "8px",
+                          left: "12px",
+                          fontFamily: F.accent,
+                          fontSize: "10px",
+                          color: "rgba(255,255,255,0.5)",
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                        }}>
+                          Fig. {r.num}
+                        </p>
+                      </div>
                     </div>
 
                     {/* Text */}
@@ -1178,8 +1194,8 @@ export default function R04Flow() {
               </h2>
             </FadeIn>
 
-            {/* Benefits hero image */}
-            <div style={{ marginTop: isMobile ? "32px" : "56px", overflow: "hidden" }}>
+            {/* Benefits hero image with top/bottom fade */}
+            <div style={{ marginTop: isMobile ? "32px" : "56px", position: "relative", overflow: "hidden" }}>
               <img
                 src="/keikamotsu-new-templates/images/benefits.webp"
                 alt="待遇・福利厚生"
@@ -1192,6 +1208,18 @@ export default function R04Flow() {
                   filter: "grayscale(15%)",
                 }}
               />
+              {/* Top fade */}
+              <div style={{
+                position: "absolute", top: 0, left: 0, right: 0, height: "60px",
+                background: `linear-gradient(to bottom, ${C.white}, transparent)`,
+                pointerEvents: "none",
+              }} />
+              {/* Bottom fade */}
+              <div style={{
+                position: "absolute", bottom: 0, left: 0, right: 0, height: "60px",
+                background: `linear-gradient(to top, ${C.white}, transparent)`,
+                pointerEvents: "none",
+              }} />
             </div>
 
             <div style={{
@@ -1294,45 +1322,41 @@ export default function R04Flow() {
             </FadeIn>
 
             {/* Inline delivery video */}
-            <FadeIn delay={0.2}>
-              <ClipReveal direction="left" delay={0.1} style={{ marginTop: isMobile ? "32px" : "56px" }}>
-                <div style={{ position: "relative", overflow: "hidden" }}>
-                  <video
-                    autoPlay muted loop playsInline
-                    style={{
-                      width: "100%",
-                      height: isMobile ? "220px" : "360px",
-                      objectFit: "cover",
-                      display: "block",
-                      filter: "grayscale(10%)",
-                    }}
-                  >
-                    <source src="/keikamotsu-new-templates/videos/delivery-scene.mp4" type="video/mp4" />
-                  </video>
-                  {/* Editorial caption overlay */}
-                  <div style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    padding: "24px 16px 12px",
-                    background: "linear-gradient(transparent, rgba(0,0,0,0.5))",
-                  }}>
-                    <p style={{
-                      fontFamily: F.accent,
-                      fontSize: "10px",
-                      color: "rgba(255,255,255,0.6)",
-                      letterSpacing: "0.12em",
-                      textTransform: "uppercase",
-                    }}>
-                      Delivery Scene — A Day in the Life
-                    </p>
-                  </div>
-                </div>
-              </ClipReveal>
-            </FadeIn>
+            <div style={{ marginTop: isMobile ? "24px" : "40px", position: "relative", overflow: "hidden" }}>
+              <video
+                autoPlay muted loop playsInline
+                style={{
+                  width: "100%",
+                  height: isMobile ? "220px" : "360px",
+                  objectFit: "cover",
+                  display: "block",
+                  filter: "grayscale(10%)",
+                }}
+              >
+                <source src="/keikamotsu-new-templates/videos/delivery-scene.mp4" type="video/mp4" />
+              </video>
+              {/* Editorial caption overlay */}
+              <div style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: "24px 16px 12px",
+                background: "linear-gradient(transparent, rgba(0,0,0,0.5))",
+              }}>
+                <p style={{
+                  fontFamily: F.accent,
+                  fontSize: "10px",
+                  color: "rgba(255,255,255,0.6)",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                }}>
+                  Delivery Scene — A Day in the Life
+                </p>
+              </div>
+            </div>
 
-            <div style={{ marginTop: isMobile ? "48px" : "80px", position: "relative" }}>
+            <div style={{ marginTop: isMobile ? "32px" : "48px", position: "relative" }}>
               {/* Timeline Line */}
               {!isMobile && (
                 <div style={{
@@ -1856,9 +1880,9 @@ export default function R04Flow() {
             backgroundImage: `url(/keikamotsu-new-templates/images/company.webp)`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            opacity: 0.08,
+            opacity: 0.15,
           }} />
-          <div style={{ position: "absolute", inset: 0, background: C.altBg, opacity: 0.92 }} />
+          <div style={{ position: "absolute", inset: 0, background: C.altBg, opacity: 0.85 }} />
           <SectionNumber number="11" align="center" />
           <div style={{ width: containerW, margin: "0 auto", maxWidth: "780px", position: "relative" }}>
             <FadeIn>
