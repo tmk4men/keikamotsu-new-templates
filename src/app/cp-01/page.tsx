@@ -55,6 +55,9 @@ const IMG = {
   history2024: "/keikamotsu-new-templates/images/history-2024.webp",
   history2025: "/keikamotsu-new-templates/images/history-2025.webp",
   cityscape: "/keikamotsu-new-templates/images/cityscape.webp",
+  workplace: "/keikamotsu-new-templates/images/workplace.webp",
+  company: "/keikamotsu-new-templates/images/company.webp",
+  vehicle: "/keikamotsu-new-templates/images/vehicle.webp",
 };
 
 const historyImages: Record<string, string> = {
@@ -72,15 +75,16 @@ const strengthImages = [IMG.strength01, IMG.strength02, IMG.strength03];
    TAB DEFINITIONS
    ============================================= */
 const tabs = [
+  { id: "news", label: "お知らせ" },
   { id: "services", label: "事業内容" },
+  { id: "numbers", label: "実績" },
   { id: "strengths", label: "強み" },
   { id: "message", label: "代表メッセージ" },
-  { id: "company", label: "会社概要" },
   { id: "history", label: "沿革" },
-  { id: "numbers", label: "実績" },
+  { id: "company", label: "会社概要" },
   { id: "partners", label: "取引先" },
-  { id: "news", label: "お知らせ" },
   { id: "recruit", label: "採用情報" },
+  { id: "access", label: "アクセス" },
   { id: "contact", label: "お問い合わせ" },
 ];
 
@@ -467,6 +471,138 @@ function SectionHeading({
    TAB CONTENT COMPONENTS
    ============================================= */
 
+/* --- NEWS TAB --- */
+function NewsContent({ isMobile }: { isMobile: boolean }) {
+  const tagColors: Record<string, { bg: string; text: string }> = {
+    press: { bg: "#e8f0fe", text: "#1a56db" },
+    new: { bg: "#fef3c7", text: "#92400e" },
+    default: { bg: C.accentLight, text: C.accent },
+  };
+
+  return (
+    <div style={{ maxWidth: 1000, margin: "0 auto", padding: "48px 20px" }}>
+      <SectionHeading icon={<IconBell size={32} />} title="お知らせ" sub="News" />
+
+      {/* News hero image */}
+      <FadeIn>
+        <div
+          style={{
+            width: "100%",
+            height: isMobile ? 200 : 300,
+            borderRadius: 12,
+            overflow: "hidden",
+            marginBottom: 32,
+            position: "relative",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `url(${IMG.workplace})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(to top, rgba(30,58,95,0.6) 0%, transparent 60%)",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: isMobile ? 16 : 24,
+              left: isMobile ? 16 : 24,
+              color: C.white,
+              fontSize: isMobile ? 18 : 24,
+              fontWeight: 700,
+              letterSpacing: "0.04em",
+            }}
+          >
+            Latest News
+          </div>
+        </div>
+      </FadeIn>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: 20,
+        }}
+      >
+        {news.map((n, i) => {
+          const tc = tagColors[n.tagStyle] || tagColors.default;
+          return (
+            <FadeIn key={i} delay={i * 120}>
+              <article
+                style={{
+                  background: C.white,
+                  border: `1px solid ${C.border}`,
+                  borderRadius: 10,
+                  padding: isMobile ? "20px 16px" : "24px",
+                  transition: "box-shadow 0.3s, transform 0.3s",
+                  cursor: "pointer",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = "0 4px 20px rgba(30,58,95,0.08)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.transform = "none";
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                  <time style={{ fontSize: 13, color: C.textSub, fontFamily: "'Montserrat', sans-serif" }}>
+                    {n.date}
+                  </time>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      padding: "3px 10px",
+                      borderRadius: 4,
+                      background: tc.bg,
+                      color: tc.text,
+                    }}
+                  >
+                    {n.tag}
+                  </span>
+                </div>
+                <h3
+                  style={{
+                    fontSize: isMobile ? 15 : 16,
+                    fontWeight: 600,
+                    color: C.navy,
+                    lineHeight: 1.6,
+                    margin: 0,
+                    flex: 1,
+                  }}
+                >
+                  {n.title}
+                </h3>
+                <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 4 }}>
+                  <span style={{ fontSize: 13, color: C.accent, fontWeight: 600 }}>
+                    Read more
+                  </span>
+                  <IconArrowRight size={14} color={C.accent} />
+                </div>
+              </article>
+            </FadeIn>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* --- SERVICES TAB --- */
 function ServicesContent({ isMobile }: { isMobile: boolean }) {
   return (
@@ -558,6 +694,110 @@ function ServicesContent({ isMobile }: { isMobile: boolean }) {
             </div>
           </FadeIn>
         ))}
+      </div>
+    </div>
+  );
+}
+
+/* --- NUMBERS TAB --- */
+function NumbersContent({ isMobile }: { isMobile: boolean }) {
+  const [triggered, setTriggered] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setTriggered(false);
+    const timer = setTimeout(() => setTriggered(true), 300);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      {/* Background */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: `url(${IMG.team})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          filter: "brightness(0.3)",
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          maxWidth: 1100,
+          margin: "0 auto",
+          padding: isMobile ? "64px 20px" : "80px 20px",
+        }}
+      >
+        <div style={{ textAlign: "center", marginBottom: 48 }}>
+          <IconChart size={32} color={C.accent} />
+          <h2
+            style={{
+              fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
+              fontWeight: 700,
+              color: C.white,
+              margin: "12px 0 0 0",
+              letterSpacing: "0.04em",
+            }}
+          >
+            実績
+          </h2>
+          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", marginTop: 8, letterSpacing: "0.08em" }}>
+            NUMBERS
+          </p>
+        </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
+            gap: isMobile ? 20 : 32,
+          }}
+        >
+          {numbers.map((n, i) => (
+            <FadeIn key={i} delay={i * 200}>
+              <div
+                style={{
+                  textAlign: "center",
+                  background: "rgba(255,255,255,0.08)",
+                  backdropFilter: "blur(8px)",
+                  borderRadius: 12,
+                  padding: isMobile ? "28px 12px" : "40px 20px",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: isMobile ? 36 : 52,
+                    fontWeight: 800,
+                    color: C.accent,
+                    lineHeight: 1.1,
+                    fontFamily: "'Montserrat', sans-serif",
+                  }}
+                >
+                  <CounterNum
+                    target={n.value}
+                    suffix={n.suffix}
+                    trigger={triggered}
+                    duration={2200}
+                  />
+                </div>
+                <p
+                  style={{
+                    fontSize: isMobile ? 13 : 15,
+                    color: "rgba(255,255,255,0.85)",
+                    marginTop: 12,
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  {n.label}
+                </p>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -786,109 +1026,6 @@ function MessageContent({ isMobile }: { isMobile: boolean }) {
   );
 }
 
-/* --- COMPANY INFO TAB --- */
-function CompanyContent({ isMobile }: { isMobile: boolean }) {
-  return (
-    <div style={{ maxWidth: 1000, margin: "0 auto", padding: "48px 20px" }}>
-      <SectionHeading icon={<IconBuilding size={32} />} title="会社概要" sub="Company" />
-      <FadeIn>
-        <div
-          style={{
-            background: C.white,
-            borderRadius: 12,
-            border: `1px solid ${C.border}`,
-            overflow: "hidden",
-            marginBottom: 48,
-          }}
-        >
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              fontSize: isMobile ? 14 : 15,
-            }}
-          >
-            <tbody>
-              {companyOverview.map((row, i) => (
-                <tr
-                  key={i}
-                  style={{
-                    borderBottom: i < companyOverview.length - 1 ? `1px solid ${C.border}` : "none",
-                  }}
-                >
-                  <th
-                    style={{
-                      padding: isMobile ? "14px 12px" : "16px 24px",
-                      textAlign: "left",
-                      fontWeight: 600,
-                      color: C.navy,
-                      background: C.accentLight,
-                      width: isMobile ? "30%" : "22%",
-                      verticalAlign: "top",
-                      whiteSpace: isMobile ? "normal" : "nowrap",
-                      fontSize: isMobile ? 13 : 15,
-                    }}
-                  >
-                    {row.dt}
-                  </th>
-                  <td
-                    style={{
-                      padding: isMobile ? "14px 12px" : "16px 24px",
-                      color: C.text,
-                      lineHeight: 1.7,
-                    }}
-                  >
-                    {row.dd}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </FadeIn>
-
-      {/* Access / Google Maps */}
-      <FadeIn delay={200}>
-        <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <IconMap size={24} color={C.accent} />
-            <h3 style={{ fontSize: 20, fontWeight: 700, color: C.navy, margin: 0 }}>
-              {access.heading}
-            </h3>
-          </div>
-          <p style={{ fontSize: 14, color: C.textSub, margin: "4px 0 0 0" }}>
-            {access.address}
-          </p>
-          <p style={{ fontSize: 13, color: C.textSub, margin: "4px 0 0 0" }}>
-            {access.nearestStation}
-          </p>
-        </div>
-        <div
-          style={{
-            borderRadius: 12,
-            overflow: "hidden",
-            border: `1px solid ${C.border}`,
-          }}
-        >
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3278.8!2d135.636!3d34.773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z5aSn6Ziq5bqc5a-d5bGL5bed5biC5rGg55Sw!5e0!3m2!1sja!2sjp!4v1700000000000"
-            width="100%"
-            height={isMobile ? "280" : "380"}
-            style={{ border: 0, display: "block" }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Google Maps"
-          />
-        </div>
-        <p style={{ fontSize: 13, color: C.textSub, marginTop: 12, textAlign: "center" }}>
-          {access.mapNote}
-        </p>
-      </FadeIn>
-    </div>
-  );
-}
-
 /* --- HISTORY TAB --- */
 function HistoryContent({ isMobile }: { isMobile: boolean }) {
   return (
@@ -1020,106 +1157,98 @@ function HistoryContent({ isMobile }: { isMobile: boolean }) {
   );
 }
 
-/* --- NUMBERS TAB --- */
-function NumbersContent({ isMobile }: { isMobile: boolean }) {
-  const [triggered, setTriggered] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setTriggered(false);
-    const timer = setTimeout(() => setTriggered(true), 300);
-    return () => clearTimeout(timer);
-  }, []);
-
+/* --- COMPANY INFO TAB --- */
+function CompanyContent({ isMobile }: { isMobile: boolean }) {
   return (
-    <div ref={ref} style={{ position: "relative" }}>
-      {/* Background */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: `url(${IMG.team})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          filter: "brightness(0.3)",
-        }}
-      />
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          maxWidth: 1100,
-          margin: "0 auto",
-          padding: isMobile ? "64px 20px" : "80px 20px",
-        }}
-      >
-        <div style={{ textAlign: "center", marginBottom: 48 }}>
-          <IconChart size={32} color={C.accent} />
-          <h2
-            style={{
-              fontSize: "clamp(1.6rem, 3vw, 2.2rem)",
-              fontWeight: 700,
-              color: C.white,
-              margin: "12px 0 0 0",
-              letterSpacing: "0.04em",
-            }}
-          >
-            実績
-          </h2>
-          <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", marginTop: 8, letterSpacing: "0.08em" }}>
-            NUMBERS
-          </p>
-        </div>
+    <div style={{ maxWidth: 1000, margin: "0 auto", padding: "48px 20px" }}>
+      <SectionHeading icon={<IconBuilding size={32} />} title="会社概要" sub="Company" />
+
+      {/* Company image */}
+      <FadeIn>
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
-            gap: isMobile ? 20 : 32,
+            width: "100%",
+            height: isMobile ? 200 : 300,
+            borderRadius: 12,
+            overflow: "hidden",
+            marginBottom: 32,
+            position: "relative",
           }}
         >
-          {numbers.map((n, i) => (
-            <FadeIn key={i} delay={i * 200}>
-              <div
-                style={{
-                  textAlign: "center",
-                  background: "rgba(255,255,255,0.08)",
-                  backdropFilter: "blur(8px)",
-                  borderRadius: 12,
-                  padding: isMobile ? "28px 12px" : "40px 20px",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: isMobile ? 36 : 52,
-                    fontWeight: 800,
-                    color: C.accent,
-                    lineHeight: 1.1,
-                    fontFamily: "'Montserrat', sans-serif",
-                  }}
-                >
-                  <CounterNum
-                    target={n.value}
-                    suffix={n.suffix}
-                    trigger={triggered}
-                    duration={2200}
-                  />
-                </div>
-                <p
-                  style={{
-                    fontSize: isMobile ? 13 : 15,
-                    color: "rgba(255,255,255,0.85)",
-                    marginTop: 12,
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  {n.label}
-                </p>
-              </div>
-            </FadeIn>
-          ))}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `url(${IMG.company})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(to top, rgba(30,58,95,0.5) 0%, transparent 50%)",
+            }}
+          />
         </div>
-      </div>
+      </FadeIn>
+
+      <FadeIn delay={100}>
+        <div
+          style={{
+            background: C.white,
+            borderRadius: 12,
+            border: `1px solid ${C.border}`,
+            overflow: "hidden",
+            marginBottom: 48,
+          }}
+        >
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              fontSize: isMobile ? 14 : 15,
+            }}
+          >
+            <tbody>
+              {companyOverview.map((row, i) => (
+                <tr
+                  key={i}
+                  style={{
+                    borderBottom: i < companyOverview.length - 1 ? `1px solid ${C.border}` : "none",
+                  }}
+                >
+                  <th
+                    style={{
+                      padding: isMobile ? "14px 12px" : "16px 24px",
+                      textAlign: "left",
+                      fontWeight: 600,
+                      color: C.navy,
+                      background: C.accentLight,
+                      width: isMobile ? "30%" : "22%",
+                      verticalAlign: "top",
+                      whiteSpace: isMobile ? "normal" : "nowrap",
+                      fontSize: isMobile ? 13 : 15,
+                    }}
+                  >
+                    {row.dt}
+                  </th>
+                  <td
+                    style={{
+                      padding: isMobile ? "14px 12px" : "16px 24px",
+                      color: C.text,
+                      lineHeight: 1.7,
+                    }}
+                  >
+                    {row.dd}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </FadeIn>
     </div>
   );
 }
@@ -1135,7 +1264,39 @@ function PartnersContent({ isMobile }: { isMobile: boolean }) {
   return (
     <div style={{ maxWidth: 1000, margin: "0 auto", padding: "48px 20px" }}>
       <SectionHeading icon={<IconHandshake size={32} />} title="主要取引先" sub="Partners" />
+
+      {/* Partners hero image */}
       <FadeIn>
+        <div
+          style={{
+            width: "100%",
+            height: isMobile ? 180 : 260,
+            borderRadius: 12,
+            overflow: "hidden",
+            marginBottom: 32,
+            position: "relative",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `url(${IMG.vehicle})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(to top, rgba(30,58,95,0.5) 0%, transparent 50%)",
+            }}
+          />
+        </div>
+      </FadeIn>
+
+      <FadeIn delay={100}>
         <div
           style={{
             display: "grid",
@@ -1254,93 +1415,6 @@ function PartnersContent({ isMobile }: { isMobile: boolean }) {
   );
 }
 
-/* --- NEWS TAB --- */
-function NewsContent({ isMobile }: { isMobile: boolean }) {
-  const tagColors: Record<string, { bg: string; text: string }> = {
-    press: { bg: "#e8f0fe", text: "#1a56db" },
-    new: { bg: "#fef3c7", text: "#92400e" },
-    default: { bg: C.accentLight, text: C.accent },
-  };
-
-  return (
-    <div style={{ maxWidth: 1000, margin: "0 auto", padding: "48px 20px" }}>
-      <SectionHeading icon={<IconBell size={32} />} title="お知らせ" sub="News" />
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-          gap: 20,
-        }}
-      >
-        {news.map((n, i) => {
-          const tc = tagColors[n.tagStyle] || tagColors.default;
-          return (
-            <FadeIn key={i} delay={i * 120}>
-              <article
-                style={{
-                  background: C.white,
-                  border: `1px solid ${C.border}`,
-                  borderRadius: 10,
-                  padding: isMobile ? "20px 16px" : "24px",
-                  transition: "box-shadow 0.3s, transform 0.3s",
-                  cursor: "pointer",
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = "0 4px 20px rgba(30,58,95,0.08)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = "none";
-                  e.currentTarget.style.transform = "none";
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                  <time style={{ fontSize: 13, color: C.textSub, fontFamily: "'Montserrat', sans-serif" }}>
-                    {n.date}
-                  </time>
-                  <span
-                    style={{
-                      fontSize: 11,
-                      fontWeight: 600,
-                      padding: "3px 10px",
-                      borderRadius: 4,
-                      background: tc.bg,
-                      color: tc.text,
-                    }}
-                  >
-                    {n.tag}
-                  </span>
-                </div>
-                <h3
-                  style={{
-                    fontSize: isMobile ? 15 : 16,
-                    fontWeight: 600,
-                    color: C.navy,
-                    lineHeight: 1.6,
-                    margin: 0,
-                    flex: 1,
-                  }}
-                >
-                  {n.title}
-                </h3>
-                <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ fontSize: 13, color: C.accent, fontWeight: 600 }}>
-                    Read more
-                  </span>
-                  <IconArrowRight size={14} color={C.accent} />
-                </div>
-              </article>
-            </FadeIn>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 /* --- RECRUIT TAB --- */
 function RecruitContent({ isMobile }: { isMobile: boolean }) {
   const [underlineWidth, setUnderlineWidth] = useState(0);
@@ -1447,6 +1521,100 @@ function RecruitContent({ isMobile }: { isMobile: boolean }) {
   );
 }
 
+/* --- ACCESS TAB --- */
+function AccessContent({ isMobile }: { isMobile: boolean }) {
+  return (
+    <div style={{ maxWidth: 1000, margin: "0 auto", padding: "48px 20px" }}>
+      <SectionHeading icon={<IconMap size={32} />} title="アクセス" sub="Access" />
+
+      {/* Access hero image */}
+      <FadeIn>
+        <div
+          style={{
+            width: "100%",
+            height: isMobile ? 200 : 300,
+            borderRadius: 12,
+            overflow: "hidden",
+            marginBottom: 32,
+            position: "relative",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `url(${IMG.company})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(to top, rgba(30,58,95,0.6) 0%, transparent 50%)",
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              bottom: isMobile ? 16 : 24,
+              left: isMobile ? 16 : 24,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <IconMap size={20} color={C.white} />
+            <span
+              style={{
+                color: C.white,
+                fontSize: isMobile ? 16 : 20,
+                fontWeight: 700,
+                letterSpacing: "0.04em",
+              }}
+            >
+              {access.heading}
+            </span>
+          </div>
+        </div>
+      </FadeIn>
+
+      <FadeIn delay={100}>
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <p style={{ fontSize: 14, color: C.textSub, margin: "4px 0 0 0" }}>
+            {access.address}
+          </p>
+          <p style={{ fontSize: 13, color: C.textSub, margin: "4px 0 0 0" }}>
+            {access.nearestStation}
+          </p>
+        </div>
+        <div
+          style={{
+            borderRadius: 12,
+            overflow: "hidden",
+            border: `1px solid ${C.border}`,
+          }}
+        >
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3278.8!2d135.636!3d34.773!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z5aSn6Ziq5bqc5a-d5bGL5bed5biC5rGg55Sw!5e0!3m2!1sja!2sjp!4v1700000000000"
+            width="100%"
+            height={isMobile ? "280" : "380"}
+            style={{ border: 0, display: "block" }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Google Maps"
+          />
+        </div>
+        <p style={{ fontSize: 13, color: C.textSub, marginTop: 12, textAlign: "center" }}>
+          {access.mapNote}
+        </p>
+      </FadeIn>
+    </div>
+  );
+}
+
 /* --- CONTACT TAB --- */
 function ContactContent({ isMobile }: { isMobile: boolean }) {
   const placeholders: Record<string, string> = {
@@ -1494,6 +1662,30 @@ function ContactContent({ isMobile }: { isMobile: boolean }) {
             <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 24px 0" }}>
               {company.name}
             </h3>
+
+            {/* Contact image */}
+            <div
+              style={{
+                width: "100%",
+                height: isMobile ? 120 : 150,
+                borderRadius: 8,
+                overflow: "hidden",
+                marginBottom: 20,
+                position: "relative",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  backgroundImage: `url(${IMG.workplace})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  opacity: 0.6,
+                }}
+              />
+            </div>
+
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
                 <IconMap size={20} color={C.accent} />
@@ -1666,7 +1858,7 @@ function ContactContent({ isMobile }: { isMobile: boolean }) {
    MAIN PAGE COMPONENT
    ============================================= */
 export default function CorporatePage01() {
-  const [activeTab, setActiveTab] = useState("services");
+  const [activeTab, setActiveTab] = useState("news");
   const [fadeKey, setFadeKey] = useState(0);
   const isMobile = useIsMobile();
   const headlineText = useTypewriter(hero.headline, 80, 600);
@@ -1705,24 +1897,26 @@ export default function CorporatePage01() {
   /* Render active tab content */
   const renderTabContent = () => {
     switch (activeTab) {
+      case "news":
+        return <NewsContent isMobile={isMobile} />;
       case "services":
         return <ServicesContent isMobile={isMobile} />;
+      case "numbers":
+        return <NumbersContent isMobile={isMobile} />;
       case "strengths":
         return <StrengthsContent isMobile={isMobile} />;
       case "message":
         return <MessageContent isMobile={isMobile} />;
-      case "company":
-        return <CompanyContent isMobile={isMobile} />;
       case "history":
         return <HistoryContent isMobile={isMobile} />;
-      case "numbers":
-        return <NumbersContent isMobile={isMobile} />;
+      case "company":
+        return <CompanyContent isMobile={isMobile} />;
       case "partners":
         return <PartnersContent isMobile={isMobile} />;
-      case "news":
-        return <NewsContent isMobile={isMobile} />;
       case "recruit":
         return <RecruitContent isMobile={isMobile} />;
+      case "access":
+        return <AccessContent isMobile={isMobile} />;
       case "contact":
         return <ContactContent isMobile={isMobile} />;
       default:

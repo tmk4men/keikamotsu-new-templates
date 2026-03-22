@@ -1667,6 +1667,8 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            NEWS
            ════════════════════════════════════════ */}
+        <ImageBand src="/keikamotsu-new-templates/images/workplace.webp" alt="お知らせ" height={isMobile ? "200px" : "340px"} />
+
         <section id="news" style={{ padding: isMobile ? "80px 0 90px" : "190px 0 165px", background: C.altBg, position: "relative" }}>
           <SectionNumber number="09" align="right" />
           <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
@@ -1739,6 +1741,8 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            ACCESS
            ════════════════════════════════════════ */}
+        <ImageBand src="/keikamotsu-new-templates/images/vehicle.webp" alt="アクセス" height={isMobile ? "200px" : "340px"} />
+
         <section id="access" style={{ padding: isMobile ? "80px 0 90px" : "150px 0 175px", background: C.white, position: "relative" }}>
           <SectionNumber number="10" align="left" />
           <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
@@ -1889,6 +1893,8 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            APPLY (FORM) with animated focus
            ════════════════════════════════════════ */}
+        <ImageBand src="/keikamotsu-new-templates/images/team.webp" alt="応募フォーム" height={isMobile ? "200px" : "340px"} />
+
         <section id="apply" style={{ padding: isMobile ? "80px 0 90px" : "165px 0 195px", background: C.white, position: "relative" }}>
           <SectionNumber number="12" align="right" />
           <div style={{ width: containerW, margin: "0 auto", maxWidth: "640px", position: "relative" }}>

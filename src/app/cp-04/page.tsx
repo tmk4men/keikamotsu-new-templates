@@ -780,7 +780,7 @@ export default function CP04Page() {
   /* ═══════════════ SERVICES - SKEWED BG ═══════════════ */
   const servicesEl = (
     <>
-      <DiagDivider from={DARK} to={LIGHT} direction="left" height={90} />
+      <DiagDivider from={SUB_DARK} to={LIGHT} direction="left" height={90} />
       <section
         id="services"
         style={{
@@ -817,7 +817,7 @@ export default function CP04Page() {
         />
 
         <div ref={servRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="01" enTitle="Services" jpTitle="事業内容" icon={sectionIcons.services} />
+          <SectionHeading num="02" enTitle="Services" jpTitle="事業内容" icon={sectionIcons.services} />
           <div
             style={{
               display: "grid",
@@ -916,11 +916,11 @@ export default function CP04Page() {
   /* ═══════════════ STRENGTHS - SKEWED DARK BG ═══════════════ */
   const strengthsEl = (
     <>
-      <DiagDivider from={LIGHT} to={DARK} direction="right" height={90} />
+      <DiagDivider from={DARK} to={SUB_DARK} direction="right" height={90} />
       <section
         id="strengths"
         style={{
-          background: DARK,
+          background: SUB_DARK,
           position: "relative",
           overflow: "hidden",
           padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
@@ -939,7 +939,7 @@ export default function CP04Page() {
           }}
         />
         <div ref={strRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="02" enTitle="Strengths" jpTitle="私たちの強み" light icon={sectionIcons.strengths} />
+          <SectionHeading num="04" enTitle="Strengths" jpTitle="私たちの強み" light icon={sectionIcons.strengths} />
           {strengths.map((s, i) => {
             const isEven = i % 2 === 0;
             const delay = i * 200;
@@ -1048,7 +1048,7 @@ export default function CP04Page() {
   /* ═══════════════ CEO MESSAGE - SPLIT LAYOUT ═══════════════ */
   const ceoEl = (
     <>
-      <DiagDivider from={DARK} to={LIGHT} direction="left" height={90} />
+      <DiagDivider from={SUB_DARK} to={LIGHT} direction="left" height={90} />
       <section
         id="message"
         style={{
@@ -1059,7 +1059,7 @@ export default function CP04Page() {
         }}
       >
         <div ref={ceoRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="03" enTitle="CEO Message" jpTitle="代表メッセージ" icon={sectionIcons.message} />
+          <SectionHeading num="05" enTitle="CEO Message" jpTitle="代表メッセージ" icon={sectionIcons.message} />
           <div
             style={{
               display: "flex",
@@ -1149,7 +1149,7 @@ export default function CP04Page() {
   /* ═══════════════ COMPANY OVERVIEW - SKEWED ═══════════════ */
   const companyEl = (
     <>
-      <DiagDivider from={LIGHT} to={DARK} direction="right" height={90} />
+      <DiagDivider from={"#f5f5f5"} to={DARK} direction="right" height={90} />
       <section
         id="company"
         style={{
@@ -1173,7 +1173,7 @@ export default function CP04Page() {
           }}
         />
         <div ref={compRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
-          <SectionHeading num="04" enTitle="Company" jpTitle="会社概要" light icon={sectionIcons.company} />
+          <SectionHeading num="07" enTitle="Company" jpTitle="会社概要" light icon={sectionIcons.company} />
           <div
             style={{
               display: "flex",
@@ -1250,11 +1250,11 @@ export default function CP04Page() {
   /* ═══════════════ HISTORY - DIAGONAL TIMELINE ═══════════════ */
   const historyEl = (
     <>
-      <DiagDivider from={DARK} to={LIGHT} direction="left" height={90} />
+      <DiagDivider from={LIGHT} to={"#f5f5f5"} direction="left" height={90} />
       <section
         id="history"
         style={{
-          background: LIGHT,
+          background: "#f5f5f5",
           position: "relative",
           overflow: "hidden",
           padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
@@ -1273,7 +1273,7 @@ export default function CP04Page() {
           }}
         />
         <div ref={histRef} style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="05" enTitle="History" jpTitle="沿革" icon={sectionIcons.history} />
+          <SectionHeading num="06" enTitle="History" jpTitle="沿革" icon={sectionIcons.history} />
           <div style={{ position: "relative", paddingLeft: isMobile ? 40 : 60 }}>
             {/* Vertical timeline line */}
             <div
@@ -1495,7 +1495,7 @@ export default function CP04Page() {
         }}
       >
         <div ref={partRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="06" enTitle="Partners" jpTitle="主要取引先" icon={sectionIcons.partners} />
+          <SectionHeading num="08" enTitle="Partners" jpTitle="主要取引先" icon={sectionIcons.partners} />
           <div
             style={{
               display: "grid",
@@ -1613,7 +1613,7 @@ export default function CP04Page() {
   /* ═══════════════ NEWS ═══════════════ */
   const newsEl = (
     <>
-      <DiagDivider from={LIGHT} to={SUB_DARK} direction="right" height={80} />
+      <DiagDivider from={DARK} to={SUB_DARK} direction="right" height={80} />
       <section
         id="news"
         style={{
@@ -1623,6 +1623,17 @@ export default function CP04Page() {
           overflow: "hidden",
         }}
       >
+        {/* Background image */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${IMG}/workplace.webp)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.08,
+          }}
+        />
         {/* Skewed bg accent */}
         <div
           style={{
@@ -1637,7 +1648,7 @@ export default function CP04Page() {
           }}
         />
         <div ref={newsRef} style={{ maxWidth: 900, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
-          <SectionHeading num="07" enTitle="News" jpTitle="お知らせ" light icon={sectionIcons.news} />
+          <SectionHeading num="01" enTitle="News" jpTitle="お知らせ" light icon={sectionIcons.news} />
           {news.map((n, i) => {
             const tagColors: Record<string, string> = {
               press: "#ff6b35",
@@ -1693,7 +1704,7 @@ export default function CP04Page() {
   /* ═══════════════ RECRUIT - BOLD BG ═══════════════ */
   const recruitEl = (
     <>
-      <DiagDivider from={SUB_DARK} to={DARK} direction="left" height={80} />
+      <DiagDivider from={LIGHT} to={DARK} direction="left" height={80} />
       <section
         id="recruit"
         style={{
@@ -1782,8 +1793,23 @@ export default function CP04Page() {
           overflow: "hidden",
         }}
       >
+        {/* Decorative background image */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            width: "40%",
+            height: "100%",
+            backgroundImage: `url(${IMG}/company.webp)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.06,
+            clipPath: "polygon(30% 0, 100% 0, 100% 100%, 0% 100%)",
+          }}
+        />
         <div ref={accRef} style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px" }}>
-          <SectionHeading num="08" enTitle="Access" jpTitle="アクセス" icon={sectionIcons.access} />
+          <SectionHeading num="10" enTitle="Access" jpTitle="アクセス" icon={sectionIcons.access} />
           <div
             style={{
               display: "flex",
@@ -1847,6 +1873,17 @@ export default function CP04Page() {
           padding: isMobile ? "60px 20px 80px" : "80px 0 100px",
         }}
       >
+        {/* Background image */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage: `url(${IMG}/team.webp)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.07,
+          }}
+        />
         {/* Skewed accent bg */}
         <div
           style={{
@@ -1860,7 +1897,7 @@ export default function CP04Page() {
           }}
         />
         <div ref={contRef} style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
-          <SectionHeading num="09" enTitle="Contact" jpTitle="お問い合わせ" light icon={sectionIcons.contact} />
+          <SectionHeading num="11" enTitle="Contact" jpTitle="お問い合わせ" light icon={sectionIcons.contact} />
           <p
             style={{
               ...bodyFont,
@@ -2135,11 +2172,11 @@ export default function CP04Page() {
         {heroEl}
         {newsEl}
         {servicesEl}
+        {numbersEl}
         {strengthsEl}
         {ceoEl}
-        {companyEl}
         {historyEl}
-        {numbersEl}
+        {companyEl}
         {partnersEl}
         {recruitEl}
         {accessEl}

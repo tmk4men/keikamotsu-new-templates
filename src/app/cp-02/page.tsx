@@ -49,6 +49,14 @@ const IMG = {
   team: "/keikamotsu-new-templates/images/team.webp",
   delivery: "/keikamotsu-new-templates/images/delivery.webp",
   footerBg: "/keikamotsu-new-templates/images/footer-bg.webp",
+  companyImg: "/keikamotsu-new-templates/images/company.webp",
+  workplace: "/keikamotsu-new-templates/images/workplace.webp",
+  vehicle: "/keikamotsu-new-templates/images/vehicle.webp",
+  reasons: "/keikamotsu-new-templates/images/reasons.webp",
+  jobs: "/keikamotsu-new-templates/images/jobs.webp",
+  history2021: "/keikamotsu-new-templates/images/history-2021.webp",
+  history2023: "/keikamotsu-new-templates/images/history-2023.webp",
+  history2025: "/keikamotsu-new-templates/images/history-2025.webp",
 };
 
 const serviceImages = [IMG.serviceRoute, IMG.serviceEc, IMG.serviceB2b, IMG.serviceSpot];
@@ -59,14 +67,16 @@ const strengthImages = [IMG.strength01, IMG.strength02, IMG.strength03];
    ═══════════════════════════════════════════════════ */
 const PANEL_SECTIONS = [
   { id: "hero", label: "TOP" },
+  { id: "news", label: "お知らせ" },
   { id: "services", label: "事業内容" },
+  { id: "numbers", label: "実績" },
   { id: "strengths", label: "私たちの強み" },
   { id: "message", label: "代表メッセージ" },
+  { id: "history", label: "沿革" },
   { id: "company", label: "会社概要" },
-  { id: "numbers", label: "実績" },
   { id: "partners", label: "取引先" },
-  { id: "news", label: "お知らせ" },
   { id: "recruit", label: "採用情報" },
+  { id: "access", label: "アクセス" },
   { id: "contact", label: "お問い合わせ" },
 ];
 const TOTAL_PANELS = PANEL_SECTIONS.length;
@@ -381,6 +391,25 @@ const SvgExternalLink = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+/* --- SVG section icons (stroke only) --- */
+const SvgNewspaper = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2v-9c0-1.1.9-2 2-2h2" />
+    <line x1="10" y1="6" x2="18" y2="6" />
+    <line x1="10" y1="10" x2="18" y2="10" />
+    <line x1="10" y1="14" x2="14" y2="14" />
+  </svg>
+);
+
+const SvgCalendar = ({ size = 24 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
+);
+
 /* --- Cityscape SVG (single-stroke) --- */
 const CityscapeSvg = ({ color = "rgba(255,255,255,0.15)", height = 60 }: { color?: string; height?: number }) => (
   <svg
@@ -509,6 +538,9 @@ export default function CP02Page() {
     setFormSubmitted(true);
   };
 
+  /* --- Dark panel indices (hero=0, numbers=3) --- */
+  const darkPanels = [0, 3];
+
   /* --- Horizontal Scroll Logic --- */
   useEffect(() => {
     if (isMobile) return;
@@ -557,7 +589,7 @@ export default function CP02Page() {
         rel="stylesheet"
       />
 
-      {/* ─── FIXED UI (desktop only) ─── */}
+      {/* --- FIXED UI (desktop only) --- */}
       {!isMobile && (
         <>
           {/* Small truck that moves with horizontal scroll */}
@@ -609,7 +641,7 @@ export default function CP02Page() {
               style={{
                 fontSize: 13,
                 fontWeight: 700,
-                color: activePanel === 0 || activePanel === 5 ? C.white : C.text,
+                color: darkPanels.includes(activePanel) ? C.white : C.text,
                 letterSpacing: "0.02em",
                 transition: "color 0.4s ease",
               }}
@@ -636,7 +668,7 @@ export default function CP02Page() {
                 fontWeight: 600,
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                color: activePanel === 0 || activePanel === 5 ? "rgba(255,255,255,0.7)" : C.textSub,
+                color: darkPanels.includes(activePanel) ? "rgba(255,255,255,0.7)" : C.textSub,
                 transition: "color 0.4s ease",
               }}
             >
@@ -646,7 +678,7 @@ export default function CP02Page() {
               style={{
                 fontSize: 22,
                 fontWeight: 800,
-                color: activePanel === 0 || activePanel === 5 ? C.white : C.text,
+                color: darkPanels.includes(activePanel) ? C.white : C.text,
                 fontFamily: "'Inter', sans-serif",
                 transition: "color 0.4s ease",
               }}
@@ -698,7 +730,7 @@ export default function CP02Page() {
                   width: activePanel === i ? 24 : 8,
                   height: 8,
                   borderRadius: 4,
-                  background: activePanel === i ? C.accent : (activePanel === 0 || activePanel === 5) ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.15)",
+                  background: activePanel === i ? C.accent : darkPanels.includes(activePanel) ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.15)",
                   border: "none",
                   cursor: "pointer",
                   transition: "all 0.3s ease",
@@ -863,7 +895,7 @@ export default function CP02Page() {
                     href="#contact"
                     onClick={(e) => {
                       e.preventDefault();
-                      if (!isMobile) scrollToPanel(9);
+                      if (!isMobile) scrollToPanel(11);
                       else {
                         document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
                       }
@@ -914,7 +946,155 @@ export default function CP02Page() {
             </section>
 
             {/* ═══════════════════════════════════════
-               PANEL 2: SERVICES
+               PANEL 2: NEWS
+               ═══════════════════════════════════════ */}
+            <section
+              id="news"
+              style={{
+                width: isMobile ? "100%" : "100vw",
+                height: isMobile ? "auto" : "100vh",
+                flexShrink: 0,
+                position: "relative",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                background: C.white,
+                padding: isMobile ? "80px 20px" : "0 80px",
+              }}
+            >
+              <FadeIn>
+                <SectionHeading title="お知らせ" sub="NEWS" />
+              </FadeIn>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: isMobile ? "1fr" : "1.4fr 1fr",
+                  gap: 24,
+                  maxWidth: 900,
+                  marginTop: 12,
+                }}
+              >
+                {/* Featured news */}
+                {news.length > 0 && (
+                  <FadeIn>
+                    <div
+                      style={{
+                        borderRadius: 14,
+                        padding: isMobile ? 24 : 36,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        minHeight: isMobile ? 160 : 280,
+                        border: `1px solid ${C.border}`,
+                        position: "relative",
+                        overflow: "hidden",
+                        backgroundImage: `url(${IMG.workplace})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    >
+                      {/* Overlay for text readability */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          background: "linear-gradient(135deg, rgba(239,246,255,0.88) 0%, rgba(219,234,254,0.82) 100%)",
+                        }}
+                      />
+                      {/* Decorative large number */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: -10,
+                          right: 10,
+                          fontSize: "8rem",
+                          fontWeight: 900,
+                          color: "rgba(59,130,246,0.08)",
+                          fontFamily: "'Inter', sans-serif",
+                          lineHeight: 1,
+                          pointerEvents: "none",
+                        }}
+                      >
+                        01
+                      </div>
+                      <div style={{ position: "relative", zIndex: 2 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                          <span
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 700,
+                              color: C.white,
+                              background: news[0].tagStyle === "press" ? "#ef4444" : news[0].tagStyle === "new" ? "#22c55e" : C.accent,
+                              padding: "3px 10px",
+                              borderRadius: 4,
+                              letterSpacing: "0.05em",
+                            }}
+                          >
+                            {news[0].tag}
+                          </span>
+                          <span style={{ fontSize: 12, color: C.textSub }}>{news[0].date}</span>
+                        </div>
+                        <h3
+                          style={{
+                            fontSize: isMobile ? 18 : 22,
+                            fontWeight: 800,
+                            color: C.text,
+                            lineHeight: 1.4,
+                            margin: 0,
+                          }}
+                        >
+                          {news[0].title}
+                        </h3>
+                      </div>
+                    </div>
+                  </FadeIn>
+                )}
+
+                {/* Other news items */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {news.slice(1).map((item, i) => (
+                    <FadeIn key={i} delay={i * 0.1}>
+                      <div
+                        style={{
+                          padding: "18px 20px",
+                          borderRadius: 10,
+                          border: `1px solid ${C.border}`,
+                          background: C.bg,
+                          transition: "box-shadow 0.3s ease",
+                          cursor: "default",
+                        }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.06)"; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                          <span
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 700,
+                              color: C.white,
+                              background: item.tagStyle === "press" ? "#ef4444" : item.tagStyle === "new" ? "#22c55e" : C.accent,
+                              padding: "2px 8px",
+                              borderRadius: 3,
+                            }}
+                          >
+                            {item.tag}
+                          </span>
+                          <span style={{ fontSize: 11, color: C.textSub }}>{item.date}</span>
+                        </div>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: C.text, lineHeight: 1.5 }}>
+                          {item.title}
+                        </div>
+                      </div>
+                    </FadeIn>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* ═══════════════════════════════════════
+               PANEL 3: SERVICES
                ═══════════════════════════════════════ */}
             <section
               id="services"
@@ -1032,7 +1212,69 @@ export default function CP02Page() {
             </section>
 
             {/* ═══════════════════════════════════════
-               PANEL 3: STRENGTHS
+               PANEL 4: NUMBERS
+               ═══════════════════════════════════════ */}
+            <section
+              id="numbers"
+              style={{
+                width: isMobile ? "100%" : "100vw",
+                height: isMobile ? "auto" : "100vh",
+                flexShrink: 0,
+                position: "relative",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: isMobile ? "80px 20px" : "0 80px",
+              }}
+            >
+              {/* BG */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  backgroundImage: `url(${IMG.team})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "rgba(15,23,42,0.88)",
+                }}
+              />
+
+              <div style={{ position: "relative", zIndex: 2, textAlign: "center", width: "100%", maxWidth: 800 }}>
+                <FadeIn>
+                  <SectionHeading title="数字で見る実績" sub="NUMBERS" light align="center" />
+                </FadeIn>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
+                    gap: isMobile ? "40px 20px" : 40,
+                    marginTop: 48,
+                  }}
+                >
+                  {numbers.map((n, i) => (
+                    <CounterNum
+                      key={n.label}
+                      value={n.value}
+                      suffix={n.suffix}
+                      label={n.label}
+                      delay={i * 0.2}
+                    />
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* ═══════════════════════════════════════
+               PANEL 5: STRENGTHS
                ═══════════════════════════════════════ */}
             <section
               id="strengths"
@@ -1150,7 +1392,7 @@ export default function CP02Page() {
             </section>
 
             {/* ═══════════════════════════════════════
-               PANEL 4: CEO MESSAGE
+               PANEL 6: CEO MESSAGE
                ═══════════════════════════════════════ */}
             <section
               id="message"
@@ -1265,10 +1507,10 @@ export default function CP02Page() {
             </section>
 
             {/* ═══════════════════════════════════════
-               PANEL 5: COMPANY + HISTORY
+               PANEL 7: HISTORY
                ═══════════════════════════════════════ */}
             <section
-              id="company"
+              id="history"
               style={{
                 width: isMobile ? "100%" : "100vw",
                 height: isMobile ? "auto" : "100vh",
@@ -1281,103 +1523,60 @@ export default function CP02Page() {
                 padding: isMobile ? "80px 20px 60px" : 0,
               }}
             >
-              {/* Corporate watermark background */}
-              <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", opacity: 0.04 }}>
-                <svg viewBox="0 0 800 600" style={{ width: "100%", height: "100%" }} fill="none" stroke={C.text} strokeWidth={0.8} strokeLinecap="round" strokeLinejoin="round">
-                  {/* Building cluster */}
-                  <rect x="50" y="180" width="80" height="220" rx="2" />
-                  <rect x="60" y="200" width="15" height="20" rx="1" /><rect x="85" y="200" width="15" height="20" rx="1" />
-                  <rect x="60" y="240" width="15" height="20" rx="1" /><rect x="85" y="240" width="15" height="20" rx="1" />
-                  <rect x="60" y="280" width="15" height="20" rx="1" /><rect x="85" y="280" width="15" height="20" rx="1" />
-                  <rect x="150" y="120" width="100" height="280" rx="2" />
-                  <rect x="165" y="140" width="18" height="22" rx="1" /><rect x="195" y="140" width="18" height="22" rx="1" /><rect x="225" y="140" width="18" height="22" rx="1" />
-                  <rect x="165" y="180" width="18" height="22" rx="1" /><rect x="195" y="180" width="18" height="22" rx="1" /><rect x="225" y="180" width="18" height="22" rx="1" />
-                  <rect x="165" y="220" width="18" height="22" rx="1" /><rect x="195" y="220" width="18" height="22" rx="1" /><rect x="225" y="220" width="18" height="22" rx="1" />
-                  <rect x="165" y="260" width="18" height="22" rx="1" /><rect x="195" y="260" width="18" height="22" rx="1" /><rect x="225" y="260" width="18" height="22" rx="1" />
-                  {/* Handshake */}
-                  <path d="M420 300 Q440 270 460 290 L480 310 Q490 320 480 330 L460 340" />
-                  <path d="M420 300 Q400 270 380 290 L360 310 Q350 320 360 330 L380 340" />
-                  <circle cx="420" cy="260" r="30" />
-                  {/* Graph/chart */}
-                  <rect x="560" y="200" width="180" height="140" rx="3" />
-                  <polyline points="580,310 610,280 640,295 670,250 700,260 720,230" />
-                  <line x1="580" y1="320" x2="580" y2="210" /><line x1="580" y1="320" x2="730" y2="320" />
-                  {/* Document */}
-                  <rect x="350" y="420" width="100" height="130" rx="3" />
-                  <line x1="370" y1="450" x2="430" y2="450" /><line x1="370" y1="470" x2="430" y2="470" /><line x1="370" y1="490" x2="410" y2="490" />
-                  {/* Small buildings right side */}
-                  <rect x="620" y="400" width="60" height="100" rx="2" />
-                  <rect x="700" y="360" width="50" height="140" rx="2" />
-                </svg>
-              </div>
-
-              {/* Left: Company Overview */}
+              {/* Left: History image strip */}
               <div
                 style={{
-                  width: isMobile ? "100%" : "55%",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  padding: isMobile ? 0 : "0 60px",
+                  width: isMobile ? "100%" : "40%",
+                  height: isMobile ? 260 : "100%",
+                  position: "relative",
+                  overflow: "hidden",
+                  flexShrink: 0,
                 }}
               >
-                <FadeIn>
-                  <SectionHeading title="会社概要" sub="COMPANY" />
-
-                  <table
-                    style={{
-                      width: "100%",
-                      maxWidth: 560,
-                      borderCollapse: "collapse",
-                      fontSize: isMobile ? 13 : 14,
-                    }}
-                  >
-                    <tbody>
-                      {companyOverview.map((row, i) => (
-                        <tr key={i}>
-                          <th
-                            style={{
-                              textAlign: "left",
-                              padding: "10px 16px 10px 0",
-                              fontWeight: 700,
-                              color: C.text,
-                              whiteSpace: "nowrap",
-                              borderBottom: `1px solid ${C.border}`,
-                              verticalAlign: "top",
-                              width: isMobile ? 80 : 100,
-                              fontSize: isMobile ? 12 : 13,
-                            }}
-                          >
-                            {row.dt}
-                          </th>
-                          <td
-                            style={{
-                              padding: "10px 0",
-                              color: C.textSub,
-                              borderBottom: `1px solid ${C.border}`,
-                              lineHeight: 1.6,
-                              fontSize: isMobile ? 12 : 13,
-                            }}
-                          >
-                            {row.dd}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </FadeIn>
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    backgroundImage: `url(${IMG.vehicle})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: isMobile
+                      ? "linear-gradient(to bottom, transparent 50%, rgba(255,255,255,1) 100%)"
+                      : "linear-gradient(to right, transparent 60%, rgba(255,255,255,1) 100%)",
+                  }}
+                />
+                {/* Year watermark */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: isMobile ? 60 : 40,
+                    left: 24,
+                    fontSize: "clamp(4rem, 8vw, 7rem)",
+                    fontWeight: 900,
+                    color: "rgba(255,255,255,0.25)",
+                    fontFamily: "'Inter', sans-serif",
+                    lineHeight: 1,
+                    pointerEvents: "none",
+                  }}
+                >
+                  SINCE
+                </div>
               </div>
 
               {/* Right: History Timeline */}
               <div
-                id="history"
                 style={{
-                  width: isMobile ? "100%" : "45%",
+                  width: isMobile ? "100%" : "60%",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
-                  padding: isMobile ? "40px 0 0" : "0 60px",
-                  borderLeft: isMobile ? "none" : `1px solid ${C.border}`,
+                  padding: isMobile ? "20px 0 0" : "0 60px",
                 }}
               >
                 <FadeIn>
@@ -1395,7 +1594,6 @@ export default function CP02Page() {
                         background: C.border,
                       }}
                     />
-
                     {history.map((item, i) => (
                       <FadeIn key={item.year} delay={i * 0.3}>
                         <div
@@ -1451,7 +1649,7 @@ export default function CP02Page() {
                       </FadeIn>
                     ))}
 
-                    {/* History image */}
+                    {/* History image thumbnail */}
                     <FadeIn delay={0.5}>
                       <div
                         style={{
@@ -1474,10 +1672,10 @@ export default function CP02Page() {
             </section>
 
             {/* ═══════════════════════════════════════
-               PANEL 6: NUMBERS
+               PANEL 8: COMPANY
                ═══════════════════════════════════════ */}
             <section
-              id="numbers"
+              id="company"
               style={{
                 width: isMobile ? "100%" : "100vw",
                 height: isMobile ? "auto" : "100vh",
@@ -1485,58 +1683,101 @@ export default function CP02Page() {
                 position: "relative",
                 overflow: "hidden",
                 display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                padding: isMobile ? "80px 20px" : "0 80px",
+                flexDirection: isMobile ? "column" : "row",
+                background: C.bg,
+                padding: isMobile ? "80px 20px 60px" : 0,
               }}
             >
-              {/* BG */}
+              {/* Left: Company image */}
               <div
                 style={{
-                  position: "absolute",
-                  inset: 0,
-                  backgroundImage: `url(${IMG.team})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
+                  width: isMobile ? "100%" : "45%",
+                  height: isMobile ? 260 : "100%",
+                  position: "relative",
+                  overflow: "hidden",
+                  flexShrink: 0,
                 }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background: "rgba(15,23,42,0.88)",
-                }}
-              />
-
-              <div style={{ position: "relative", zIndex: 2, textAlign: "center", width: "100%", maxWidth: 800 }}>
-                <FadeIn>
-                  <SectionHeading title="数字で見る実績" sub="NUMBERS" light align="center" />
-                </FadeIn>
-
+              >
                 <div
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
-                    gap: isMobile ? "40px 20px" : 40,
-                    marginTop: 48,
+                    position: "absolute",
+                    inset: 0,
+                    backgroundImage: `url(${IMG.companyImg})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
                   }}
-                >
-                  {numbers.map((n, i) => (
-                    <CounterNum
-                      key={n.label}
-                      value={n.value}
-                      suffix={n.suffix}
-                      label={n.label}
-                      delay={i * 0.2}
-                    />
-                  ))}
-                </div>
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: isMobile
+                      ? "linear-gradient(to bottom, transparent 50%, rgba(248,249,250,1) 100%)"
+                      : "linear-gradient(to right, transparent 60%, rgba(248,249,250,1) 100%)",
+                  }}
+                />
+              </div>
+
+              {/* Right: Company Overview */}
+              <div
+                style={{
+                  width: isMobile ? "100%" : "55%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  padding: isMobile ? "20px 0 0" : "0 60px",
+                }}
+              >
+                <FadeIn>
+                  <SectionHeading title="会社概要" sub="COMPANY" />
+
+                  <table
+                    style={{
+                      width: "100%",
+                      maxWidth: 560,
+                      borderCollapse: "collapse",
+                      fontSize: isMobile ? 13 : 14,
+                    }}
+                  >
+                    <tbody>
+                      {companyOverview.map((row, i) => (
+                        <tr key={i}>
+                          <th
+                            style={{
+                              textAlign: "left",
+                              padding: "10px 16px 10px 0",
+                              fontWeight: 700,
+                              color: C.text,
+                              whiteSpace: "nowrap",
+                              borderBottom: `1px solid ${C.border}`,
+                              verticalAlign: "top",
+                              width: isMobile ? 80 : 100,
+                              fontSize: isMobile ? 12 : 13,
+                            }}
+                          >
+                            {row.dt}
+                          </th>
+                          <td
+                            style={{
+                              padding: "10px 0",
+                              color: C.textSub,
+                              borderBottom: `1px solid ${C.border}`,
+                              lineHeight: 1.6,
+                              fontSize: isMobile ? 12 : 13,
+                            }}
+                          >
+                            {row.dd}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </FadeIn>
               </div>
             </section>
 
             {/* ═══════════════════════════════════════
-               PANEL 7: PARTNERS
+               PANEL 9: PARTNERS
                ═══════════════════════════════════════ */}
             <section
               id="partners"
@@ -1549,10 +1790,26 @@ export default function CP02Page() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
-                background: C.bg,
+                background: C.white,
                 padding: isMobile ? "80px 20px" : "0 80px",
               }}
             >
+              {/* Background image accent */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  width: "40%",
+                  height: "100%",
+                  backgroundImage: `url(${IMG.reasons})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  opacity: 0.06,
+                  pointerEvents: "none",
+                }}
+              />
+
               <FadeIn>
                 <SectionHeading title="主要取引先" sub="PARTNERS" align="center" />
               </FadeIn>
@@ -1565,6 +1822,8 @@ export default function CP02Page() {
                   maxWidth: 700,
                   margin: "20px auto 0",
                   width: "100%",
+                  position: "relative",
+                  zIndex: 1,
                 }}
               >
                 {partners.map((p, i) => (
@@ -1662,155 +1921,7 @@ export default function CP02Page() {
             </section>
 
             {/* ═══════════════════════════════════════
-               PANEL 8: NEWS
-               ═══════════════════════════════════════ */}
-            <section
-              id="news"
-              style={{
-                width: isMobile ? "100%" : "100vw",
-                height: isMobile ? "auto" : "100vh",
-                flexShrink: 0,
-                position: "relative",
-                overflow: "hidden",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                background: C.white,
-                padding: isMobile ? "80px 20px" : "0 80px",
-              }}
-            >
-              <FadeIn>
-                <SectionHeading title="お知らせ" sub="NEWS" />
-              </FadeIn>
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: isMobile ? "1fr" : "1.4fr 1fr",
-                  gap: 24,
-                  maxWidth: 900,
-                  marginTop: 12,
-                }}
-              >
-                {/* Featured news */}
-                {news.length > 0 && (
-                  <FadeIn>
-                    <div
-                      style={{
-                        borderRadius: 14,
-                        padding: isMobile ? 24 : 36,
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        minHeight: isMobile ? 160 : 280,
-                        border: `1px solid ${C.border}`,
-                        position: "relative",
-                        overflow: "hidden",
-                        backgroundImage: `url(/画像/沖縄エリア.png)`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }}
-                    >
-                      {/* Dark overlay for text readability */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          background: "linear-gradient(135deg, rgba(239,246,255,0.88) 0%, rgba(219,234,254,0.82) 100%)",
-                        }}
-                      />
-                      {/* Decorative large number */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: -10,
-                          right: 10,
-                          fontSize: "8rem",
-                          fontWeight: 900,
-                          color: "rgba(59,130,246,0.08)",
-                          fontFamily: "'Inter', sans-serif",
-                          lineHeight: 1,
-                          pointerEvents: "none",
-                        }}
-                      >
-                        01
-                      </div>
-                      <div style={{ position: "relative", zIndex: 2 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-                          <span
-                            style={{
-                              fontSize: 10,
-                              fontWeight: 700,
-                              color: C.white,
-                              background: news[0].tagStyle === "press" ? "#ef4444" : news[0].tagStyle === "new" ? "#22c55e" : C.accent,
-                              padding: "3px 10px",
-                              borderRadius: 4,
-                              letterSpacing: "0.05em",
-                            }}
-                          >
-                            {news[0].tag}
-                          </span>
-                          <span style={{ fontSize: 12, color: C.textSub }}>{news[0].date}</span>
-                        </div>
-                        <h3
-                          style={{
-                            fontSize: isMobile ? 18 : 22,
-                            fontWeight: 800,
-                            color: C.text,
-                            lineHeight: 1.4,
-                            margin: 0,
-                          }}
-                        >
-                          {news[0].title}
-                        </h3>
-                      </div>
-                    </div>
-                  </FadeIn>
-                )}
-
-                {/* Other news items */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {news.slice(1).map((item, i) => (
-                    <FadeIn key={i} delay={i * 0.1}>
-                      <div
-                        style={{
-                          padding: "18px 20px",
-                          borderRadius: 10,
-                          border: `1px solid ${C.border}`,
-                          background: C.bg,
-                          transition: "box-shadow 0.3s ease",
-                          cursor: "default",
-                        }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.06)"; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
-                      >
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                          <span
-                            style={{
-                              fontSize: 10,
-                              fontWeight: 700,
-                              color: C.white,
-                              background: item.tagStyle === "press" ? "#ef4444" : item.tagStyle === "new" ? "#22c55e" : C.accent,
-                              padding: "2px 8px",
-                              borderRadius: 3,
-                            }}
-                          >
-                            {item.tag}
-                          </span>
-                          <span style={{ fontSize: 11, color: C.textSub }}>{item.date}</span>
-                        </div>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: C.text, lineHeight: 1.5 }}>
-                          {item.title}
-                        </div>
-                      </div>
-                    </FadeIn>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* ═══════════════════════════════════════
-               PANEL 9: RECRUIT
+               PANEL 10: RECRUIT
                ═══════════════════════════════════════ */}
             <section
               id="recruit"
@@ -1830,7 +1941,7 @@ export default function CP02Page() {
                 style={{
                   position: "absolute",
                   inset: 0,
-                  backgroundImage: `url(${IMG.delivery})`,
+                  backgroundImage: `url(${IMG.jobs})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
@@ -1937,30 +2048,30 @@ export default function CP02Page() {
             </section>
 
             {/* ═══════════════════════════════════════
-               PANEL 10: CONTACT
+               PANEL 11: ACCESS
                ═══════════════════════════════════════ */}
             <section
-              id="contact"
+              id="access"
               style={{
                 width: isMobile ? "100%" : "100vw",
                 height: isMobile ? "auto" : "100vh",
                 flexShrink: 0,
                 position: "relative",
-                overflow: isMobile ? "visible" : "auto",
+                overflow: "hidden",
                 display: "flex",
                 flexDirection: isMobile ? "column" : "row",
                 background: C.bg,
               }}
             >
-              {/* Left: Company info + map */}
+              {/* Left: Map image + info */}
               <div
-                id="access"
                 style={{
                   width: isMobile ? "100%" : "50%",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
                   padding: isMobile ? "80px 20px 40px" : "0 48px",
+                  position: "relative",
                 }}
               >
                 <FadeIn>
@@ -2012,15 +2123,108 @@ export default function CP02Page() {
                 </FadeIn>
               </div>
 
-              {/* Right: Contact form */}
+              {/* Right: Building/exterior image */}
               <div
                 style={{
                   width: isMobile ? "100%" : "50%",
+                  height: isMobile ? 260 : "100%",
+                  position: "relative",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    backgroundImage: `url(${IMG.delivery})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: isMobile
+                      ? "linear-gradient(to bottom, rgba(248,249,250,1) 0%, transparent 30%)"
+                      : "linear-gradient(to right, rgba(248,249,250,1) 0%, transparent 30%)",
+                  }}
+                />
+              </div>
+            </section>
+
+            {/* ═══════════════════════════════════════
+               PANEL 12: CONTACT
+               ═══════════════════════════════════════ */}
+            <section
+              id="contact"
+              style={{
+                width: isMobile ? "100%" : "100vw",
+                height: isMobile ? "auto" : "100vh",
+                flexShrink: 0,
+                position: "relative",
+                overflow: isMobile ? "visible" : "auto",
+                display: "flex",
+                flexDirection: isMobile ? "column" : "row",
+                background: C.white,
+              }}
+            >
+              {/* Left: Image with overlay */}
+              <div
+                style={{
+                  width: isMobile ? "100%" : "45%",
+                  height: isMobile ? 220 : "100%",
+                  position: "relative",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    backgroundImage: `url(${IMG.workplace})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    background: isMobile
+                      ? "linear-gradient(to bottom, transparent 50%, rgba(255,255,255,1) 100%)"
+                      : "linear-gradient(to right, transparent 60%, rgba(255,255,255,1) 100%)",
+                  }}
+                />
+                {/* Contact watermark */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: isMobile ? 60 : 60,
+                    left: 24,
+                    fontSize: "clamp(3rem, 6vw, 5rem)",
+                    fontWeight: 900,
+                    color: "rgba(255,255,255,0.3)",
+                    fontFamily: "'Inter', sans-serif",
+                    lineHeight: 1,
+                    pointerEvents: "none",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  CONTACT
+                </div>
+              </div>
+
+              {/* Right: Contact form */}
+              <div
+                style={{
+                  width: isMobile ? "100%" : "55%",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
                   padding: isMobile ? "20px 20px 60px" : "0 48px",
-                  borderLeft: isMobile ? "none" : `1px solid ${C.border}`,
                 }}
               >
                 <FadeIn>

@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback, FormEvent } from "react";
 import {
   company,
   meta,
-  navLinks,
   hero,
   services,
   strengths,
@@ -18,8 +17,91 @@ import {
   access,
   contact,
   footer,
-  sectionIcons,
 } from "@/data/corporateSiteData";
+
+/* ─────────────────── CP-03 local nav order ─────────────────── */
+
+const cp03NavLinks = [
+  { href: "#news", label: "お知らせ" },
+  { href: "#services", label: "事業内容" },
+  { href: "#numbers", label: "実績" },
+  { href: "#strengths", label: "私たちの強み" },
+  { href: "#message", label: "代表メッセージ" },
+  { href: "#history", label: "沿革" },
+  { href: "#company", label: "会社概要" },
+  { href: "#partners", label: "主要取引先" },
+  { href: "#recruit", label: "採用情報" },
+  { href: "#access", label: "アクセス" },
+  { href: "#contact", label: "お問い合わせ" },
+];
+
+/* ─────────────────── SVG icons (stroke-only) ─────────────────── */
+
+const svgIcons: Record<string, React.ReactNode> = {
+  news: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4h16v16H4z" />
+      <path d="M8 8h8M8 12h5M8 16h8" />
+    </svg>
+  ),
+  services: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="6" width="16" height="12" rx="1" />
+      <path d="M17 10h4l2 3v5h-6" />
+      <circle cx="7" cy="20" r="2" />
+      <circle cx="19" cy="20" r="2" />
+    </svg>
+  ),
+  numbers: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 20V10M10 20V4M16 20V14M22 20V8" />
+    </svg>
+  ),
+  strengths: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2L15 8.5L22 9.5L17 14.5L18 21.5L12 18.5L6 21.5L7 14.5L2 9.5L9 8.5Z" />
+    </svg>
+  ),
+  message: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+    </svg>
+  ),
+  history: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
+    </svg>
+  ),
+  company: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4h6v4M9 10h.01M15 10h.01M9 14h.01M15 14h.01" />
+    </svg>
+  ),
+  partners: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+    </svg>
+  ),
+  recruit: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2M9 2h6v4H9z" />
+      <path d="M9 14l2 2 4-4" />
+    </svg>
+  ),
+  access: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  ),
+  contact: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <path d="M22 6l-10 7L2 6" />
+    </svg>
+  ),
+};
 
 /* ─────────────────── helpers ─────────────────── */
 
@@ -104,7 +186,7 @@ const scaleInStyle = (visible: boolean, delay = 0): React.CSSProperties => ({
   transition: `opacity 0.8s ease ${delay}s, transform 0.8s ease ${delay}s`,
 });
 
-/* ─────────────────── Typewriter フック ─────────────────── */
+/* ─────────────────── Typewriter ─────────────────── */
 function useTypewriter(text: string, speed = 80, delay = 500) {
   const [displayed, setDisplayed] = useState("");
   const [done, setDone] = useState(false);
@@ -460,60 +542,60 @@ export default function CP03() {
           setMenuOpen={setMenuOpen}
         />
 
-        {/* ───── HERO ───── */}
+        {/* ───── 1. HERO ───── */}
         <HeroSection isMobile={isMobile} />
 
         <SectionDivider variant="diamond" />
 
-        {/* ───── SERVICES ───── */}
+        {/* ───── 2. NEWS ───── */}
+        <NewsSection isMobile={isMobile} />
+
+        <SectionDivider variant="line" />
+
+        {/* ───── 3. SERVICES ───── */}
         <ServicesSection isMobile={isMobile} />
 
-        <SectionDivider variant="line" />
-
-        {/* ───── STRENGTHS ───── */}
-        <StrengthsSection isMobile={isMobile} />
-
         <SectionDivider variant="dots" />
 
-        {/* ───── CEO MESSAGE ───── */}
-        <CeoSection isMobile={isMobile} />
-
-        <SectionDivider variant="diamond" />
-
-        {/* ───── COMPANY ───── */}
-        <CompanySection isMobile={isMobile} />
-
-        <SectionDivider variant="line" />
-
-        {/* ───── HISTORY ───── */}
-        <HistorySection isMobile={isMobile} />
-
-        <SectionDivider variant="dots" />
-
-        {/* ───── NUMBERS ───── */}
+        {/* ───── 4. NUMBERS ───── */}
         <NumbersSection isMobile={isMobile} />
 
         <SectionDivider variant="diamond" />
 
-        {/* ───── PARTNERS ───── */}
-        <PartnersSection isMobile={isMobile} />
+        {/* ───── 5. STRENGTHS ───── */}
+        <StrengthsSection isMobile={isMobile} />
 
         <SectionDivider variant="line" />
 
-        {/* ───── NEWS ───── */}
-        <NewsSection isMobile={isMobile} />
+        {/* ───── 6. CEO MESSAGE ───── */}
+        <CeoSection isMobile={isMobile} />
 
         <SectionDivider variant="dots" />
 
-        {/* ───── RECRUIT ───── */}
+        {/* ───── 7. HISTORY ───── */}
+        <HistorySection isMobile={isMobile} />
+
+        <SectionDivider variant="diamond" />
+
+        {/* ───── 8. COMPANY ───── */}
+        <CompanySection isMobile={isMobile} />
+
+        <SectionDivider variant="line" />
+
+        {/* ───── 9. PARTNERS ───── */}
+        <PartnersSection isMobile={isMobile} />
+
+        <SectionDivider variant="dots" />
+
+        {/* ───── 10. RECRUIT ───── */}
         <RecruitSection isMobile={isMobile} />
 
         <SectionDivider variant="diamond" />
 
-        {/* ───── ACCESS ───── */}
+        {/* ───── 11. ACCESS ───── */}
         <AccessSection isMobile={isMobile} />
 
-        {/* ───── CONTACT ───── */}
+        {/* ───── 12. CONTACT ───── */}
         <ContactSection isMobile={isMobile} />
 
         {/* ───── FOOTER ───── */}
@@ -595,7 +677,7 @@ function Header({
               transition: "border-color 0.4s",
             }}
           >
-            {navLinks.map((l) => (
+            {cp03NavLinks.map((l) => (
               <a
                 key={l.href}
                 href={l.href}
@@ -604,7 +686,7 @@ function Header({
                   color: scrolled ? C.sub : "rgba(255,255,255,0.7)",
                 }}
               >
-                <><span style={{marginRight:4,fontSize:"0.85em"}}>{l.icon}</span>{l.label}</>
+                {l.label}
               </a>
             ))}
           </nav>
@@ -614,7 +696,7 @@ function Header({
         {isMobile && (
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="メニュー"
+            aria-label="menu"
             style={{
               position: "absolute",
               right: 24,
@@ -681,7 +763,7 @@ function Header({
             zIndex: 999,
           }}
         >
-          {navLinks.map((l, i) => (
+          {cp03NavLinks.map((l, i) => (
             <a
               key={l.href}
               href={l.href}
@@ -697,7 +779,7 @@ function Header({
                 transition: `opacity 0.4s ease ${0.1 + i * 0.05}s, transform 0.4s ease ${0.1 + i * 0.05}s`,
               }}
             >
-              <><span style={{marginRight:6,fontSize:"0.9em"}}>{l.icon}</span>{l.label}</>
+              {l.label}
             </a>
           ))}
         </div>
@@ -920,6 +1002,131 @@ function HeroSection({ isMobile }: { isMobile: boolean }) {
 }
 
 /* ═══════════════════════════════════════════════
+   NEWS - newspaper-style columns with image
+   ═══════════════════════════════════════════════ */
+
+function NewsSection({
+  isMobile,
+}: {
+  isMobile: boolean;
+}) {
+  const iv = useInView();
+
+  return (
+    <section
+      id="news"
+      ref={iv.ref}
+      style={{
+        paddingTop: isMobile ? 52 : 70,
+        paddingBottom: isMobile ? 44 : 60,
+        background: C.white,
+      }}
+    >
+      <div style={{
+        maxWidth: 1100,
+        margin: "0 auto",
+        paddingLeft: isMobile ? 24 : 48,
+        paddingRight: isMobile ? 24 : 48,
+      }}>
+        <SectionLabel label="News" num="01" visible={iv.visible} iconKey="news" />
+        <h2
+          className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
+          style={{
+            fontFamily: fontGothic,
+            fontSize: isMobile ? 24 : 32,
+            fontWeight: 500,
+            marginBottom: isMobile ? 48 : 80,
+            letterSpacing: "0.08em",
+            ...revealStyle(iv.visible, 0.2),
+          }}
+        >
+          お知らせ
+        </h2>
+
+        {/* Image banner for news section */}
+        <div
+          className="cp03-photo-frame"
+          style={{
+            marginBottom: isMobile ? 32 : 48,
+            width: "100%",
+            height: isMobile ? 180 : 280,
+            overflow: "hidden",
+            ...fadeUpStyle(iv.visible, 0.25),
+          }}
+        >
+          <img
+            src="/keikamotsu-new-templates/images/workplace.webp"
+            alt="News"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              filter: "grayscale(50%)",
+              transition: "filter 0.5s ease",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.filter = "grayscale(10%)")}
+            onMouseLeave={(e) => (e.currentTarget.style.filter = "grayscale(50%)")}
+          />
+        </div>
+
+        {/* Newspaper-style: 2-column on desktop */}
+        <div style={{
+          ...fadeUpStyle(iv.visible, 0.3),
+          columnCount: isMobile ? 1 : 2,
+          columnGap: 48,
+          columnRule: `1px solid ${C.line}`,
+        }}>
+          {news.map((n, i) => (
+            <a
+              key={i}
+              href="#"
+              style={{
+                display: "block",
+                padding: isMobile ? "20px 0" : "20px 0",
+                borderBottom: `1px solid ${C.line}`,
+                textDecoration: "none",
+                color: C.text,
+                transition: "opacity 0.3s, transform 0.3s",
+                breakInside: "avoid" as const,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = "0.6";
+                e.currentTarget.style.transform = "translateX(4px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = "1";
+                e.currentTarget.style.transform = "translateX(0)";
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: fontOswald,
+                  fontSize: isMobile ? 11 : 12,
+                  color: C.muted,
+                  letterSpacing: "0.06em",
+                  display: "block",
+                  marginBottom: 6,
+                }}
+              >
+                -- {n.date}
+              </span>
+              <span
+                style={{
+                  fontSize: isMobile ? 13 : 14,
+                  lineHeight: 1.7,
+                }}
+              >
+                {n.title}
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════
    SERVICES
    ═══════════════════════════════════════════════ */
 
@@ -944,7 +1151,7 @@ function ServicesSection({
         paddingRight: isMobile ? 24 : 48,
       }}
     >
-      <SectionLabel label="Services" num="01" visible={iv.visible} icon={sectionIcons.services} />
+      <SectionLabel label="Services" num="02" visible={iv.visible} iconKey="services" />
       <h2
         className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
         style={{
@@ -1071,6 +1278,157 @@ function ServiceItem({
 }
 
 /* ═══════════════════════════════════════════════
+   NUMBERS - with counter animation and bg image
+   ═══════════════════════════════════════════════ */
+
+function NumbersSection({
+  isMobile,
+}: {
+  isMobile: boolean;
+}) {
+  const iv = useInView();
+
+  return (
+    <section
+      id="numbers"
+      ref={iv.ref}
+      style={{
+        paddingTop: isMobile ? 72 : 105,
+        paddingBottom: isMobile ? 56 : 90,
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Background image */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        backgroundImage: "url(/keikamotsu-new-templates/images/team.webp)",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        filter: "grayscale(100%)",
+        opacity: 0.08,
+        zIndex: 0,
+      }} />
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        background: C.white,
+        opacity: 0.92,
+        zIndex: 0,
+      }} />
+
+      <div
+        style={{
+          maxWidth: 1100,
+          margin: "0 auto",
+          paddingLeft: isMobile ? 24 : 48,
+          paddingRight: isMobile ? 24 : 48,
+          position: "relative",
+          zIndex: 1,
+        }}
+      >
+        <SectionLabel label="Numbers" num="03" visible={iv.visible} iconKey="numbers" />
+        <h2
+          className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
+          style={{
+            fontFamily: fontGothic,
+            fontSize: isMobile ? 24 : 32,
+            fontWeight: 500,
+            marginBottom: isMobile ? 48 : 80,
+            letterSpacing: "0.08em",
+            ...revealStyle(iv.visible, 0.2),
+          }}
+        >
+          数字で見る実績
+        </h2>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile
+              ? "1fr 1fr"
+              : "1fr 1fr 1fr 1fr",
+            gap: isMobile ? 32 : 0,
+            borderTop: isMobile ? "none" : `1px solid ${C.line}`,
+            borderBottom: isMobile ? "none" : `1px solid ${C.line}`,
+            padding: isMobile ? 0 : "48px 0",
+          }}
+        >
+          {numbers.map((n, i) => (
+            <NumberItem key={i} n={n} isMobile={isMobile} index={i} visible={iv.visible} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function NumberItem({
+  n,
+  isMobile,
+  index,
+  visible,
+}: {
+  n: (typeof numbers)[0];
+  isMobile: boolean;
+  index: number;
+  visible: boolean;
+}) {
+  const numericValue = parseInt(n.value.replace(/[^0-9]/g, ""), 10) || 0;
+  const count = useCounter(numericValue, visible, 2000 + index * 200);
+  const prefix = n.value.match(/^[^0-9]*/)?.[0] || "";
+
+  return (
+    <div
+      style={{
+        textAlign: "center",
+        borderRight:
+          !isMobile && index < numbers.length - 1
+            ? `1px solid ${C.line}`
+            : "none",
+        ...fadeUpStyle(visible, 0.2 + index * 0.15),
+      }}
+    >
+      <div style={{ marginBottom: 8 }}>
+        <span
+          style={{
+            fontFamily: fontSerif,
+            fontSize: isMobile ? 40 : 64,
+            fontWeight: 700,
+            color: C.text,
+            lineHeight: 1,
+            letterSpacing: "-0.02em",
+          }}
+        >
+          {prefix}{count}
+        </span>
+        <span
+          style={{
+            fontFamily: fontGothic,
+            fontSize: isMobile ? 14 : 16,
+            color: C.sub,
+            marginLeft: 4,
+          }}
+        >
+          {n.suffix}
+        </span>
+      </div>
+      <p
+        style={{
+          margin: 0,
+          fontSize: isMobile ? 11 : 12,
+          color: C.muted,
+          letterSpacing: "0.1em",
+        }}
+      >
+        {n.label}
+      </p>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
    STRENGTHS
    ═══════════════════════════════════════════════ */
 
@@ -1099,7 +1457,7 @@ function StrengthsSection({
           paddingRight: isMobile ? 24 : 48,
         }}
       >
-        <SectionLabel label="Strengths" num="02" visible={iv.visible} icon={sectionIcons.strengths} />
+        <SectionLabel label="Strengths" num="04" visible={iv.visible} iconKey="strengths" />
         <h2
           className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
           style={{
@@ -1318,7 +1676,7 @@ function CeoSection({
 
         {/* Message Content */}
         <div style={{ flex: 1 }}>
-          <SectionLabel label="Message" num="03" visible={iv.visible} icon={sectionIcons.message} />
+          <SectionLabel label="Message" num="05" visible={iv.visible} iconKey="message" />
           <h2
             className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
             style={{
@@ -1402,125 +1760,6 @@ function CeoSection({
 }
 
 /* ═══════════════════════════════════════════════
-   COMPANY
-   ═══════════════════════════════════════════════ */
-
-function CompanySection({
-  isMobile,
-}: {
-  isMobile: boolean;
-}) {
-  const iv = useInView();
-
-  return (
-    <section
-      id="company"
-      ref={iv.ref}
-      style={{
-        paddingTop: isMobile ? 64 : 95,
-        paddingBottom: isMobile ? 56 : 80,
-        background: C.white,
-      }}
-    >
-      <div style={{
-        maxWidth: 1100,
-        margin: "0 auto",
-        paddingLeft: isMobile ? 24 : 48,
-        paddingRight: isMobile ? 24 : 48,
-        display: isMobile ? "block" : "flex",
-        gap: 64,
-        alignItems: "flex-start",
-      }}>
-        {/* Company Image */}
-        <div
-          className="cp03-photo-frame"
-          style={{
-            flex: "0 0 360px",
-            marginBottom: isMobile ? 40 : 0,
-            ...fadeLeftStyle(iv.visible, 0.2),
-          }}
-        >
-          <img
-            src="/keikamotsu-new-templates/images/company.webp"
-            alt="会社外観"
-            style={{
-              width: "100%",
-              height: isMobile ? 200 : 320,
-              objectFit: "cover",
-              filter: "grayscale(30%)",
-              display: "block",
-            }}
-          />
-        </div>
-
-        <div style={{ flex: 1 }}>
-          <SectionLabel label="Company" num="04" visible={iv.visible} icon={sectionIcons.company} />
-          <h2
-            className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
-            style={{
-              fontFamily: fontGothic,
-              fontSize: isMobile ? 24 : 32,
-              fontWeight: 500,
-              marginBottom: isMobile ? 48 : 56,
-              letterSpacing: "0.08em",
-              ...revealStyle(iv.visible, 0.2),
-            }}
-          >
-            会社概要
-          </h2>
-
-          <table
-            style={{
-              width: "100%",
-              borderCollapse: "collapse",
-              ...fadeUpStyle(iv.visible, 0.3),
-            }}
-          >
-            <tbody>
-              {companyOverview.map((row, i) => (
-                <tr
-                  key={i}
-                  style={{
-                    borderBottom: `1px solid ${C.line}`,
-                  }}
-                >
-                  <th
-                    style={{
-                      textAlign: "left",
-                      fontWeight: 400,
-                      fontFamily: fontGothic,
-                      fontSize: isMobile ? 13 : 14,
-                      color: C.sub,
-                      padding: isMobile ? "16px 8px 16px 0" : "20px 24px 20px 0",
-                      whiteSpace: "nowrap",
-                      verticalAlign: "top",
-                      width: isMobile ? 90 : 140,
-                      letterSpacing: "0.06em",
-                    }}
-                  >
-                    <span style={{ marginRight: 6 }}>&#9642;</span>{row.dt}
-                  </th>
-                  <td
-                    style={{
-                      padding: isMobile ? "16px 0" : "20px 0",
-                      fontSize: isMobile ? 13 : 14,
-                      color: C.text,
-                      whiteSpace: "pre-line",
-                    }}
-                  >
-                    {typeof row.dd === "string" ? row.dd.split("\n").map((line: string, li: number) => <span key={li}>{line}{li < row.dd.split("\n").length - 1 && <br />}</span>) : row.dd}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ═══════════════════════════════════════════════
    HISTORY
    ═══════════════════════════════════════════════ */
 
@@ -1548,7 +1787,7 @@ function HistorySection({
         paddingLeft: isMobile ? 24 : 48,
         paddingRight: isMobile ? 24 : 48,
       }}>
-        <SectionLabel label="History" num="05" visible={iv.visible} icon={sectionIcons.history} />
+        <SectionLabel label="History" num="06" visible={iv.visible} iconKey="history" />
         <h2
           className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
           style={{
@@ -1677,7 +1916,7 @@ function HistoryItem({
           >
             <img
               src={imgSrc}
-              alt={`${h.year}年`}
+              alt={`${h.year}`}
               style={{
                 width: "100%",
                 height: "100%",
@@ -1698,10 +1937,10 @@ function HistoryItem({
 }
 
 /* ═══════════════════════════════════════════════
-   NUMBERS - with counter animation and bg image
+   COMPANY
    ═══════════════════════════════════════════════ */
 
-function NumbersSection({
+function CompanySection({
   isMobile,
 }: {
   isMobile: boolean;
@@ -1710,141 +1949,109 @@ function NumbersSection({
 
   return (
     <section
-      id="numbers"
+      id="company"
       ref={iv.ref}
       style={{
-        paddingTop: isMobile ? 72 : 105,
-        paddingBottom: isMobile ? 56 : 90,
-        position: "relative",
-        overflow: "hidden",
+        paddingTop: isMobile ? 64 : 95,
+        paddingBottom: isMobile ? 56 : 80,
+        background: C.white,
       }}
     >
-      {/* Background image */}
       <div style={{
-        position: "absolute",
-        inset: 0,
-        backgroundImage: "url(/keikamotsu-new-templates/images/team.webp)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        filter: "grayscale(100%)",
-        opacity: 0.08,
-        zIndex: 0,
-      }} />
-      <div style={{
-        position: "absolute",
-        inset: 0,
-        background: C.white,
-        opacity: 0.92,
-        zIndex: 0,
-      }} />
-
-      <div
-        style={{
-          maxWidth: 1100,
-          margin: "0 auto",
-          paddingLeft: isMobile ? 24 : 48,
-          paddingRight: isMobile ? 24 : 48,
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
-        <SectionLabel label="Numbers" num="06" visible={iv.visible} icon={sectionIcons.numbers} />
-        <h2
-          className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
-          style={{
-            fontFamily: fontGothic,
-            fontSize: isMobile ? 24 : 32,
-            fontWeight: 500,
-            marginBottom: isMobile ? 48 : 80,
-            letterSpacing: "0.08em",
-            ...revealStyle(iv.visible, 0.2),
-          }}
-        >
-          数字で見る実績
-        </h2>
-
+        maxWidth: 1100,
+        margin: "0 auto",
+        paddingLeft: isMobile ? 24 : 48,
+        paddingRight: isMobile ? 24 : 48,
+        display: isMobile ? "block" : "flex",
+        gap: 64,
+        alignItems: "flex-start",
+      }}>
+        {/* Company Image */}
         <div
+          className="cp03-photo-frame"
           style={{
-            display: "grid",
-            gridTemplateColumns: isMobile
-              ? "1fr 1fr"
-              : "1fr 1fr 1fr 1fr",
-            gap: isMobile ? 32 : 0,
-            borderTop: isMobile ? "none" : `1px solid ${C.line}`,
-            borderBottom: isMobile ? "none" : `1px solid ${C.line}`,
-            padding: isMobile ? 0 : "48px 0",
+            flex: "0 0 360px",
+            marginBottom: isMobile ? 40 : 0,
+            ...fadeLeftStyle(iv.visible, 0.2),
           }}
         >
-          {numbers.map((n, i) => (
-            <NumberItem key={i} n={n} isMobile={isMobile} index={i} visible={iv.visible} />
-          ))}
+          <img
+            src="/keikamotsu-new-templates/images/company.webp"
+            alt="Company"
+            style={{
+              width: "100%",
+              height: isMobile ? 200 : 320,
+              objectFit: "cover",
+              filter: "grayscale(30%)",
+              display: "block",
+            }}
+          />
+        </div>
+
+        <div style={{ flex: 1 }}>
+          <SectionLabel label="Company" num="07" visible={iv.visible} iconKey="company" />
+          <h2
+            className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
+            style={{
+              fontFamily: fontGothic,
+              fontSize: isMobile ? 24 : 32,
+              fontWeight: 500,
+              marginBottom: isMobile ? 48 : 56,
+              letterSpacing: "0.08em",
+              ...revealStyle(iv.visible, 0.2),
+            }}
+          >
+            会社概要
+          </h2>
+
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              ...fadeUpStyle(iv.visible, 0.3),
+            }}
+          >
+            <tbody>
+              {companyOverview.map((row, i) => (
+                <tr
+                  key={i}
+                  style={{
+                    borderBottom: `1px solid ${C.line}`,
+                  }}
+                >
+                  <th
+                    style={{
+                      textAlign: "left",
+                      fontWeight: 400,
+                      fontFamily: fontGothic,
+                      fontSize: isMobile ? 13 : 14,
+                      color: C.sub,
+                      padding: isMobile ? "16px 8px 16px 0" : "20px 24px 20px 0",
+                      whiteSpace: "nowrap",
+                      verticalAlign: "top",
+                      width: isMobile ? 90 : 140,
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    <span style={{ marginRight: 6 }}>&#9642;</span>{row.dt}
+                  </th>
+                  <td
+                    style={{
+                      padding: isMobile ? "16px 0" : "20px 0",
+                      fontSize: isMobile ? 13 : 14,
+                      color: C.text,
+                      whiteSpace: "pre-line",
+                    }}
+                  >
+                    {typeof row.dd === "string" ? row.dd.split("\n").map((line: string, li: number) => <span key={li}>{line}{li < row.dd.split("\n").length - 1 && <br />}</span>) : row.dd}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
-  );
-}
-
-function NumberItem({
-  n,
-  isMobile,
-  index,
-  visible,
-}: {
-  n: (typeof numbers)[0];
-  isMobile: boolean;
-  index: number;
-  visible: boolean;
-}) {
-  const numericValue = parseInt(n.value.replace(/[^0-9]/g, ""), 10) || 0;
-  const count = useCounter(numericValue, visible, 2000 + index * 200);
-  const prefix = n.value.match(/^[^0-9]*/)?.[0] || "";
-
-  return (
-    <div
-      style={{
-        textAlign: "center",
-        borderRight:
-          !isMobile && index < numbers.length - 1
-            ? `1px solid ${C.line}`
-            : "none",
-        ...fadeUpStyle(visible, 0.2 + index * 0.15),
-      }}
-    >
-      <div style={{ marginBottom: 8 }}>
-        <span
-          style={{
-            fontFamily: fontSerif,
-            fontSize: isMobile ? 40 : 64,
-            fontWeight: 700,
-            color: C.text,
-            lineHeight: 1,
-            letterSpacing: "-0.02em",
-          }}
-        >
-          {prefix}{count}
-        </span>
-        <span
-          style={{
-            fontFamily: fontGothic,
-            fontSize: isMobile ? 14 : 16,
-            color: C.sub,
-            marginLeft: 4,
-          }}
-        >
-          {n.suffix}
-        </span>
-      </div>
-      <p
-        style={{
-          margin: 0,
-          fontSize: isMobile ? 11 : 12,
-          color: C.muted,
-          letterSpacing: "0.1em",
-        }}
-      >
-        {n.label}
-      </p>
-    </div>
   );
 }
 
@@ -1876,7 +2083,7 @@ function PartnersSection({
         paddingLeft: isMobile ? 24 : 48,
         paddingRight: isMobile ? 24 : 48,
       }}>
-        <SectionLabel label="Partners" num="07" visible={iv.visible} icon={sectionIcons.partners} />
+        <SectionLabel label="Partners" num="08" visible={iv.visible} iconKey="partners" />
         <h2
           className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
           style={{
@@ -1959,13 +2166,11 @@ function PartnersSection({
           ))}
         </div>
 
-        {/* トラックアニメーション */}
+        {/* truck animation */}
         <div style={{ position: "relative", height: isMobile ? 40 : 60, overflow: "hidden", marginTop: isMobile ? 20 : 40, opacity: 0.12 }}>
-          {/* 背景の街並み */}
           <svg viewBox="0 0 800 60" fill="none" style={{ position: "absolute", bottom: 0, width: "100%", height: isMobile ? 40 : 60 }}>
             <path d="M0,58 L60,58 L60,40 L55,35 L50,30 L45,35 L40,40 L40,58 L100,58 L100,28 L110,28 L110,58 L140,58 L140,20 L150,15 L160,20 L160,58 L200,58 L200,30 L220,25 L230,30 L230,58 L270,58 L290,35 L295,12 L305,12 L310,35 L310,58 L370,58 L370,42 L355,34 L370,42 L370,58 L420,58 L420,22 L410,18 L420,22 L420,58 L480,58 L480,30 L490,30 L490,58 L530,58 L530,15 L520,7 L530,15 L530,58 L580,58 L580,38 L570,32 L580,38 L580,58 L630,58 L630,45 L620,40 L630,45 L630,58 L670,58 L670,25 L660,20 L670,25 L670,58 L735,58 L735,48 L710,38 L735,48 L735,58 L770,58 L770,30 L770,58 L800,58" stroke="currentColor" strokeWidth="1" fill="none" />
           </svg>
-          {/* トラック */}
           <div style={{ position: "absolute", left: 0, bottom: 2, animation: `truckDrive ${isMobile ? 12 : 20}s linear infinite` }}>
             <svg width={isMobile ? 36 : 48} height={isMobile ? 20 : 28} viewBox="0 0 48 28" fill="currentColor" opacity="0.8">
               <rect x="0" y="4" width="28" height="18" rx="2" />
@@ -1974,105 +2179,6 @@ function PartnersSection({
               <circle cx="38" cy="24" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
             </svg>
           </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ═══════════════════════════════════════════════
-   NEWS - newspaper-style columns
-   ═══════════════════════════════════════════════ */
-
-function NewsSection({
-  isMobile,
-}: {
-  isMobile: boolean;
-}) {
-  const iv = useInView();
-
-  return (
-    <section
-      id="news"
-      ref={iv.ref}
-      style={{
-        paddingTop: isMobile ? 52 : 70,
-        paddingBottom: isMobile ? 44 : 60,
-        background: C.white,
-      }}
-    >
-      <div style={{
-        maxWidth: 1100,
-        margin: "0 auto",
-        paddingLeft: isMobile ? 24 : 48,
-        paddingRight: isMobile ? 24 : 48,
-      }}>
-        <SectionLabel label="News" num="08" visible={iv.visible} icon={sectionIcons.news} />
-        <h2
-          className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
-          style={{
-            fontFamily: fontGothic,
-            fontSize: isMobile ? 24 : 32,
-            fontWeight: 500,
-            marginBottom: isMobile ? 48 : 80,
-            letterSpacing: "0.08em",
-            ...revealStyle(iv.visible, 0.2),
-          }}
-        >
-          お知らせ
-        </h2>
-
-        {/* Newspaper-style: 2-column on desktop */}
-        <div style={{
-          ...fadeUpStyle(iv.visible, 0.3),
-          columnCount: isMobile ? 1 : 2,
-          columnGap: 48,
-          columnRule: `1px solid ${C.line}`,
-        }}>
-          {news.map((n, i) => (
-            <a
-              key={i}
-              href="#"
-              style={{
-                display: "block",
-                padding: isMobile ? "20px 0" : "20px 0",
-                borderBottom: `1px solid ${C.line}`,
-                textDecoration: "none",
-                color: C.text,
-                transition: "opacity 0.3s, transform 0.3s",
-                breakInside: "avoid" as const,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = "0.6";
-                e.currentTarget.style.transform = "translateX(4px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = "1";
-                e.currentTarget.style.transform = "translateX(0)";
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: fontOswald,
-                  fontSize: isMobile ? 11 : 12,
-                  color: C.muted,
-                  letterSpacing: "0.06em",
-                  display: "block",
-                  marginBottom: 6,
-                }}
-              >
-                ─ {n.date}
-              </span>
-              <span
-                style={{
-                  fontSize: isMobile ? 13 : 14,
-                  lineHeight: 1.7,
-                }}
-              >
-                {n.title}
-              </span>
-            </a>
-          ))}
         </div>
       </div>
     </section>
@@ -2129,7 +2235,7 @@ function RecruitSection({
       }} />
 
       <div style={{ position: "relative", zIndex: 1, maxWidth: 840, margin: "0 auto" }}>
-        <SectionLabel label="Recruit" num="09" visible={iv.visible} icon={sectionIcons.recruit} />
+        <SectionLabel label="Recruit" num="09" visible={iv.visible} iconKey="recruit" />
 
         <div style={revealStyle(iv.visible, 0.2)}>
           <h2
@@ -2218,7 +2324,32 @@ function AccessSection({ isMobile }: { isMobile: boolean }) {
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          title="アクセスマップ"
+          title="Access map"
+        />
+      </div>
+
+      {/* Vehicle image strip below map */}
+      <div
+        className="cp03-photo-frame"
+        style={{
+          width: "100%",
+          height: isMobile ? 100 : 160,
+          overflow: "hidden",
+          ...fadeUpStyle(iv.visible, 0.2),
+        }}
+      >
+        <img
+          src="/keikamotsu-new-templates/images/vehicle.webp"
+          alt="Access"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            filter: "grayscale(60%)",
+            transition: "filter 0.5s ease",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.filter = "grayscale(20%)")}
+          onMouseLeave={(e) => (e.currentTarget.style.filter = "grayscale(60%)")}
         />
       </div>
 
@@ -2226,7 +2357,7 @@ function AccessSection({ isMobile }: { isMobile: boolean }) {
       <div
         style={{
           position: "absolute",
-          bottom: isMobile ? 24 : 40,
+          bottom: isMobile ? 124 : 200,
           left: isMobile ? 24 : 48,
           background: "#ffffff",
           padding: isMobile ? "24px 28px" : "32px 40px",
@@ -2243,7 +2374,7 @@ function AccessSection({ isMobile }: { isMobile: boolean }) {
           display: "block",
           marginBottom: 12,
         }}>
-          ── Access ──
+          -- Access --
         </span>
         <h2
           style={{
@@ -2322,7 +2453,33 @@ function ContactSection({
         paddingLeft: isMobile ? 24 : 48,
         paddingRight: isMobile ? 24 : 48,
       }}>
-        <SectionLabel label="Contact" num="10" visible={iv.visible} icon={sectionIcons.contact} />
+        {/* Contact section image */}
+        <div
+          className="cp03-photo-frame"
+          style={{
+            marginBottom: isMobile ? 32 : 48,
+            width: "100%",
+            height: isMobile ? 140 : 200,
+            overflow: "hidden",
+            ...fadeUpStyle(iv.visible, 0.1),
+          }}
+        >
+          <img
+            src="/keikamotsu-new-templates/images/reasons.webp"
+            alt="Contact"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              filter: "grayscale(50%)",
+              transition: "filter 0.5s ease",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.filter = "grayscale(10%)")}
+            onMouseLeave={(e) => (e.currentTarget.style.filter = "grayscale(50%)")}
+          />
+        </div>
+
+        <SectionLabel label="Contact" num="11" visible={iv.visible} iconKey="contact" />
         <h2
           className={`cp03-h2-underline${iv.visible ? " visible" : ""}`}
           style={{
@@ -2520,14 +2677,14 @@ function FooterSection({ isMobile }: { isMobile: boolean }) {
             marginBottom: 32,
             flexWrap: "wrap",
           }}>
-            {navLinks.map((l) => (
+            {cp03NavLinks.map((l) => (
               <a
                 key={l.href}
                 href={l.href}
                 className="cp03-nav-link"
                 style={{ fontSize: 11, color: C.muted }}
               >
-                <><span style={{marginRight:4,fontSize:"0.85em"}}>{l.icon}</span>{l.label}</>
+                {l.label}
               </a>
             ))}
           </nav>
@@ -2544,7 +2701,7 @@ function FooterSection({ isMobile }: { isMobile: boolean }) {
         >
           {company.name}
         </p>
-            {/* 一筆書きシティスケープ */}
+            {/* cityscape line drawing */}
             <div style={{ width: "100%", maxWidth: 800, margin: "0 auto 20px", opacity: 0.15, lineHeight: 0 }}>
               <svg viewBox="0 0 800 60" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "100%", height: "auto" }}>
                 <path d="M0,58 L60,58 L60,40 L55,40 L55,35 L50,30 L45,35 L45,40 L40,40 L40,58 L80,58 L80,28 L85,28 L85,22 L90,22 L90,28 L100,28 L100,58 L120,58 L125,45 L130,58 L140,58 L140,20 L145,20 L145,15 L150,15 L150,20 L160,20 L160,58 L200,58 L200,30 L210,30 L210,25 L220,25 L220,30 L230,30 L230,58 L250,58 L255,48 L260,52 L265,46 L270,58 L290,58 L290,35 L295,35 L295,12 L300,12 L305,12 L305,35 L310,35 L310,58 L340,58 L340,42 L350,42 L350,38 L355,34 L360,38 L360,42 L370,42 L370,58 L400,58 L400,22 L405,22 L410,18 L415,22 L420,22 L420,58 L440,58 L445,50 L450,45 L455,50 L460,58 L480,58 L480,30 L490,30 L490,58 L510,58 L510,15 L515,15 L515,10 L520,7 L525,10 L525,15 L530,15 L530,58 L560,58 L560,38 L565,38 L570,32 L575,38 L580,38 L580,58 L600,58 L600,45 L610,45 L610,40 L620,40 L620,45 L630,45 L630,58 L650,58 L650,25 L660,20 L670,25 L670,58 L700,58 L700,48 L705,48 L705,42 L710,38 L715,35 L720,38 L720,42 L730,42 L730,48 L735,48 L735,58 L760,58 L760,30 L770,30 L770,58 L800,58"
@@ -2568,19 +2725,19 @@ function FooterSection({ isMobile }: { isMobile: boolean }) {
 }
 
 /* ═══════════════════════════════════════════════
-   SHARED: Section Label with editorial number
+   SHARED: Section Label with editorial number + SVG icon
    ═══════════════════════════════════════════════ */
 
 function SectionLabel({
   label,
   num,
   visible,
-  icon,
+  iconKey,
 }: {
   label: string;
   num?: string;
   visible: boolean;
-  icon?: string;
+  iconKey?: string;
 }) {
   return (
     <div style={{
@@ -2610,9 +2767,15 @@ function SectionLabel({
           fontSize: 11,
           letterSpacing: "0.2em",
           color: C.muted,
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
         }}
       >
-        {icon && <span style={{ marginRight: 8, fontSize: "0.9em", opacity: 0.7 }}>{icon}</span>}── {label} ──
+        {iconKey && svgIcons[iconKey] && (
+          <span style={{ display: "inline-flex", alignItems: "center", opacity: 0.7 }}>{svgIcons[iconKey]}</span>
+        )}
+        -- {label} --
       </span>
     </div>
   );

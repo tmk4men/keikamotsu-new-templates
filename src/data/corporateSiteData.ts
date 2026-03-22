@@ -52,14 +52,14 @@ export const sectionIcons: Record<string, string> = {
 };
 
 export const navLinks = [
+  { href: "#news", label: "お知らせ", icon: "⎘" },
   { href: "#services", label: "事業内容", icon: "⛟" },
+  { href: "#numbers", label: "実績", icon: "⟐" },
   { href: "#strengths", label: "私たちの強み", icon: "⚑" },
   { href: "#message", label: "代表メッセージ", icon: "〝" },
-  { href: "#company", label: "会社概要", icon: "⌂" },
   { href: "#history", label: "沿革", icon: "⏱" },
-  { href: "#numbers", label: "実績", icon: "⟐" },
+  { href: "#company", label: "会社概要", icon: "⌂" },
   { href: "#partners", label: "主要取引先", icon: "⤫" },
-  { href: "#news", label: "お知らせ", icon: "⎘" },
   { href: "#recruit", label: "採用情報", icon: "⚙" },
   { href: "#access", label: "アクセス", icon: "⌖" },
   { href: "#contact", label: "お問い合わせ", icon: "✎" },

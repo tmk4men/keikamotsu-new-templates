@@ -37,6 +37,21 @@ const BP = 768;
 const IMG = "/keikamotsu-new-templates/images";
 const SIDEBAR_W = 240;
 
+/* ───────────────────── SECTION ORDER ───────────────────── */
+const SECTION_ORDER = [
+  { id: "news", label: "お知らせ" },
+  { id: "services", label: "事業内容" },
+  { id: "numbers", label: "実績" },
+  { id: "strengths", label: "私たちの強み" },
+  { id: "message", label: "代表メッセージ" },
+  { id: "history", label: "沿革" },
+  { id: "company", label: "会社概要" },
+  { id: "partners", label: "主要取引先" },
+  { id: "recruit", label: "採用情報" },
+  { id: "access", label: "アクセス" },
+  { id: "contact", label: "お問い合わせ" },
+];
+
 /* ───────────────────── SVG ICONS (stroke only) ───────────────────── */
 const Icons = {
   truck: (size = 20, color = "currentColor") => (
@@ -387,10 +402,7 @@ function Sidebar({
   mobile: boolean;
   onClose?: () => void;
 }) {
-  const sidebarLinks = navLinks.map((l) => ({
-    id: l.href.replace("#", ""),
-    label: l.label,
-  }));
+  const sidebarLinks = SECTION_ORDER;
 
   const handleClick = (id: string) => {
     const el = document.getElementById(id);
@@ -614,7 +626,7 @@ export default function CP05() {
 
   /* ---- Scrollspy ---- */
   useEffect(() => {
-    const ids = navLinks.map((l) => l.href.replace("#", ""));
+    const ids = SECTION_ORDER.map((s) => s.id);
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -710,7 +722,7 @@ export default function CP05() {
 
       {/* ════════════════════ CONTENT AREA ════════════════════ */}
       <main style={{ marginLeft: contentLeft }}>
-        {/* ──── HERO ──── */}
+        {/* ──── 1. HERO ──── */}
         <section
           id="hero"
           style={{
@@ -806,7 +818,133 @@ export default function CP05() {
           </div>
         </section>
 
-        {/* ──── SERVICES (Bento Grid) ──── */}
+        {/* ──── 2. NEWS (Card grid, first large) ──── */}
+        <section
+          id="news"
+          style={{
+            padding: mobile ? "64px 16px" : "100px 60px",
+            background: C.bgSub,
+          }}
+        >
+          <FadeIn>
+            <h2
+              style={{
+                fontSize: mobile ? 24 : 36,
+                fontWeight: 700,
+                marginBottom: 48,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 12,
+                position: "relative" as const,
+                paddingBottom: 8,
+              }}
+            >
+              {Icons.newspaper(28, C.accent)}
+              <span>
+                <span style={{ color: C.accent }}>お知</span>らせ
+              </span>
+            </h2>
+          </FadeIn>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: mobile ? "1fr" : "1fr 1fr",
+              gap: 20,
+            }}
+          >
+            {news.map((n, i) => {
+              const isFirst = i === 0;
+              const tagColors: Record<string, string> = {
+                press: "#e74c3c",
+                new: C.accent,
+                default: "#6b7280",
+              };
+              return (
+                <FadeIn
+                  key={i}
+                  delay={i * 0.1}
+                  className="news-card"
+                  style={{
+                    gridColumn:
+                      !mobile && isFirst ? "1 / 3" : undefined,
+                    background: C.white,
+                    borderRadius: 12,
+                    overflow: "hidden",
+                    cursor: "pointer",
+                    transition: "all 0.3s",
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                  }}
+                >
+                  {isFirst && (
+                    <div
+                      style={{
+                        height: mobile ? 160 : 200,
+                        position: "relative",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <img
+                        src={`${IMG}/vehicle.webp`}
+                        alt={n.title}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </div>
+                  )}
+                  <div
+                    style={{
+                      padding: isFirst ? "20px 24px" : "20px 24px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        marginBottom: 8,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 12,
+                          color: C.textSub,
+                        }}
+                      >
+                        {n.date}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 11,
+                          padding: "2px 10px",
+                          borderRadius: 99,
+                          color: C.white,
+                          background: tagColors[n.tagStyle] || tagColors.default,
+                        }}
+                      >
+                        {n.tag}
+                      </span>
+                    </div>
+                    <h3
+                      style={{
+                        fontSize: isFirst ? 18 : 15,
+                        fontWeight: 600,
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {n.title}
+                    </h3>
+                  </div>
+                </FadeIn>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ──── 3. SERVICES (Bento Grid) ──── */}
         <section
           id="services"
           style={{ padding: mobile ? "64px 16px" : "100px 60px" }}
@@ -921,7 +1059,107 @@ export default function CP05() {
           </div>
         </section>
 
-        {/* ──── STRENGTHS (Alternating full-bleed rows) ──── */}
+        {/* ──── 4. NUMBERS (Dark section, 2x2 grid) ──── */}
+        <section
+          id="numbers"
+          style={{
+            padding: mobile ? "64px 16px" : "100px 60px",
+            background: C.dark,
+            color: C.white,
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          {/* Background image */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `url(${IMG}/team.webp)`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              opacity: 0.15,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: `linear-gradient(135deg, ${C.dark} 0%, rgba(20,30,20,0.92) 100%)`,
+            }}
+          />
+          <FadeIn style={{ position: "relative", zIndex: 2 }}>
+            <h2
+              style={{
+                fontSize: mobile ? 24 : 36,
+                fontWeight: 700,
+                marginBottom: 56,
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              {Icons.barChart(28, C.accent)}
+              <span>
+                <span style={{ color: C.accent }}>数字で</span>見る実績
+              </span>
+            </h2>
+          </FadeIn>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: mobile ? "1fr" : "1fr 1fr",
+              maxWidth: 800,
+              margin: "0 auto",
+              position: "relative",
+              zIndex: 2,
+            }}
+          >
+            {numbers.map((n, i) => (
+              <FadeIn key={i} delay={i * 0.1}>
+                <div
+                  style={{
+                    padding: mobile ? "32px 16px" : "48px 40px",
+                    textAlign: "center",
+                    borderRight:
+                      !mobile && i % 2 === 0
+                        ? "1px solid rgba(255,255,255,0.15)"
+                        : "none",
+                    borderBottom:
+                      i < 2
+                        ? "1px solid rgba(255,255,255,0.15)"
+                        : mobile && i < 3
+                        ? "1px solid rgba(255,255,255,0.15)"
+                        : "none",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: mobile ? 40 : 56,
+                      fontWeight: 800,
+                      color: C.accent,
+                      lineHeight: 1,
+                    }}
+                  >
+                    <CounterNum value={n.value} suffix={n.suffix} />
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      color: "rgba(255,255,255,0.7)",
+                      marginTop: 12,
+                    }}
+                  >
+                    {n.label}
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </section>
+
+        {/* ──── 5. STRENGTHS (Alternating full-bleed rows) ──── */}
         <section id="strengths" style={{ padding: mobile ? "64px 0" : "100px 0" }}>
           <FadeIn style={{ padding: mobile ? "0 16px" : "0 60px", marginBottom: 48 }}>
             <h2
@@ -1015,7 +1253,7 @@ export default function CP05() {
           })}
         </section>
 
-        {/* ──── CEO MESSAGE (Quote style) ──── */}
+        {/* ──── 6. CEO MESSAGE (Quote style) ──── */}
         <section
           id="message"
           style={{
@@ -1120,7 +1358,27 @@ export default function CP05() {
           </FadeIn>
         </section>
 
-        {/* ──── COMPANY OVERVIEW ──── */}
+        {/* ──── 7. HISTORY (Sticky horizontal scroll) ──── */}
+        <section
+          id="history"
+          style={{
+            background: C.bgSub,
+            height: `${(history.length + 2) * 100}vh`,
+            position: "relative",
+          }}
+        >
+          <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
+            <div style={{ padding: mobile ? "40px 16px 20px" : "60px 60px 20px" }}>
+              <h2 className="cp05-heading-underline visible" style={{ fontSize: mobile ? 24 : 36, fontWeight: 700, display: "flex", alignItems: "center", gap: 12 }}>
+                {Icons.clock(28, C.accent)}
+                <span><span style={{ color: C.accent }}>沿</span>革</span>
+              </h2>
+            </div>
+            <HistoryHScroll items={history} mobile={mobile} />
+          </div>
+        </section>
+
+        {/* ──── 8. COMPANY OVERVIEW ──── */}
         <section
           id="company"
           style={{ padding: mobile ? "64px 16px" : "100px 60px" }}
@@ -1148,160 +1406,69 @@ export default function CP05() {
           <FadeIn delay={0.1}>
             <div
               style={{
-                maxWidth: 800,
-                borderTop: `2px solid ${C.accent}`,
-              }}
-            >
-              {companyOverview.map((item, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    flexDirection: mobile ? "column" : "row",
-                    borderBottom: `1px solid ${C.border}`,
-                    padding: mobile ? "14px 0" : "16px 0",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: mobile ? "100%" : 160,
-                      fontWeight: 600,
-                      fontSize: 14,
-                      color: C.accent,
-                      flexShrink: 0,
-                      marginBottom: mobile ? 4 : 0,
-                    }}
-                  >
-                    {item.dt}
-                  </div>
-                  <div style={{ fontSize: 14, lineHeight: 1.7 }}>{item.dd}</div>
-                </div>
-              ))}
-            </div>
-          </FadeIn>
-        </section>
-
-        {/* ──── HISTORY (Sticky horizontal scroll) ──── */}
-        <section
-          id="history"
-          style={{
-            background: C.bgSub,
-            height: `${(history.length + 2) * 100}vh`,
-            position: "relative",
-          }}
-        >
-          <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
-            <div style={{ padding: mobile ? "40px 16px 20px" : "60px 60px 20px" }}>
-              <h2 className="cp05-heading-underline visible" style={{ fontSize: mobile ? 24 : 36, fontWeight: 700, display: "flex", alignItems: "center", gap: 12 }}>
-                {Icons.clock(28, C.accent)}
-                <span><span style={{ color: C.accent }}>沿</span>革</span>
-              </h2>
-            </div>
-            <HistoryHScroll items={history} mobile={mobile} />
-          </div>
-        </section>
-
-        {/* ──── NUMBERS (Dark section, 2x2 grid) ──── */}
-        <section
-          id="numbers"
-          style={{
-            padding: mobile ? "64px 16px" : "100px 60px",
-            background: C.dark,
-            color: C.white,
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
-          {/* Background image */}
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              backgroundImage: `url(${IMG}/team.webp)`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              opacity: 0.15,
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background: `linear-gradient(135deg, ${C.dark} 0%, rgba(20,30,20,0.92) 100%)`,
-            }}
-          />
-          <FadeIn style={{ position: "relative", zIndex: 2 }}>
-            <h2
-              style={{
-                fontSize: mobile ? 24 : 36,
-                fontWeight: 700,
-                marginBottom: 56,
                 display: "flex",
-                alignItems: "center",
-                gap: 12,
+                flexDirection: mobile ? "column" : "row",
+                gap: mobile ? 32 : 48,
               }}
             >
-              {Icons.barChart(28, C.accent)}
-              <span>
-                <span style={{ color: C.accent }}>数字で</span>見る実績
-              </span>
-            </h2>
-          </FadeIn>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: mobile ? "1fr" : "1fr 1fr",
-              maxWidth: 800,
-              margin: "0 auto",
-              position: "relative",
-              zIndex: 2,
-            }}
-          >
-            {numbers.map((n, i) => (
-              <FadeIn key={i} delay={i * 0.1}>
-                <div
+              {/* Company image */}
+              <div
+                style={{
+                  width: mobile ? "100%" : "40%",
+                  borderRadius: 16,
+                  overflow: "hidden",
+                  flexShrink: 0,
+                }}
+              >
+                <img
+                  src={`${IMG}/company.webp`}
+                  alt="会社外観"
                   style={{
-                    padding: mobile ? "32px 16px" : "48px 40px",
-                    textAlign: "center",
-                    borderRight:
-                      !mobile && i % 2 === 0
-                        ? "1px solid rgba(255,255,255,0.15)"
-                        : "none",
-                    borderBottom:
-                      i < 2
-                        ? "1px solid rgba(255,255,255,0.15)"
-                        : mobile && i < 3
-                        ? "1px solid rgba(255,255,255,0.15)"
-                        : "none",
+                    width: "100%",
+                    height: mobile ? 220 : "100%",
+                    objectFit: "cover",
+                    display: "block",
                   }}
-                >
+                />
+              </div>
+              {/* Company table */}
+              <div
+                style={{
+                  flex: 1,
+                  borderTop: `2px solid ${C.accent}`,
+                }}
+              >
+                {companyOverview.map((item, i) => (
                   <div
+                    key={i}
                     style={{
-                      fontSize: mobile ? 40 : 56,
-                      fontWeight: 800,
-                      color: C.accent,
-                      lineHeight: 1,
+                      display: "flex",
+                      flexDirection: mobile ? "column" : "row",
+                      borderBottom: `1px solid ${C.border}`,
+                      padding: mobile ? "14px 0" : "16px 0",
                     }}
                   >
-                    <CounterNum value={n.value} suffix={n.suffix} />
+                    <div
+                      style={{
+                        width: mobile ? "100%" : 160,
+                        fontWeight: 600,
+                        fontSize: 14,
+                        color: C.accent,
+                        flexShrink: 0,
+                        marginBottom: mobile ? 4 : 0,
+                      }}
+                    >
+                      {item.dt}
+                    </div>
+                    <div style={{ fontSize: 14, lineHeight: 1.7 }}>{item.dd}</div>
                   </div>
-                  <div
-                    style={{
-                      fontSize: 14,
-                      color: "rgba(255,255,255,0.7)",
-                      marginTop: 12,
-                    }}
-                  >
-                    {n.label}
-                  </div>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
+                ))}
+              </div>
+            </div>
+          </FadeIn>
         </section>
 
-        {/* ──── PARTNERS (Marquee + Truck) ──── */}
+        {/* ──── 9. PARTNERS (Marquee + Truck) ──── */}
         <section
           id="partners"
           style={{ padding: mobile ? "64px 0" : "100px 0", overflow: "hidden" }}
@@ -1432,133 +1599,7 @@ export default function CP05() {
           </div>
         </section>
 
-        {/* ──── NEWS (Card grid, first large) ──── */}
-        <section
-          id="news"
-          style={{
-            padding: mobile ? "64px 16px" : "100px 60px",
-            background: C.bgSub,
-          }}
-        >
-          <FadeIn>
-            <h2
-              style={{
-                fontSize: mobile ? 24 : 36,
-                fontWeight: 700,
-                marginBottom: 48,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 12,
-                position: "relative" as const,
-                paddingBottom: 8,
-              }}
-            >
-              {Icons.newspaper(28, C.accent)}
-              <span>
-                <span style={{ color: C.accent }}>お知</span>らせ
-              </span>
-            </h2>
-          </FadeIn>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: mobile ? "1fr" : "1fr 1fr",
-              gap: 20,
-            }}
-          >
-            {news.map((n, i) => {
-              const isFirst = i === 0;
-              const tagColors: Record<string, string> = {
-                press: "#e74c3c",
-                new: C.accent,
-                default: "#6b7280",
-              };
-              return (
-                <FadeIn
-                  key={i}
-                  delay={i * 0.1}
-                  className="news-card"
-                  style={{
-                    gridColumn:
-                      !mobile && isFirst ? "1 / 3" : undefined,
-                    background: C.white,
-                    borderRadius: 12,
-                    overflow: "hidden",
-                    cursor: "pointer",
-                    transition: "all 0.3s",
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
-                  }}
-                >
-                  {isFirst && (
-                    <div
-                      style={{
-                        height: mobile ? 160 : 200,
-                        position: "relative",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <img
-                        src={`${IMG}/vehicle.webp`}
-                        alt={n.title}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </div>
-                  )}
-                  <div
-                    style={{
-                      padding: isFirst ? "20px 24px" : "20px 24px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        marginBottom: 8,
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: 12,
-                          color: C.textSub,
-                        }}
-                      >
-                        {n.date}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: 11,
-                          padding: "2px 10px",
-                          borderRadius: 99,
-                          color: C.white,
-                          background: tagColors[n.tagStyle] || tagColors.default,
-                        }}
-                      >
-                        {n.tag}
-                      </span>
-                    </div>
-                    <h3
-                      style={{
-                        fontSize: isFirst ? 18 : 15,
-                        fontWeight: 600,
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      {n.title}
-                    </h3>
-                  </div>
-                </FadeIn>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ──── RECRUIT (Accent banner + underline animation) ──── */}
+        {/* ──── 10. RECRUIT (Accent banner + underline animation) ──── */}
         <section
           id="recruit"
           style={{
@@ -1673,7 +1714,7 @@ export default function CP05() {
           </div>
         </section>
 
-        {/* ──── ACCESS ──── */}
+        {/* ──── 11. ACCESS ──── */}
         <section
           id="access"
           style={{ padding: mobile ? "64px 16px" : "100px 60px" }}
@@ -1707,6 +1748,25 @@ export default function CP05() {
               }}
             >
               <div style={{ flex: 1 }}>
+                {/* Access image */}
+                <div
+                  style={{
+                    borderRadius: 12,
+                    overflow: "hidden",
+                    marginBottom: 24,
+                  }}
+                >
+                  <img
+                    src={`${IMG}/workplace.webp`}
+                    alt="拠点の様子"
+                    style={{
+                      width: "100%",
+                      height: mobile ? 160 : 200,
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                </div>
                 <div
                   style={{
                     display: "flex",
@@ -1780,7 +1840,7 @@ export default function CP05() {
           </FadeIn>
         </section>
 
-        {/* ──── CONTACT (2-col form) ──── */}
+        {/* ──── 12. CONTACT (2-col form) ──── */}
         <section
           id="contact"
           style={{
@@ -1854,6 +1914,25 @@ export default function CP05() {
                     flex: mobile ? "none" : "0 0 280px",
                   }}
                 >
+                  {/* Contact image */}
+                  <div
+                    style={{
+                      borderRadius: 12,
+                      overflow: "hidden",
+                      marginBottom: 20,
+                    }}
+                  >
+                    <img
+                      src={`${IMG}/team.webp`}
+                      alt="スタッフ"
+                      style={{
+                        width: "100%",
+                        height: 160,
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                  </div>
                   <h3
                     style={{
                       fontSize: 18,
