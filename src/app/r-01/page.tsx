@@ -1119,9 +1119,34 @@ export default function R01Page() {
                   overflow: "hidden",
                   marginBottom: 32,
                   boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+                  position: "relative",
                 }}
               >
                 <img src={IMG.jobs} alt="求人情報" style={{ width: "100%", height: isMobile ? 180 : 280, objectFit: "cover", display: "block" }} />
+                {/* Top fade-out gradient */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: "30%",
+                    background: `linear-gradient(to bottom, ${C.bgSub}, transparent)`,
+                    pointerEvents: "none",
+                  }}
+                />
+                {/* Bottom fade-out gradient */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: "30%",
+                    background: `linear-gradient(to top, ${C.bgSub}, transparent)`,
+                    pointerEvents: "none",
+                  }}
+                />
               </div>
             </FadeIn>
 
@@ -1288,16 +1313,28 @@ export default function R01Page() {
         </section>
 
         {/* ═══ 6. DAILY ═══ */}
-        <section id="daily" style={{ padding: secPad, background: C.bg }}>
-          <div style={{ maxWidth: maxW, margin: "0 auto" }}>
+        <section
+          id="daily"
+          style={{
+            padding: secPad,
+            position: "relative",
+            backgroundImage: `url(${IMG.dailyFlow})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundAttachment: isMobile ? "scroll" : "fixed",
+          }}
+        >
+          {/* Dark overlay for readability */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "rgba(255,255,255,0.85)",
+              pointerEvents: "none",
+            }}
+          />
+          <div style={{ maxWidth: maxW, margin: "0 auto", position: "relative", zIndex: 1 }}>
             <SectionTitle id="daily" label="DAILY SCHEDULE" title="1日の流れ" />
-
-            {/* Banner */}
-            <FadeIn>
-              <div style={{ borderRadius: 16, overflow: "hidden", marginBottom: 32 }}>
-                <img src={IMG.dailyFlow} alt="1日の流れ" style={{ width: "100%", height: isMobile ? 160 : 240, objectFit: "cover", display: "block" }} />
-              </div>
-            </FadeIn>
 
             <FadeIn delay={0.1}>
               <p style={{ fontSize: 14, color: C.textSub, lineHeight: 1.9, textAlign: "center", marginBottom: 40, whiteSpace: "pre-line" }}>
@@ -1453,22 +1490,16 @@ export default function R01Page() {
                     </svg>
                     {/* Header */}
                     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                      <div
+                      <img
+                        src={v.image}
+                        alt={v.name}
                         style={{
                           width: 44,
                           height: 44,
                           borderRadius: "50%",
-                          background: `linear-gradient(135deg, ${C.accentLight}, ${C.accent}20)`,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontWeight: 700,
-                          fontSize: 16,
-                          color: C.accent,
+                          objectFit: "cover",
                         }}
-                      >
-                        {v.name[0]}
-                      </div>
+                      />
                       <div>
                         <div style={{ fontWeight: 700, fontSize: 14, color: C.text }}>{v.name}（{v.age}）</div>
                         <div style={{ fontSize: 11, color: C.textSub }}>{v.prev}</div>

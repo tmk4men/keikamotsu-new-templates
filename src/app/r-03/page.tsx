@@ -857,22 +857,47 @@ export default function R03TrustPage() {
                 alignItems: "center",
               }}
             >
-              {/* 写真（clip-path reveal） */}
+              {/* 写真（clip-path reveal）+ beige layered rectangle */}
               <div
                 style={{
                   flex: "1 1 50%", minWidth: 300, position: "relative",
-                  aspectRatio: r.num === "01" ? "3/2" : r.num === "02" ? "4/3" : "16/9",
-                  overflow: "hidden", borderRadius: 4,
+                  paddingBottom: i % 2 === 0 ? 12 : 12,
+                  paddingRight: i % 2 === 0 ? 12 : 0,
+                  paddingLeft: i % 2 === 0 ? 0 : 12,
                 }}
               >
-                <div style={{
-                  width: "100%", height: "100%",
-                  background: `url(/keikamotsu-new-templates/images/strength-${r.num}.webp) center/cover no-repeat`,
-                  transition: "transform 0.6s ease",
-                }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                {/* Beige offset rectangle (behind image) */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 10,
+                    left: i % 2 === 0 ? 10 : undefined,
+                    right: i % 2 === 0 ? undefined : 10,
+                    width: "100%",
+                    height: "100%",
+                    background: "#F5F0E8",
+                    borderRadius: 4,
+                    zIndex: 0,
+                  }}
                 />
+                {/* Image */}
+                <div
+                  style={{
+                    position: "relative",
+                    aspectRatio: r.num === "01" ? "3/2" : r.num === "02" ? "4/3" : "16/9",
+                    overflow: "hidden", borderRadius: 4,
+                    zIndex: 1,
+                  }}
+                >
+                  <div style={{
+                    width: "100%", height: "100%",
+                    background: `url(/keikamotsu-new-templates/images/strength-${r.num}.webp) center/cover no-repeat`,
+                    transition: "transform 0.6s ease",
+                  }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                  />
+                </div>
               </div>
               {/* テキスト */}
               <div
@@ -1180,16 +1205,15 @@ export default function R03TrustPage() {
                     <div style={{ position: "relative", zIndex: 1 }}>
                       {/* イニシャル + 名前 */}
                       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
-                        <div style={{
-                          width: 56, height: 56, borderRadius: "50%",
-                          background: `linear-gradient(135deg, ${C.accent}, ${C.accentSoft})`,
-                          color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 20, fontWeight: 600,
-                          fontFamily: "'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                        }}>
-                          {v.name.charAt(0)}
-                        </div>
+                        <img
+                          src={v.image}
+                          alt={v.name}
+                          style={{
+                            width: 56, height: 56, borderRadius: "50%",
+                            objectFit: "cover",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                          }}
+                        />
                         <div>
                           <span style={{ fontWeight: 600, color: C.text, fontSize: 15 }}>{v.name}</span>
                           <span style={{ display: "block", fontSize: 12, color: C.sub }}>{v.age}・{v.prev}</span>

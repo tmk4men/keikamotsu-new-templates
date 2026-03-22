@@ -812,7 +812,7 @@ export default function R04Flow() {
         </section>
 
         {/* ── Marquee ── */}
-        <div style={{ background: C.bg, overflow: "hidden", padding: "20px 0" }}>
+        <div style={{ background: C.bg, overflow: "hidden", padding: "20px 0", width: "100vw", position: "relative", left: "50%", right: "50%", marginLeft: "-50vw", marginRight: "-50vw" }}>
           {[
             ["迅速配達", "未経験歓迎", "車両無料貸出", "月収40万〜100万円", "週払いOK", "入社祝い金5万円"],
             ["大阪・東京・兵庫", "20〜60代活躍", "リース料ゼロ", "AT限定OK", "スマホ完結", "集荷なし"],
@@ -1566,9 +1566,11 @@ export default function R04Flow() {
                     </p>
                     {/* Profile inside bubble */}
                     <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
-                      <div style={{ width: 44, height: 44, borderRadius: "50%", background: C.accent + "20", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ fontSize: 18 }}>👤</span>
-                      </div>
+                      <img
+                        src={v.image}
+                        alt={v.name}
+                        style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover" }}
+                      />
                       <div>
                         <p style={{ fontWeight: 600, fontSize: 14, color: C.text }}>{v.name}</p>
                         <p style={{ fontSize: 12, color: C.muted }}>{v.age} / {v.prev}</p>
@@ -2045,7 +2047,7 @@ export default function R04Flow() {
            ════════════════════════════════════════ */}
         <section style={{
           padding: isMobile ? "100px 0" : "160px 0",
-          background: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)), url(/keikamotsu-new-templates/images/delivery.webp) center/cover no-repeat`,
+          background: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)), url(/images/delivery.webp) center/cover no-repeat`,
           color: "#fff",
           position: "relative",
         }}>
@@ -2143,7 +2145,7 @@ export default function R04Flow() {
            ════════════════════════════════════════ */}
         <footer style={{
           padding: isMobile ? "48px 0 32px" : "64px 0 40px",
-          background: `linear-gradient(rgba(26,26,26,0.92), rgba(26,26,26,0.96)), url(/keikamotsu-new-templates/images/footer-bg.webp) center/cover no-repeat`,
+          background: `linear-gradient(rgba(26,26,26,0.92), rgba(26,26,26,0.96)), url(/images/footer-bg.webp) center/cover no-repeat`,
           borderTop: `1px solid ${C.borderDark}`,
           textAlign: "center",
           position: "relative",

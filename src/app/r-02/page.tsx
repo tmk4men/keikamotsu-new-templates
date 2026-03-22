@@ -402,7 +402,7 @@ function FadeIn({ children, delay = 0, style }: { children: React.ReactNode; del
 }
 
 /* Section heading with underline animation */
-function SectionHeading({ icon, title, sub, light }: { icon: React.ReactNode; title: string; sub: string; light?: boolean }) {
+function SectionHeading({ icon, title, sub, light, underlineAnimate }: { icon: React.ReactNode; title: string; sub: string; light?: boolean; underlineAnimate?: boolean }) {
   const { ref, visible } = useFadeIn();
   return (
     <div ref={ref} style={{ textAlign: "center", marginBottom: 56 }}>
@@ -413,8 +413,23 @@ function SectionHeading({ icon, title, sub, light }: { icon: React.ReactNode; ti
       <h2 style={{
         fontSize: "clamp(1.6rem,4vw,2.2rem)", fontWeight: 800, color: light ? C.white : C.text,
         lineHeight: 1.4, margin: "0 0 12px",
+        position: "relative", display: "inline-block",
       }}>
         {title}
+        {underlineAnimate && (
+          <span style={{
+            position: "absolute",
+            bottom: -4,
+            left: 0,
+            width: "100%",
+            height: 3,
+            background: `linear-gradient(to right, ${C.accent}, #a78bfa)`,
+            borderRadius: 2,
+            transform: visible ? "scaleX(1)" : "scaleX(0)",
+            transformOrigin: "left",
+            transition: "transform 0.8s 0.4s cubic-bezier(.22,1,.36,1)",
+          }} />
+        )}
       </h2>
       <div style={{
         width: 48, height: 3, background: C.accent, borderRadius: 2, margin: "0 auto",
@@ -490,7 +505,7 @@ export default function R02Page() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
-  const { display: heroText, done: heroDone } = useTypewriter(hero.headlineParts, 55, 2000);
+  const { display: heroText, done: heroDone } = useTypewriter([hero.headlineParts[0] + "\n", hero.headlineParts[1]], 55, 2000);
 
   /* scroll progress */
   useEffect(() => {
@@ -764,6 +779,7 @@ export default function R02Page() {
         <div style={{
           background: C.accent, overflow: "hidden",
           position: "relative", padding: "4px 0",
+          width: "100vw", marginLeft: "calc(-50vw + 50%)",
         }}>
           {/* row 1: left-to-right */}
           <div style={{
@@ -863,7 +879,7 @@ export default function R02Page() {
 
         {/* ═══════════ SECTION 3: REASONS ═══════════ */}
         <section id="reasons" style={{ minHeight: "100vh", scrollSnapAlign: "start", padding: "100px 0" }}>
-          <SectionHeading icon={StarIcon} title="選ばれる理由" sub="REASONS" />
+          <SectionHeading icon={StarIcon} title="選ばれる理由" sub="REASONS" underlineAnimate />
 
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             {reasons.map((r, i) => (
@@ -1320,14 +1336,14 @@ export default function R02Page() {
 
                   {/* header */}
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                    <div style={{
-                      width: 44, height: 44, borderRadius: "50%",
-                      background: C.accent, color: C.white,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontWeight: 800, fontSize: 16,
-                    }}>
-                      {v.name.charAt(0)}
-                    </div>
+                    <img
+                      src={v.image}
+                      alt={v.name}
+                      style={{
+                        width: 44, height: 44, borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
+                    />
                     <div>
                       <div style={{ fontWeight: 700, fontSize: 15 }}>{v.name}({v.age})</div>
                       <div style={{ fontSize: 12, color: C.textSub }}>{v.prev}</div>
@@ -1901,11 +1917,16 @@ export default function R02Page() {
                 fontSize: "clamp(1rem,2.5vw,1.4rem)",
                 color: "rgba(255,255,255,0.7)",
                 letterSpacing: 2,
-                whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
               }}>
-                {footerData.catchphrase}
+                {(() => {
+                  const text = footerData.catchphrase;
+                  const splitPoint = "物流で未来を変えていく。";
+                  const idx = text.indexOf(splitPoint);
+                  if (idx === -1) return text;
+                  return <>{text.slice(0, idx + splitPoint.length)}<br />{text.slice(idx + splitPoint.length)}</>;
+                })()}
               </p>
               {/* subtle subline */}
               <p style={{

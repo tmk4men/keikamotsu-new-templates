@@ -457,7 +457,7 @@ export default function R05Page() {
     return () => obs.disconnect();
   }, []);
 
-  const heroText = hero.headlineParts.join("");
+  const heroText = hero.headlineParts.join("\n\n");
   const { displayed: typedHero, done: typeDone } = useTypewriter(heroText, 55, 300);
 
   const handleSubmit = useCallback((e: FormEvent) => {
@@ -1246,22 +1246,17 @@ export default function R05Page() {
                     />
                     {/* Profile */}
                     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                      <div
+                      <img
+                        src={v.image}
+                        alt={v.name}
                         style={{
                           width: 44,
                           height: 44,
                           borderRadius: "50%",
-                          background: `${C.accent}18`,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
+                          objectFit: "cover",
                           flexShrink: 0,
                         }}
-                      >
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" />
-                        </svg>
-                      </div>
+                      />
                       <div>
                         <div style={{ fontWeight: 700, fontSize: 15, color: C.text }}>{v.name}</div>
                         <div style={{ fontSize: 12, color: C.muted }}>{v.age} / {v.prev}</div>
@@ -1795,11 +1790,15 @@ export default function R05Page() {
                   fontSize: isMobile ? "clamp(1rem, 4vw, 1.4rem)" : "clamp(1.2rem, 2vw, 1.8rem)",
                   color: "rgba(255,255,255,0.85)",
                   margin: 0,
-                  whiteSpace: "nowrap",
+                  whiteSpace: "pre-line",
                   letterSpacing: 2,
                 }}
               >
-                {footer.catchphrase}
+                {footer.catchphrase.split("。").filter(Boolean).map((part, i, arr) => (
+                  <React.Fragment key={i}>
+                    {part}。{i < arr.length - 1 && <br />}
+                  </React.Fragment>
+                ))}
               </p>
             </div>
 
