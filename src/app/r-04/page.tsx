@@ -1693,22 +1693,20 @@ export default function R04Flow() {
             </FadeIn>
 
             {/* Section image */}
-            <FadeIn delay={0.15}>
-              <ClipReveal direction="left" delay={0.1} style={{ marginTop: isMobile ? "32px" : "48px" }}>
-                <img
-                  src="/keikamotsu-new-templates/images/workplace.webp"
-                  alt="お知らせ"
-                  className="flow-img-hover"
-                  style={{
-                    width: "100%",
-                    height: isMobile ? "200px" : "320px",
-                    objectFit: "cover",
-                    display: "block",
-                    filter: "grayscale(15%)",
-                  }}
-                />
-              </ClipReveal>
-            </FadeIn>
+            <div style={{ marginTop: isMobile ? "32px" : "48px", overflow: "hidden" }}>
+              <img
+                src="/keikamotsu-new-templates/images/workplace.webp"
+                alt="お知らせ"
+                className="flow-img-hover"
+                style={{
+                  width: "100%",
+                  height: isMobile ? "200px" : "320px",
+                  objectFit: "cover",
+                  display: "block",
+                  filter: "grayscale(15%)",
+                }}
+              />
+            </div>
 
             <div style={{ marginTop: isMobile ? "40px" : "56px" }}>
               {news.map((n, i) => (
@@ -1785,22 +1783,20 @@ export default function R04Flow() {
             </FadeIn>
 
             {/* Section image */}
-            <FadeIn delay={0.15}>
-              <ClipReveal direction="right" delay={0.1} style={{ marginTop: isMobile ? "32px" : "48px" }}>
-                <img
-                  src="/keikamotsu-new-templates/images/vehicle.webp"
-                  alt="アクセス"
-                  className="flow-img-hover"
-                  style={{
-                    width: "100%",
-                    height: isMobile ? "200px" : "320px",
-                    objectFit: "cover",
-                    display: "block",
-                    filter: "grayscale(15%)",
-                  }}
-                />
-              </ClipReveal>
-            </FadeIn>
+            <div style={{ marginTop: isMobile ? "32px" : "48px", overflow: "hidden" }}>
+              <img
+                src="/keikamotsu-new-templates/images/vehicle.webp"
+                alt="アクセス"
+                className="flow-img-hover"
+                style={{
+                  width: "100%",
+                  height: isMobile ? "200px" : "320px",
+                  objectFit: "cover",
+                  display: "block",
+                  filter: "grayscale(15%)",
+                }}
+              />
+            </div>
 
             <div style={{
               marginTop: isMobile ? "40px" : "64px",
@@ -1877,22 +1873,20 @@ export default function R04Flow() {
             </FadeIn>
 
             {/* Company image */}
-            <FadeIn delay={0.1}>
-              <ClipReveal direction="bottom" delay={0.1} style={{ marginTop: isMobile ? "32px" : "48px" }}>
-                <img
-                  src="/keikamotsu-new-templates/images/company.webp"
-                  alt="会社概要"
-                  className="flow-img-hover"
-                  style={{
-                    width: "100%",
-                    height: isMobile ? "200px" : "300px",
-                    objectFit: "cover",
-                    display: "block",
-                    filter: "grayscale(15%)",
-                  }}
-                />
-              </ClipReveal>
-            </FadeIn>
+            <div style={{ marginTop: isMobile ? "32px" : "48px", overflow: "hidden" }}>
+              <img
+                src="/keikamotsu-new-templates/images/company.webp"
+                alt="会社概要"
+                className="flow-img-hover"
+                style={{
+                  width: "100%",
+                  height: isMobile ? "200px" : "300px",
+                  objectFit: "cover",
+                  display: "block",
+                  filter: "grayscale(15%)",
+                }}
+              />
+            </div>
 
             <div style={{ marginTop: isMobile ? "40px" : "56px" }}>
               {companyInfo.map((row, i) => (
@@ -1967,22 +1961,20 @@ export default function R04Flow() {
             </FadeIn>
 
             {/* Section image */}
-            <FadeIn delay={0.2}>
-              <ClipReveal direction="left" delay={0.1} style={{ marginTop: isMobile ? "32px" : "48px" }}>
-                <img
-                  src="/keikamotsu-new-templates/images/team.webp"
-                  alt="応募"
-                  className="flow-img-hover"
-                  style={{
-                    width: "100%",
-                    height: isMobile ? "180px" : "280px",
-                    objectFit: "cover",
-                    display: "block",
-                    filter: "grayscale(15%)",
-                  }}
-                />
-              </ClipReveal>
-            </FadeIn>
+            <div style={{ marginTop: isMobile ? "32px" : "48px", overflow: "hidden" }}>
+              <img
+                src="/keikamotsu-new-templates/images/team.webp"
+                alt="応募"
+                className="flow-img-hover"
+                style={{
+                  width: "100%",
+                  height: isMobile ? "180px" : "280px",
+                  objectFit: "cover",
+                  display: "block",
+                  filter: "grayscale(15%)",
+                }}
+              />
+            </div>
 
             {submitted ? (
               <FadeIn>
