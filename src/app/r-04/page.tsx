@@ -839,7 +839,20 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            LEAD
            ════════════════════════════════════════ */}
-        <section style={{ padding: isMobile ? "100px 0 80px" : "185px 0 140px", background: C.bg, position: "relative" }}>
+        <section style={{
+          padding: isMobile ? "100px 0 80px" : "185px 0 140px",
+          background: C.bg,
+          position: "relative",
+          overflow: "hidden",
+        }}>
+          {/* Background image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(/keikamotsu-new-templates/images/delivery.webp)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.06,
+          }} />
           <SectionNumber number="01" align="left" />
           <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
             <FadeIn>
@@ -916,8 +929,8 @@ export default function R04Flow() {
                     gap: "48px",
                     flexDirection: i % 2 === 0 ? "row" : "row-reverse",
                   }}>
-                    {/* Image with clip reveal */}
-                    <ClipReveal direction={i % 2 === 0 ? "left" : "right"} delay={i * 0.1} style={{
+                    {/* Image */}
+                    <div style={{
                       flex: isMobile ? undefined : "0 0 38%",
                       marginBottom: isMobile ? "20px" : 0,
                       overflow: "hidden",
@@ -948,7 +961,7 @@ export default function R04Flow() {
                       }}>
                         Fig. {r.num}
                       </p>
-                    </ClipReveal>
+                    </div>
 
                     {/* Text */}
                     <div style={{
@@ -1237,7 +1250,15 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            DAILY (with inline video)
            ════════════════════════════════════════ */}
-        <section id="daily" style={{ padding: isMobile ? "80px 0 90px" : "200px 0 160px", background: C.altBg, position: "relative" }}>
+        <section id="daily" style={{ padding: isMobile ? "80px 0 90px" : "200px 0 160px", background: C.altBg, position: "relative", overflow: "hidden" }}>
+          {/* Background image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(/keikamotsu-new-templates/images/daily-flow.webp)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.05,
+          }} />
           <SectionNumber number="05" align="right" />
           <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
             <FadeIn>
@@ -1415,42 +1436,38 @@ export default function R04Flow() {
             {isMobile ? (
               <div style={{ marginTop: "40px", display: "flex", flexDirection: "column", gap: "16px" }}>
                 {gallery.images.map((img, i) => (
-                  <FadeIn key={img.src} delay={i * 0.1}>
-                    <ClipReveal direction={i % 2 === 0 ? "left" : "right"}>
-                      <div style={{ position: "relative" }}>
-                        <img
-                          src={img.src} alt={img.alt}
-                          className="flow-img-hover"
-                          style={{
-                            width: "100%", height: "220px", objectFit: "cover",
-                            display: "block", filter: "grayscale(15%)",
-                          }}
-                        />
-                        {/* Editorial caption */}
-                        <div style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "baseline",
-                          marginTop: "8px",
-                        }}>
-                          <p style={{
-                            fontFamily: F.heading, fontSize: "11px", color: C.muted,
-                            letterSpacing: "0.03em",
-                          }}>
-                            {img.caption}
-                          </p>
-                          <span style={{
-                            fontFamily: F.accent,
-                            fontSize: "10px",
-                            color: C.mutedLight,
-                            letterSpacing: "0.08em",
-                          }}>
-                            {String(i + 1).padStart(2, "0")}
-                          </span>
-                        </div>
-                      </div>
-                    </ClipReveal>
-                  </FadeIn>
+                  <div key={img.src} style={{ position: "relative" }}>
+                    <img
+                      src={img.src} alt={img.alt}
+                      className="flow-img-hover"
+                      style={{
+                        width: "100%", height: "220px", objectFit: "cover",
+                        display: "block", filter: "grayscale(15%)",
+                      }}
+                    />
+                    {/* Editorial caption */}
+                    <div style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "baseline",
+                      marginTop: "8px",
+                    }}>
+                      <p style={{
+                        fontFamily: F.heading, fontSize: "11px", color: C.muted,
+                        letterSpacing: "0.03em",
+                      }}>
+                        {img.caption}
+                      </p>
+                      <span style={{
+                        fontFamily: F.accent,
+                        fontSize: "10px",
+                        color: C.mutedLight,
+                        letterSpacing: "0.08em",
+                      }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -1470,7 +1487,7 @@ export default function R04Flow() {
                     4: { gridColumn: "3 / 4", gridRow: "2 / 3" },
                   };
                   return (
-                    <ClipReveal key={img.src} direction={i % 2 === 0 ? "left" : "right"} delay={i * 0.08} style={{ ...spans[i], position: "relative", overflow: "hidden" }}>
+                    <div key={img.src} style={{ ...spans[i], position: "relative", overflow: "hidden" }}>
                       <img
                         src={img.src} alt={img.alt}
                         className="flow-img-hover"
@@ -1501,7 +1518,7 @@ export default function R04Flow() {
                           </span>
                         </div>
                       </div>
-                    </ClipReveal>
+                    </div>
                   );
                 })}
               </div>
@@ -1787,40 +1804,6 @@ export default function R04Flow() {
         <section id="access" style={{ padding: isMobile ? "80px 0 90px" : "150px 0 175px", background: C.white, position: "relative" }}>
           <SectionNumber number="10" align="left" />
           <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
-            {/* Decorative image - editorial float left */}
-            {!isMobile && (
-              <div style={{
-                position: "absolute",
-                top: "-30px",
-                left: "-5%",
-                width: "280px",
-                height: "200px",
-                zIndex: 1,
-                overflow: "hidden",
-              }}>
-                <img
-                  src="/keikamotsu-new-templates/images/vehicle.webp"
-                  alt="アクセス"
-                  className="flow-img-hover"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    display: "block",
-                    filter: "grayscale(15%)",
-                  }}
-                />
-                <p style={{
-                  fontFamily: F.accent,
-                  fontSize: "10px",
-                  color: C.mutedLight,
-                  letterSpacing: "0.08em",
-                  marginTop: "8px",
-                }}>
-                  Our location
-                </p>
-              </div>
-            )}
             <FadeIn>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, color: C.mutedLight }}>
                 {sectionIcons["Access"]}
@@ -1840,16 +1823,6 @@ export default function R04Flow() {
                 <span style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 2, background: `linear-gradient(to right, ${C.accent}, transparent)`, transformOrigin: "left", transform: "scaleX(0)", animation: "underlineReveal 0.8s ease 0.4s forwards" }} />
               </h2>
             </FadeIn>
-
-            {isMobile && (
-              <div style={{ margin: "24px 0", overflow: "hidden" }}>
-                <img
-                  src="/keikamotsu-new-templates/images/vehicle.webp"
-                  alt="アクセス"
-                  style={{ width: "100%", height: "180px", objectFit: "cover", display: "block", filter: "grayscale(15%)" }}
-                />
-              </div>
-            )}
 
             <div style={{
               marginTop: isMobile ? "40px" : "64px",
@@ -1900,7 +1873,16 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            COMPANY (with image)
            ════════════════════════════════════════ */}
-        <section id="company" style={{ padding: isMobile ? "80px 0 90px" : "175px 0 185px", background: C.altBg, position: "relative" }}>
+        <section id="company" style={{ padding: isMobile ? "80px 0 90px" : "175px 0 185px", position: "relative", overflow: "hidden" }}>
+          {/* Background image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(/keikamotsu-new-templates/images/company.webp)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.08,
+          }} />
+          <div style={{ position: "absolute", inset: 0, background: C.altBg, opacity: 0.92 }} />
           <SectionNumber number="11" align="center" />
           <div style={{ width: containerW, margin: "0 auto", maxWidth: "780px", position: "relative" }}>
             <FadeIn>
@@ -1924,22 +1906,6 @@ export default function R04Flow() {
                 </h2>
               </div>
             </FadeIn>
-
-            {/* Company image */}
-            <div style={{ marginTop: isMobile ? "32px" : "48px", overflow: "hidden" }}>
-              <img
-                src="/keikamotsu-new-templates/images/company.webp"
-                alt="会社概要"
-                className="flow-img-hover"
-                style={{
-                  width: "100%",
-                  height: isMobile ? "200px" : "300px",
-                  objectFit: "cover",
-                  display: "block",
-                  filter: "grayscale(15%)",
-                }}
-              />
-            </div>
 
             <div style={{ marginTop: isMobile ? "40px" : "56px" }}>
               {companyInfo.map((row, i) => (
@@ -2178,7 +2144,7 @@ export default function R04Flow() {
            ════════════════════════════════════════ */}
         <section style={{
           padding: isMobile ? "100px 0" : "160px 0",
-          background: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)), url(/images/delivery.webp) center/cover no-repeat`,
+          background: `linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)), url(/keikamotsu-new-templates/images/delivery.webp) center/cover no-repeat`,
           color: "#fff",
           position: "relative",
         }}>
@@ -2276,7 +2242,7 @@ export default function R04Flow() {
            ════════════════════════════════════════ */}
         <footer style={{
           padding: isMobile ? "48px 0 32px" : "64px 0 40px",
-          background: `linear-gradient(rgba(26,26,26,0.92), rgba(26,26,26,0.96)), url(/images/footer-bg.webp) center/cover no-repeat`,
+          background: `linear-gradient(rgba(26,26,26,0.92), rgba(26,26,26,0.96)), url(/keikamotsu-new-templates/images/footer-bg.webp) center/cover no-repeat`,
           borderTop: `1px solid ${C.borderDark}`,
           textAlign: "center",
           position: "relative",
