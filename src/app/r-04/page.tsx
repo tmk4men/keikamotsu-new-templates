@@ -1667,11 +1667,43 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            NEWS
            ════════════════════════════════════════ */}
-        <ImageBand src="/keikamotsu-new-templates/images/workplace.webp" alt="お知らせ" height={isMobile ? "200px" : "340px"} />
-
         <section id="news" style={{ padding: isMobile ? "80px 0 90px" : "190px 0 165px", background: C.altBg, position: "relative" }}>
           <SectionNumber number="09" align="right" />
           <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
+            {/* Decorative image - editorial float */}
+            {!isMobile && (
+              <div style={{
+                position: "absolute",
+                top: "-40px",
+                right: "-5%",
+                width: "300px",
+                height: "200px",
+                zIndex: 1,
+                overflow: "hidden",
+              }}>
+                <img
+                  src="/keikamotsu-new-templates/images/workplace.webp"
+                  alt="お知らせ"
+                  className="flow-img-hover"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    display: "block",
+                    filter: "grayscale(15%)",
+                  }}
+                />
+                <p style={{
+                  fontFamily: F.accent,
+                  fontSize: "10px",
+                  color: C.mutedLight,
+                  letterSpacing: "0.08em",
+                  marginTop: "8px",
+                }}>
+                  Latest updates
+                </p>
+              </div>
+            )}
             <FadeIn>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, color: C.mutedLight }}>
                 {sectionIcons["News"]}
@@ -1692,21 +1724,15 @@ export default function R04Flow() {
               </h2>
             </FadeIn>
 
-            {/* Section image */}
-            <div style={{ marginTop: isMobile ? "32px" : "48px", overflow: "hidden" }}>
-              <img
-                src="/keikamotsu-new-templates/images/workplace.webp"
-                alt="お知らせ"
-                className="flow-img-hover"
-                style={{
-                  width: "100%",
-                  height: isMobile ? "200px" : "320px",
-                  objectFit: "cover",
-                  display: "block",
-                  filter: "grayscale(15%)",
-                }}
-              />
-            </div>
+            {isMobile && (
+              <div style={{ margin: "24px 0", overflow: "hidden" }}>
+                <img
+                  src="/keikamotsu-new-templates/images/workplace.webp"
+                  alt="お知らせ"
+                  style={{ width: "100%", height: "180px", objectFit: "cover", display: "block", filter: "grayscale(15%)" }}
+                />
+              </div>
+            )}
 
             <div style={{ marginTop: isMobile ? "40px" : "56px" }}>
               {news.map((n, i) => (
@@ -1757,11 +1783,43 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            ACCESS
            ════════════════════════════════════════ */}
-        <ImageBand src="/keikamotsu-new-templates/images/vehicle.webp" alt="アクセス" height={isMobile ? "200px" : "340px"} />
-
         <section id="access" style={{ padding: isMobile ? "80px 0 90px" : "150px 0 175px", background: C.white, position: "relative" }}>
           <SectionNumber number="10" align="left" />
           <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
+            {/* Decorative image - editorial float left */}
+            {!isMobile && (
+              <div style={{
+                position: "absolute",
+                top: "-30px",
+                left: "-5%",
+                width: "280px",
+                height: "200px",
+                zIndex: 1,
+                overflow: "hidden",
+              }}>
+                <img
+                  src="/keikamotsu-new-templates/images/vehicle.webp"
+                  alt="アクセス"
+                  className="flow-img-hover"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    display: "block",
+                    filter: "grayscale(15%)",
+                  }}
+                />
+                <p style={{
+                  fontFamily: F.accent,
+                  fontSize: "10px",
+                  color: C.mutedLight,
+                  letterSpacing: "0.08em",
+                  marginTop: "8px",
+                }}>
+                  Our location
+                </p>
+              </div>
+            )}
             <FadeIn>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, color: C.mutedLight }}>
                 {sectionIcons["Access"]}
@@ -1782,21 +1840,15 @@ export default function R04Flow() {
               </h2>
             </FadeIn>
 
-            {/* Section image */}
-            <div style={{ marginTop: isMobile ? "32px" : "48px", overflow: "hidden" }}>
-              <img
-                src="/keikamotsu-new-templates/images/vehicle.webp"
-                alt="アクセス"
-                className="flow-img-hover"
-                style={{
-                  width: "100%",
-                  height: isMobile ? "200px" : "320px",
-                  objectFit: "cover",
-                  display: "block",
-                  filter: "grayscale(15%)",
-                }}
-              />
-            </div>
+            {isMobile && (
+              <div style={{ margin: "24px 0", overflow: "hidden" }}>
+                <img
+                  src="/keikamotsu-new-templates/images/vehicle.webp"
+                  alt="アクセス"
+                  style={{ width: "100%", height: "180px", objectFit: "cover", display: "block", filter: "grayscale(15%)" }}
+                />
+              </div>
+            )}
 
             <div style={{
               marginTop: isMobile ? "40px" : "64px",
@@ -1923,10 +1975,42 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            APPLY (FORM) with animated focus
            ════════════════════════════════════════ */}
-        <ImageBand src="/keikamotsu-new-templates/images/team.webp" alt="応募フォーム" height={isMobile ? "200px" : "340px"} />
-
         <section id="apply" style={{ padding: isMobile ? "80px 0 90px" : "165px 0 195px", background: C.white, position: "relative" }}>
           <SectionNumber number="12" align="right" />
+          {/* Decorative image - editorial float right */}
+          {!isMobile && (
+            <div style={{
+              position: "absolute",
+              top: "80px",
+              right: "5%",
+              width: "240px",
+              height: "320px",
+              zIndex: 1,
+              overflow: "hidden",
+            }}>
+              <img
+                src="/keikamotsu-new-templates/images/team.webp"
+                alt="応募"
+                className="flow-img-hover"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  display: "block",
+                  filter: "grayscale(15%)",
+                }}
+              />
+              <p style={{
+                fontFamily: F.accent,
+                fontSize: "10px",
+                color: C.mutedLight,
+                letterSpacing: "0.08em",
+                marginTop: "8px",
+              }}>
+                Join our team
+              </p>
+            </div>
+          )}
           <div style={{ width: containerW, margin: "0 auto", maxWidth: "640px", position: "relative" }}>
             <FadeIn>
               <div style={{ textAlign: "center" }}>
@@ -1960,21 +2044,15 @@ export default function R04Flow() {
               </p>
             </FadeIn>
 
-            {/* Section image */}
-            <div style={{ marginTop: isMobile ? "32px" : "48px", overflow: "hidden" }}>
-              <img
-                src="/keikamotsu-new-templates/images/team.webp"
-                alt="応募"
-                className="flow-img-hover"
-                style={{
-                  width: "100%",
-                  height: isMobile ? "180px" : "280px",
-                  objectFit: "cover",
-                  display: "block",
-                  filter: "grayscale(15%)",
-                }}
-              />
-            </div>
+            {isMobile && (
+              <div style={{ margin: "24px 0", overflow: "hidden" }}>
+                <img
+                  src="/keikamotsu-new-templates/images/team.webp"
+                  alt="応募"
+                  style={{ width: "100%", height: "180px", objectFit: "cover", display: "block", filter: "grayscale(15%)" }}
+                />
+              </div>
+            )}
 
             {submitted ? (
               <FadeIn>
