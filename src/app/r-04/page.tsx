@@ -812,19 +812,20 @@ export default function R04Flow() {
         </section>
 
         {/* ── Marquee ── */}
-        <div style={{ background: C.bg, overflow: "hidden", padding: "20px 0", width: "100vw", position: "relative", left: "50%", right: "50%", marginLeft: "-50vw", marginRight: "-50vw" }}>
+        <div style={{ background: C.bg, overflow: "hidden", padding: "20px 0", width: "100vw", position: "relative", left: "50%", marginLeft: "-50vw" }}>
           {[
             ["迅速配達", "未経験歓迎", "車両無料貸出", "月収40万〜100万円", "週払いOK", "入社祝い金5万円"],
             ["大阪・東京・兵庫", "20〜60代活躍", "リース料ゼロ", "AT限定OK", "スマホ完結", "集荷なし"],
           ].map((row, ri) => (
             <div key={ri} style={{ overflow: "hidden", whiteSpace: "nowrap", marginBottom: ri === 0 ? 10 : 0 }}>
               <div style={{
-                display: "inline-flex", gap: 48,
+                display: "inline-flex", gap: 64, paddingRight: 64,
                 animation: `${ri === 0 ? "r04marqueeLeft" : "r04marqueeRight"} ${28 + ri * 6}s linear infinite`,
+                width: "max-content",
               }}>
-                {[...row, ...row, ...row, ...row].map((t, ti) => (
+                {[...row, ...row, ...row, ...row, ...row, ...row].map((t, ti) => (
                   <span key={ti} style={{
-                    fontFamily: F.accent, fontSize: "12px", letterSpacing: "0.15em",
+                    fontFamily: F.accent, fontSize: isMobile ? "12px" : "14px", letterSpacing: "0.2em",
                     color: C.mutedLight, textTransform: "uppercase", fontWeight: 300,
                   }}>
                     {t}
