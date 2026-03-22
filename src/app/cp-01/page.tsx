@@ -584,36 +584,58 @@ function StrengthsContent({ isMobile }: { isMobile: boolean }) {
                 <div
                   style={{
                     flex: "0 0 50%",
-                    borderRadius: 12,
-                    overflow: "hidden",
                     position: "relative",
+                    padding: isReversed ? "0 15px 15px 0" : "0 0 15px 15px",
                   }}
                 >
+                  {/* Color panel behind image */}
                   <div
                     style={{
+                      position: "absolute",
+                      bottom: 0,
+                      ...(isReversed ? { left: 0 } : { right: 0 }),
                       width: "100%",
-                      paddingTop: "60%",
-                      backgroundImage: `url(${strengthImages[i]})`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
+                      height: "100%",
+                      borderRadius: 12,
+                      background: C.accent,
+                      opacity: 0.18,
+                      zIndex: 0,
                     }}
                   />
                   <div
                     style={{
-                      position: "absolute",
-                      top: 16,
-                      left: isReversed ? "auto" : 16,
-                      right: isReversed ? 16 : "auto",
-                      background: C.accent,
-                      color: C.white,
-                      padding: "6px 16px",
-                      borderRadius: 4,
-                      fontSize: 12,
-                      fontWeight: 700,
-                      letterSpacing: "0.12em",
+                      position: "relative",
+                      borderRadius: 12,
+                      overflow: "hidden",
+                      zIndex: 1,
                     }}
                   >
-                    STRENGTH {s.num}
+                    <div
+                      style={{
+                        width: "100%",
+                        paddingTop: "60%",
+                        backgroundImage: `url(${strengthImages[i]})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    />
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 16,
+                        left: isReversed ? "auto" : 16,
+                        right: isReversed ? 16 : "auto",
+                        background: C.accent,
+                        color: C.white,
+                        padding: "6px 16px",
+                        borderRadius: 4,
+                        fontSize: 12,
+                        fontWeight: 700,
+                        letterSpacing: "0.12em",
+                      }}
+                    >
+                      STRENGTH {s.num}
+                    </div>
                   </div>
                 </div>
                 <div style={{ flex: 1 }}>
@@ -672,23 +694,47 @@ function MessageContent({ isMobile }: { isMobile: boolean }) {
           >
             <div
               style={{
+                position: "relative",
                 width: isMobile ? 200 : 260,
                 height: isMobile ? 260 : 340,
-                borderRadius: 12,
-                overflow: "hidden",
                 margin: "0 auto",
-                boxShadow: "0 8px 32px rgba(30,58,95,0.12)",
               }}
             >
+              {/* Color panel behind image */}
               <div
                 style={{
+                  position: "absolute",
+                  top: 12,
+                  left: 12,
                   width: "100%",
                   height: "100%",
-                  backgroundImage: `url(${IMG.ceo})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center top",
+                  borderRadius: 12,
+                  background: C.accent,
+                  opacity: 0.2,
+                  zIndex: 0,
                 }}
               />
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 12,
+                  overflow: "hidden",
+                  boxShadow: "0 8px 32px rgba(30,58,95,0.12)",
+                  zIndex: 1,
+                }}
+              >
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    backgroundImage: `url(${IMG.ceo})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center top",
+                  }}
+                />
+              </div>
             </div>
             <p
               style={{
@@ -915,12 +961,44 @@ function HistoryContent({ isMobile }: { isMobile: boolean }) {
                     height: isMobile ? 140 : 110,
                     borderRadius: 8,
                     overflow: "hidden",
-                    backgroundImage: `url(${historyImages[h.year] || ""})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
+                    position: "relative",
                     border: `1px solid ${C.border}`,
                   }}
-                />
+                >
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      backgroundImage: `url(${historyImages[h.year] || ""})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                  />
+                  {/* Top fade */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "30%",
+                      background: "linear-gradient(to bottom, rgba(250,249,246,0.7) 0%, transparent 100%)",
+                      zIndex: 1,
+                    }}
+                  />
+                  {/* Bottom fade */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: "30%",
+                      background: "linear-gradient(to top, rgba(250,249,246,0.7) 0%, transparent 100%)",
+                      zIndex: 1,
+                    }}
+                  />
+                </div>
                 {/* Text */}
                 <p
                   style={{
@@ -1166,7 +1244,7 @@ function PartnersContent({ isMobile }: { isMobile: boolean }) {
             bottom: 24,
             left: 0,
             transform: truckStarted ? "translateX(calc(100vw))" : "translateX(-100px)",
-            transition: "transform 6s linear",
+            transition: "transform 30s linear",
           }}
         >
           <IconTruck size={36} color={C.accent} />
@@ -1306,6 +1384,7 @@ function RecruitContent({ isMobile }: { isMobile: boolean }) {
               lineHeight: 1.4,
               position: "relative",
               display: "inline-block",
+              whiteSpace: isMobile ? "normal" : "nowrap",
             }}
           >
             {recruit.heading}

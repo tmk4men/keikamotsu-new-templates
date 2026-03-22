@@ -95,6 +95,14 @@ const KEYFRAMES = `
   0% { transform: translateX(-120px); }
   100% { transform: translateX(calc(100vw + 120px)); }
 }
+@keyframes cp02-footerTruckDrive {
+  0% { transform: translateX(-100px); }
+  100% { transform: translateX(100vw); }
+}
+@keyframes cp02-historyEntrance {
+  0% { opacity: 0; transform: translateX(-20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
 @keyframes cp02-counterUp {
   0% { opacity: 0; transform: translateY(20px); }
   100% { opacity: 1; transform: translateY(0); }
@@ -472,7 +480,7 @@ function SectionHeading({
             background: C.accent,
             borderRadius: 2,
             width: visible ? "100%" : 0,
-            transition: "width 0.8s cubic-bezier(0.4,0,0.2,1) 0.3s",
+            transition: "width 2.5s cubic-bezier(0.4,0,0.2,1) 0.3s",
           }}
         />
       </h2>
@@ -552,6 +560,21 @@ export default function CP02Page() {
       {/* ─── FIXED UI (desktop only) ─── */}
       {!isMobile && (
         <>
+          {/* Small truck that moves with horizontal scroll */}
+          <div
+            style={{
+              position: "fixed",
+              bottom: 16,
+              left: 0,
+              zIndex: 999,
+              transform: `translateX(${scrollProgress * 85}vw)`,
+              transition: "transform 0.3s ease-out",
+              pointerEvents: "none",
+            }}
+          >
+            <TruckSvg size={40} />
+          </div>
+
           {/* Logo top-left */}
           <div
             style={{
@@ -683,6 +706,38 @@ export default function CP02Page() {
                 }}
               />
             ))}
+          </div>
+
+          {/* Scroll-tracking truck */}
+          <div
+            style={{
+              position: "fixed",
+              bottom: 36,
+              left: 0,
+              width: "100%",
+              height: 40,
+              pointerEvents: "none",
+              zIndex: 999,
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: `${scrollProgress * 85}%`,
+                transition: "left 0.15s linear",
+              }}
+            >
+              <svg width={48} height={28} viewBox="0 0 120 72" fill="none" stroke={C.accent} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.7 }}>
+                <rect x="2" y="12" width="70" height="40" rx="4" />
+                <path d="M72 30h20l14 18v4H72V30z" />
+                <circle cx="24" cy="58" r="10" />
+                <circle cx="24" cy="58" r="4" />
+                <circle cx="94" cy="58" r="10" />
+                <circle cx="94" cy="58" r="4" />
+                <line x1="34" y1="52" x2="84" y2="52" />
+              </svg>
+            </div>
           </div>
         </>
       )}
@@ -1226,6 +1281,36 @@ export default function CP02Page() {
                 padding: isMobile ? "80px 20px 60px" : 0,
               }}
             >
+              {/* Corporate watermark background */}
+              <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", opacity: 0.04 }}>
+                <svg viewBox="0 0 800 600" style={{ width: "100%", height: "100%" }} fill="none" stroke={C.text} strokeWidth={0.8} strokeLinecap="round" strokeLinejoin="round">
+                  {/* Building cluster */}
+                  <rect x="50" y="180" width="80" height="220" rx="2" />
+                  <rect x="60" y="200" width="15" height="20" rx="1" /><rect x="85" y="200" width="15" height="20" rx="1" />
+                  <rect x="60" y="240" width="15" height="20" rx="1" /><rect x="85" y="240" width="15" height="20" rx="1" />
+                  <rect x="60" y="280" width="15" height="20" rx="1" /><rect x="85" y="280" width="15" height="20" rx="1" />
+                  <rect x="150" y="120" width="100" height="280" rx="2" />
+                  <rect x="165" y="140" width="18" height="22" rx="1" /><rect x="195" y="140" width="18" height="22" rx="1" /><rect x="225" y="140" width="18" height="22" rx="1" />
+                  <rect x="165" y="180" width="18" height="22" rx="1" /><rect x="195" y="180" width="18" height="22" rx="1" /><rect x="225" y="180" width="18" height="22" rx="1" />
+                  <rect x="165" y="220" width="18" height="22" rx="1" /><rect x="195" y="220" width="18" height="22" rx="1" /><rect x="225" y="220" width="18" height="22" rx="1" />
+                  <rect x="165" y="260" width="18" height="22" rx="1" /><rect x="195" y="260" width="18" height="22" rx="1" /><rect x="225" y="260" width="18" height="22" rx="1" />
+                  {/* Handshake */}
+                  <path d="M420 300 Q440 270 460 290 L480 310 Q490 320 480 330 L460 340" />
+                  <path d="M420 300 Q400 270 380 290 L360 310 Q350 320 360 330 L380 340" />
+                  <circle cx="420" cy="260" r="30" />
+                  {/* Graph/chart */}
+                  <rect x="560" y="200" width="180" height="140" rx="3" />
+                  <polyline points="580,310 610,280 640,295 670,250 700,260 720,230" />
+                  <line x1="580" y1="320" x2="580" y2="210" /><line x1="580" y1="320" x2="730" y2="320" />
+                  {/* Document */}
+                  <rect x="350" y="420" width="100" height="130" rx="3" />
+                  <line x1="370" y1="450" x2="430" y2="450" /><line x1="370" y1="470" x2="430" y2="470" /><line x1="370" y1="490" x2="410" y2="490" />
+                  {/* Small buildings right side */}
+                  <rect x="620" y="400" width="60" height="100" rx="2" />
+                  <rect x="700" y="360" width="50" height="140" rx="2" />
+                </svg>
+              </div>
+
               {/* Left: Company Overview */}
               <div
                 style={{
@@ -1312,7 +1397,7 @@ export default function CP02Page() {
                     />
 
                     {history.map((item, i) => (
-                      <FadeIn key={item.year} delay={i * 0.1}>
+                      <FadeIn key={item.year} delay={i * 0.3}>
                         <div
                           style={{
                             position: "relative",
@@ -1320,6 +1405,7 @@ export default function CP02Page() {
                             display: "flex",
                             gap: 16,
                             alignItems: "flex-start",
+                            animation: `cp02-historyEntrance 0.6s ease ${i * 0.3}s both`,
                           }}
                         >
                           {/* Dot */}
@@ -1364,6 +1450,24 @@ export default function CP02Page() {
                         </div>
                       </FadeIn>
                     ))}
+
+                    {/* History image */}
+                    <FadeIn delay={0.5}>
+                      <div
+                        style={{
+                          marginTop: 16,
+                          borderRadius: 8,
+                          overflow: "hidden",
+                          height: 100,
+                          backgroundImage: `url(${IMG.delivery})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          opacity: 0.7,
+                          maskImage: "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+                          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%)",
+                        }}
+                      />
+                    </FadeIn>
                   </div>
                 </FadeIn>
               </div>
@@ -1493,12 +1597,18 @@ export default function CP02Page() {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
+                          backgroundImage: p.logo ? `url(${p.logo})` : undefined,
+                          backgroundSize: "contain",
+                          backgroundPosition: "center",
+                          backgroundRepeat: "no-repeat",
                         }}
                       >
-                        <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-                          <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
-                        </svg>
+                        {!p.logo && (
+                          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                            <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
+                          </svg>
+                        )}
                       </div>
                       <div style={{ fontSize: 14, fontWeight: 700, color: C.text, marginBottom: 4 }}>
                         {p.name}
@@ -1587,7 +1697,6 @@ export default function CP02Page() {
                   <FadeIn>
                     <div
                       style={{
-                        background: C.accentLight,
                         borderRadius: 14,
                         padding: isMobile ? 24 : 36,
                         display: "flex",
@@ -1597,8 +1706,19 @@ export default function CP02Page() {
                         border: `1px solid ${C.border}`,
                         position: "relative",
                         overflow: "hidden",
+                        backgroundImage: `url(/画像/沖縄エリア.png)`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
                       }}
                     >
+                      {/* Dark overlay for text readability */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          background: "linear-gradient(135deg, rgba(239,246,255,0.88) 0%, rgba(219,234,254,0.82) 100%)",
+                        }}
+                      />
                       {/* Decorative large number */}
                       <div
                         style={{
@@ -1607,7 +1727,7 @@ export default function CP02Page() {
                           right: 10,
                           fontSize: "8rem",
                           fontWeight: 900,
-                          color: "rgba(59,130,246,0.06)",
+                          color: "rgba(59,130,246,0.08)",
                           fontFamily: "'Inter', sans-serif",
                           lineHeight: 1,
                           pointerEvents: "none",
@@ -1761,6 +1881,7 @@ export default function CP02Page() {
                       marginBottom: 8,
                       position: "relative",
                       display: "inline-block",
+                      whiteSpace: isMobile ? "normal" : "nowrap",
                     }}
                   >
                     {recruit.heading}
@@ -2255,6 +2376,37 @@ export default function CP02Page() {
             }}
           >
             &copy; {new Date().getFullYear()} {company.name} All Rights Reserved.
+          </div>
+        </div>
+
+        {/* Footer truck animation */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 8,
+            left: 0,
+            width: "100%",
+            overflow: "hidden",
+            height: 40,
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              animation: "cp02-footerTruckDrive 25s linear infinite",
+            }}
+          >
+            <svg width={48} height={28} viewBox="0 0 120 72" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="12" width="70" height="40" rx="4" />
+              <path d="M72 30h20l14 18v4H72V30z" />
+              <circle cx="24" cy="58" r="10" />
+              <circle cx="24" cy="58" r="4" />
+              <circle cx="94" cy="58" r="10" />
+              <circle cx="94" cy="58" r="4" />
+              <line x1="34" y1="52" x2="84" y2="52" />
+            </svg>
           </div>
         </div>
       </footer>

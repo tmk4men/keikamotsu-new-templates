@@ -334,8 +334,8 @@ export default function CP04Page() {
     }
 
     @keyframes truckDrive {
-      from { transform: translateX(-60px); }
-      to { transform: translateX(calc(100vw + 60px)); }
+      from { transform: translateX(-100px); }
+      to { transform: translateX(calc(100% + 100px)); }
     }
 
     .cp04-h2-underline {
@@ -1550,18 +1550,58 @@ export default function CP04Page() {
           </div>
 
           {/* トラックアニメーション */}
-          <div style={{ position: "relative", height: isMobile ? 40 : 60, overflow: "hidden", marginTop: isMobile ? 20 : 40, opacity: 0.12 }}>
-            {/* 背景の街並み */}
-            <svg viewBox="0 0 800 60" fill="none" style={{ position: "absolute", bottom: 0, width: "100%", height: isMobile ? 40 : 60 }}>
-              <path d="M0,58 L60,58 L60,40 L55,35 L50,30 L45,35 L40,40 L40,58 L100,58 L100,28 L110,28 L110,58 L140,58 L140,20 L150,15 L160,20 L160,58 L200,58 L200,30 L220,25 L230,30 L230,58 L270,58 L290,35 L295,12 L305,12 L310,35 L310,58 L370,58 L370,42 L355,34 L370,42 L370,58 L420,58 L420,22 L410,18 L420,22 L420,58 L480,58 L480,30 L490,30 L490,58 L530,58 L530,15 L520,7 L530,15 L530,58 L580,58 L580,38 L570,32 L580,38 L580,58 L630,58 L630,45 L620,40 L630,45 L630,58 L670,58 L670,25 L660,20 L670,25 L670,58 L735,58 L735,48 L710,38 L735,48 L735,58 L770,58 L770,30 L770,58 L800,58" stroke="currentColor" strokeWidth="1" fill="none" />
+          <div style={{ position: "relative", height: isMobile ? 60 : 90, overflow: "hidden", marginTop: isMobile ? 20 : 40 }}>
+            {/* 背景の街並み・木・建物の線画 */}
+            <svg viewBox="0 0 1200 80" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", bottom: 0, width: "100%", height: "100%", opacity: 0.1 }}>
+              {/* Buildings */}
+              <rect x="40" y="20" width="40" height="58" rx="1" />
+              <rect x="48" y="28" width="8" height="8" rx="0.5" /><rect x="62" y="28" width="8" height="8" rx="0.5" />
+              <rect x="48" y="42" width="8" height="8" rx="0.5" /><rect x="62" y="42" width="8" height="8" rx="0.5" />
+              <rect x="110" y="10" width="50" height="68" rx="1" />
+              <rect x="120" y="18" width="10" height="10" rx="0.5" /><rect x="136" y="18" width="10" height="10" rx="0.5" />
+              <rect x="120" y="34" width="10" height="10" rx="0.5" /><rect x="136" y="34" width="10" height="10" rx="0.5" />
+              <rect x="120" y="50" width="10" height="10" rx="0.5" /><rect x="136" y="50" width="10" height="10" rx="0.5" />
+              {/* Trees */}
+              <line x1="220" y1="78" x2="220" y2="50" /><ellipse cx="220" cy="42" rx="14" ry="18" />
+              <line x1="260" y1="78" x2="260" y2="55" /><ellipse cx="260" cy="48" rx="11" ry="14" />
+              {/* More buildings */}
+              <rect x="320" y="30" width="35" height="48" rx="1" />
+              <rect x="328" y="38" width="7" height="7" rx="0.5" /><rect x="340" y="38" width="7" height="7" rx="0.5" />
+              <rect x="328" y="52" width="7" height="7" rx="0.5" /><rect x="340" y="52" width="7" height="7" rx="0.5" />
+              <rect x="380" y="15" width="30" height="63" rx="1" />
+              {/* Trees */}
+              <line x1="450" y1="78" x2="450" y2="48" /><ellipse cx="450" cy="40" rx="16" ry="20" />
+              <line x1="500" y1="78" x2="500" y2="58" /><ellipse cx="500" cy="52" rx="10" ry="12" />
+              {/* Warehouse */}
+              <rect x="560" y="40" width="60" height="38" rx="1" />
+              <path d="M555,40 L590,20 L625,40" />
+              {/* Trees */}
+              <line x1="660" y1="78" x2="660" y2="52" /><ellipse cx="660" cy="44" rx="13" ry="16" />
+              {/* Tall building */}
+              <rect x="720" y="8" width="40" height="70" rx="1" />
+              <rect x="728" y="16" width="8" height="8" rx="0.5" /><rect x="744" y="16" width="8" height="8" rx="0.5" />
+              <rect x="728" y="32" width="8" height="8" rx="0.5" /><rect x="744" y="32" width="8" height="8" rx="0.5" />
+              <rect x="728" y="48" width="8" height="8" rx="0.5" /><rect x="744" y="48" width="8" height="8" rx="0.5" />
+              {/* Trees */}
+              <line x1="800" y1="78" x2="800" y2="55" /><ellipse cx="800" cy="48" rx="11" ry="14" />
+              <line x1="840" y1="78" x2="840" y2="50" /><ellipse cx="840" cy="42" rx="14" ry="18" />
+              {/* Small buildings */}
+              <rect x="900" y="38" width="45" height="40" rx="1" />
+              <rect x="970" y="28" width="35" height="50" rx="1" />
+              {/* Trees */}
+              <line x1="1040" y1="78" x2="1040" y2="52" /><ellipse cx="1040" cy="44" rx="13" ry="16" />
+              <rect x="1090" y="20" width="50" height="58" rx="1" />
+              <line x1="1170" y1="78" x2="1170" y2="56" /><ellipse cx="1170" cy="48" rx="12" ry="15" />
+              {/* Road line */}
+              <line x1="0" y1="78" x2="1200" y2="78" strokeDasharray="8 6" />
             </svg>
             {/* トラック */}
-            <div style={{ position: "absolute", left: 0, bottom: 2, animation: `truckDrive ${isMobile ? 12 : 20}s linear infinite` }}>
-              <svg width={isMobile ? 36 : 48} height={isMobile ? 20 : 28} viewBox="0 0 48 28" fill="currentColor" opacity="0.8">
+            <div style={{ position: "absolute", left: 0, bottom: 4, animation: `truckDrive ${isMobile ? 18 : 30}s linear infinite`, opacity: 0.2 }}>
+              <svg width={isMobile ? 36 : 52} height={isMobile ? 20 : 30} viewBox="0 0 48 28" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="0" y="4" width="28" height="18" rx="2" />
-                <rect x="28" y="10" width="16" height="12" rx="1" />
-                <circle cx="10" cy="24" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
-                <circle cx="38" cy="24" r="4" fill="none" stroke="currentColor" strokeWidth="2" />
+                <path d="M28 10h12l6 8v4H28V10z" />
+                <circle cx="10" cy="24" r="4" />
+                <circle cx="38" cy="24" r="4" />
               </svg>
             </div>
           </div>
@@ -2093,6 +2133,7 @@ export default function CP04Page() {
       <div style={{ minHeight: "100vh", background: DARK, color: LIGHT }}>
         {headerEl}
         {heroEl}
+        {newsEl}
         {servicesEl}
         {strengthsEl}
         {ceoEl}
@@ -2100,7 +2141,6 @@ export default function CP04Page() {
         {historyEl}
         {numbersEl}
         {partnersEl}
-        {newsEl}
         {recruitEl}
         {accessEl}
         {contactEl}

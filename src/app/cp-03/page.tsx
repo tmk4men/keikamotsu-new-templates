@@ -1684,6 +1684,8 @@ function HistoryItem({
                 objectFit: "cover",
                 filter: "grayscale(50%)",
                 transition: "filter 0.4s ease",
+                maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+                WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.filter = "grayscale(10%)")}
               onMouseLeave={(e) => (e.currentTarget.style.filter = "grayscale(50%)")}

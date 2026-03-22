@@ -174,6 +174,46 @@ function useTypewriter(text: string, speed = 40) {
   return { displayed, done };
 }
 
+/* ───────────────────── ANIMATED UNDERLINE HOOK ───────────────────── */
+function useAnimatedUnderline() {
+  const ref = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("animate-underline");
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
+/* ───────────────────── STRENGTH HEADING ───────────────────── */
+function StrengthHeading({ children, mobile }: { children: React.ReactNode; mobile: boolean }) {
+  const ref = useAnimatedUnderline();
+  return (
+    <h3
+      ref={ref}
+      className="strength-heading"
+      style={{
+        fontSize: mobile ? 20 : 26,
+        fontWeight: 700,
+        marginTop: 8,
+        lineHeight: 1.4,
+      }}
+    >
+      {children}
+    </h3>
+  );
+}
+
 /* ───────────────────── COMPONENTS ───────────────────── */
 function FadeIn({
   children,
@@ -283,9 +323,9 @@ function HistoryHScroll({ items, mobile }: { items: typeof history; mobile: bool
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const totalW = items.length * (mobile ? 280 : 320) + 80;
+  const totalW = items.length * (mobile ? 280 : 320) + (mobile ? 200 : 300);
   const viewW = typeof window !== "undefined" ? window.innerWidth - (mobile ? 0 : SIDEBAR_W) : 1000;
-  const maxTranslate = Math.max(0, totalW - viewW);
+  const maxTranslate = Math.max(0, totalW - viewW + (mobile ? 60 : 120));
   const translateX = -progress * maxTranslate;
 
   return (
@@ -296,6 +336,7 @@ function HistoryHScroll({ items, mobile }: { items: typeof history; mobile: bool
           display: "flex",
           gap: 20,
           padding: mobile ? "0 16px" : "0 60px",
+          paddingRight: mobile ? 80 : 120,
           transform: `translateX(${translateX}px)`,
           transition: "transform 0.1s linear",
           willChange: "transform",
@@ -624,9 +665,13 @@ export default function CP05() {
         @keyframes underlineGrow { 0% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
         @keyframes fadeInUp { 0% { opacity:0; transform:translateY(24px); } 100% { opacity:1; transform:translateY(0); } }
         @keyframes handwrite { 0% { width: 0; opacity: 0; } 10% { opacity: 1; } 100% { width: 100%; opacity: 1; } }
+        @keyframes strengthUnderlineGrow { 0% { width: 0%; } 100% { width: 100%; } }
         .bento-card:hover { transform: scale(1.02); }
         .cp05-h-ul { position: relative; display: inline-flex; align-items: center; gap: 12px; padding-bottom: 8px; }
         .cp05-h-ul::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: ${C.accent}; transform: scaleX(0); transform-origin: left; animation: underlineGrow 0.8s ease 0.3s forwards; }
+        .strength-heading { position: relative; display: inline-block; padding-bottom: 6px; }
+        .strength-heading::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0%; height: 3px; background: ${C.accent}; transition: none; }
+        .strength-heading.animate-underline::after { animation: strengthUnderlineGrow 0.8s ease-out forwards; }
         .news-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-4px); }
         input:focus, textarea:focus { outline: none; border-color: ${C.accent} !important; box-shadow: 0 0 0 3px ${C.accentLight}; }
       `}</style>
@@ -949,16 +994,9 @@ export default function CP05() {
                     >
                       {s.num}
                     </span>
-                    <h3
-                      style={{
-                        fontSize: mobile ? 20 : 26,
-                        fontWeight: 700,
-                        marginTop: 8,
-                        lineHeight: 1.4,
-                      }}
-                    >
+                    <StrengthHeading mobile={mobile}>
                       {s.title}
-                    </h3>
+                    </StrengthHeading>
                     <p
                       style={{
                         fontSize: 14,
@@ -1029,20 +1067,35 @@ export default function CP05() {
                 margin: "0 auto",
               }}
             >
-              {ceoMessage.message.map((p, i) => (
-                <p
-                  key={i}
-                  style={{
-                    fontSize: mobile ? 15 : 17,
-                    lineHeight: 2,
-                    color: C.text,
-                    fontStyle: "italic",
-                    marginBottom: 20,
-                  }}
-                >
-                  {p}
-                </p>
-              ))}
+              {ceoMessage.message.map((p, i) => {
+                // 長い段落は句点で分割して改行を増やす
+                const sentences = p.split(/(?<=。)/).filter(Boolean);
+                const chunks: string[] = [];
+                let buf = "";
+                for (const s of sentences) {
+                  buf += s;
+                  if (buf.length > 30) {
+                    chunks.push(buf);
+                    buf = "";
+                  }
+                }
+                if (buf) chunks.push(buf);
+
+                return chunks.map((chunk, j) => (
+                  <p
+                    key={`${i}-${j}`}
+                    style={{
+                      fontSize: mobile ? 15 : 17,
+                      lineHeight: 2,
+                      color: C.text,
+                      fontStyle: "italic",
+                      marginBottom: 16,
+                    }}
+                  >
+                    {chunk}
+                  </p>
+                ));
+              })}
             </div>
             <div
               style={{
@@ -1133,7 +1186,7 @@ export default function CP05() {
           id="history"
           style={{
             background: C.bgSub,
-            height: `${(history.length + 1) * 100}vh`,
+            height: `${(history.length + 2) * 100}vh`,
             position: "relative",
           }}
         >
@@ -1155,9 +1208,29 @@ export default function CP05() {
             padding: mobile ? "64px 16px" : "100px 60px",
             background: C.dark,
             color: C.white,
+            position: "relative",
+            overflow: "hidden",
           }}
         >
-          <FadeIn>
+          {/* Background image */}
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              backgroundImage: `url(${IMG}/team.webp)`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              opacity: 0.15,
+            }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: `linear-gradient(135deg, ${C.dark} 0%, rgba(20,30,20,0.92) 100%)`,
+            }}
+          />
+          <FadeIn style={{ position: "relative", zIndex: 2 }}>
             <h2
               style={{
                 fontSize: mobile ? 24 : 36,
@@ -1181,6 +1254,8 @@ export default function CP05() {
               gridTemplateColumns: mobile ? "1fr" : "1fr 1fr",
               maxWidth: 800,
               margin: "0 auto",
+              position: "relative",
+              zIndex: 2,
             }}
           >
             {numbers.map((n, i) => (
