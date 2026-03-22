@@ -1179,22 +1179,20 @@ export default function R04Flow() {
             </FadeIn>
 
             {/* Benefits hero image */}
-            <FadeIn delay={0.1}>
-              <ClipReveal direction="bottom" delay={0.15} style={{ marginTop: isMobile ? "32px" : "56px" }}>
-                <img
-                  src="/keikamotsu-new-templates/images/benefits.webp"
-                  alt="待遇・福利厚生"
-                  className="flow-img-hover"
-                  style={{
-                    width: "100%",
-                    height: isMobile ? "200px" : "320px",
-                    objectFit: "cover",
-                    display: "block",
-                    filter: "grayscale(15%)",
-                  }}
-                />
-              </ClipReveal>
-            </FadeIn>
+            <div style={{ marginTop: isMobile ? "32px" : "56px", overflow: "hidden" }}>
+              <img
+                src="/keikamotsu-new-templates/images/benefits.webp"
+                alt="待遇・福利厚生"
+                className="flow-img-hover"
+                style={{
+                  width: "100%",
+                  height: isMobile ? "200px" : "320px",
+                  objectFit: "cover",
+                  display: "block",
+                  filter: "grayscale(15%)",
+                }}
+              />
+            </div>
 
             <div style={{
               display: "grid",
@@ -1257,7 +1255,7 @@ export default function R04Flow() {
             backgroundImage: `url(/keikamotsu-new-templates/images/daily-flow.webp)`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            opacity: 0.05,
+            opacity: 0.12,
           }} />
           <SectionNumber number="05" align="right" />
           <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
@@ -1558,14 +1556,27 @@ export default function R04Flow() {
             <div style={{ marginTop: isMobile ? "48px" : "80px", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: "32px" }}>
               {voices.map((v, i) => (
                 <FadeIn key={v.name} delay={i * 0.12}>
-                  <div style={{
-                    background: "#f8f8f6",
-                    borderRadius: i % 2 === 0 ? "16px 16px 16px 4px" : "16px 16px 4px 16px",
-                    padding: "32px",
-                    position: "relative",
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-                    marginBottom: "24px",
-                  }}>
+                  <div
+                    className="voice-card"
+                    style={{
+                      background: "#f8f8f6",
+                      borderRadius: i % 2 === 0 ? "16px 16px 16px 4px" : "16px 16px 4px 16px",
+                      padding: "32px",
+                      position: "relative",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+                      marginBottom: "24px",
+                      transition: "transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.4s ease",
+                      cursor: "default",
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.transform = "translateY(-6px) scale(1.02)";
+                      e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.12)";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.transform = "none";
+                      e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.06)";
+                    }}
+                  >
                     {/* Highlight quote */}
                     <p style={{
                       fontSize: isMobile ? "16px" : "18px",
@@ -1685,43 +1696,18 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            NEWS
            ════════════════════════════════════════ */}
-        <section id="news" style={{ padding: isMobile ? "80px 0 90px" : "190px 0 165px", background: C.altBg, position: "relative" }}>
+        <section id="news" style={{ padding: isMobile ? "80px 0 90px" : "190px 0 165px", position: "relative", overflow: "hidden" }}>
+          {/* Background image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(/keikamotsu-new-templates/images/workplace.webp)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.08,
+          }} />
+          <div style={{ position: "absolute", inset: 0, background: C.altBg, opacity: 0.92 }} />
           <SectionNumber number="09" align="right" />
           <div style={{ width: containerW, margin: "0 auto", position: "relative" }}>
-            {/* Decorative image - editorial float */}
-            {!isMobile && (
-              <div style={{
-                position: "absolute",
-                top: "-40px",
-                right: "-5%",
-                width: "300px",
-                height: "200px",
-                zIndex: 1,
-                overflow: "hidden",
-              }}>
-                <img
-                  src="/keikamotsu-new-templates/images/workplace.webp"
-                  alt="お知らせ"
-                  className="flow-img-hover"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    display: "block",
-                    filter: "grayscale(15%)",
-                  }}
-                />
-                <p style={{
-                  fontFamily: F.accent,
-                  fontSize: "10px",
-                  color: C.mutedLight,
-                  letterSpacing: "0.08em",
-                  marginTop: "8px",
-                }}>
-                  Latest updates
-                </p>
-              </div>
-            )}
             <FadeIn>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, color: C.mutedLight }}>
                 {sectionIcons["News"]}
@@ -1741,16 +1727,6 @@ export default function R04Flow() {
                 <span style={{ position: "absolute", bottom: 0, left: 0, width: "100%", height: 2, background: `linear-gradient(to right, ${C.accent}, transparent)`, transformOrigin: "left", transform: "scaleX(0)", animation: "underlineReveal 0.8s ease 0.4s forwards" }} />
               </h2>
             </FadeIn>
-
-            {isMobile && (
-              <div style={{ margin: "24px 0", overflow: "hidden" }}>
-                <img
-                  src="/keikamotsu-new-templates/images/workplace.webp"
-                  alt="お知らせ"
-                  style={{ width: "100%", height: "180px", objectFit: "cover", display: "block", filter: "grayscale(15%)" }}
-                />
-              </div>
-            )}
 
             <div style={{ marginTop: isMobile ? "40px" : "56px" }}>
               {news.map((n, i) => (
@@ -1942,42 +1918,17 @@ export default function R04Flow() {
         {/* ════════════════════════════════════════
            APPLY (FORM) with animated focus
            ════════════════════════════════════════ */}
-        <section id="apply" style={{ padding: isMobile ? "80px 0 90px" : "165px 0 195px", background: C.white, position: "relative" }}>
+        <section id="apply" style={{ padding: isMobile ? "80px 0 90px" : "165px 0 195px", position: "relative", overflow: "hidden" }}>
+          {/* Background image */}
+          <div style={{
+            position: "absolute", inset: 0,
+            backgroundImage: `url(/keikamotsu-new-templates/images/team.webp)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: 0.07,
+          }} />
+          <div style={{ position: "absolute", inset: 0, background: C.white, opacity: 0.93 }} />
           <SectionNumber number="12" align="right" />
-          {/* Decorative image - editorial float right */}
-          {!isMobile && (
-            <div style={{
-              position: "absolute",
-              top: "80px",
-              right: "5%",
-              width: "240px",
-              height: "320px",
-              zIndex: 1,
-              overflow: "hidden",
-            }}>
-              <img
-                src="/keikamotsu-new-templates/images/team.webp"
-                alt="応募"
-                className="flow-img-hover"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                  filter: "grayscale(15%)",
-                }}
-              />
-              <p style={{
-                fontFamily: F.accent,
-                fontSize: "10px",
-                color: C.mutedLight,
-                letterSpacing: "0.08em",
-                marginTop: "8px",
-              }}>
-                Join our team
-              </p>
-            </div>
-          )}
           <div style={{ width: containerW, margin: "0 auto", maxWidth: "640px", position: "relative" }}>
             <FadeIn>
               <div style={{ textAlign: "center" }}>
@@ -2010,16 +1961,6 @@ export default function R04Flow() {
                 折り返しご連絡いたします。
               </p>
             </FadeIn>
-
-            {isMobile && (
-              <div style={{ margin: "24px 0", overflow: "hidden" }}>
-                <img
-                  src="/keikamotsu-new-templates/images/team.webp"
-                  alt="応募"
-                  style={{ width: "100%", height: "180px", objectFit: "cover", display: "block", filter: "grayscale(15%)" }}
-                />
-              </div>
-            )}
 
             {submitted ? (
               <FadeIn>
