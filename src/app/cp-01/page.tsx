@@ -1618,7 +1618,7 @@ function AccessContent({ isMobile }: { isMobile: boolean }) {
 /* --- CONTACT TAB --- */
 function ContactContent({ isMobile }: { isMobile: boolean }) {
   const placeholders: Record<string, string> = {
-    company: "例）グリーンロジスティクス株式会社",
+    company: "例）サンプルロジスティクス株式会社",
     name: "例）山田 太郎",
     email: "例）info@example.co.jp",
     phone: "例）050-0000-0000",

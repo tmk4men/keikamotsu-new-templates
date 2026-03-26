@@ -2267,7 +2267,7 @@ export default function CP02Page() {
                           type="text"
                           name="company"
                           required
-                          placeholder="例）グリーンロジスティクス株式会社"
+                          placeholder="例）サンプルロジスティクス株式会社"
                           value={form.company}
                           onChange={handleFormChange}
                           style={{
@@ -2350,7 +2350,7 @@ export default function CP02Page() {
                         <input
                           type="tel"
                           name="phone"
-                          placeholder="例）050-0132-1348"
+                          placeholder="例）050-0000-0000"
                           value={form.phone}
                           onChange={handleFormChange}
                           style={{
